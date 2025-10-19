@@ -8,16 +8,6 @@
         <div class="col-md-6 left-course-container">
             <h1>{{ $courseDetails->title ?? '' }}</h1>
             <h6>{!! $courseDetails->short_description !!}</h6>
-            <!-- <p><span><i class="ri-checkbox-circle-line"></i></span> Guaranteed PMP Exam Success on Your First Try
-            </p>
-            <p><span><i class="ri-checkbox-circle-line"></i></span> Specialized Master Classes for Project
-                Management Using Generative AI</p>
-            <p><span><i class="ri-checkbox-circle-line"></i></span> Get 12 simulated assessments | Earn 35 PDUs |
-                500+ premium questions</p>
-            <p><span><i class="ri-checkbox-circle-line"></i></span> Study Plan with 1000 Questions | Cheat Sheet |
-                Guaranteed Exam Pass</p>
-            <p><span><i class="ri-checkbox-circle-line"></i></span> Guarantee to Run More than 30 Live Cohorts in
-                the Next 90 Days</p> -->
             {!! $courseDetails->description !!}
 
             <div class="demo-course-btn d-flex flex-wrap">
