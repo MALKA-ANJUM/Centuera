@@ -6,11 +6,11 @@ The platform enables learners to browse certification courses, enroll in live se
 
 🧩 Tech Stack
 
-**Backend: Laravel (PHP 8+)
-**Frontend: Bootstrap & jQuery
-**Database: MySQL
-**Payment Gateway: Razorpay
-**Storage: Local / Cloud
+**Backend:** Laravel (PHP 8+)
+**Frontend:** Bootstrap & jQuery
+**Database:** MySQL
+**Payment Gateway:** Razorpay
+**Storage:** Local / Cloud
 
 ⚙️ Installation
 1️⃣ Clone the Repository
