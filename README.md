@@ -7,10 +7,13 @@ The platform enables learners to browse certification courses, enroll in live se
 🧩 Tech Stack
 
 Backend: Laravel (PHP 8+)
+
 Frontend: Bootstrap & jQuery
+
 Database: MySQL
-Queue System: Laravel Queue
+
 Payment Gateway: Razorpay
+
 Storage: Local / Cloud
 
 ⚙️ Installation
