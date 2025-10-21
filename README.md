@@ -1,8 +1,8 @@
 🎓 Centuera — Professional Certification & E-Learning Platform
-
+---
 A modern E-Learning Web Application built with Laravel and MySQL, designed for real-time instructor-led training and efficient course management.
 The platform enables learners to browse certification courses, enroll in live sessions, and earn certificates seamlessly.
----
+
 
 🧩 Tech Stack
 
