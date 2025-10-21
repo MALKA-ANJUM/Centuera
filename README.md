@@ -6,11 +6,11 @@ The platform enables learners to browse certification courses, enroll in live se
 
 🧩 Tech Stack
 
-**Backend:** Laravel (PHP 8+)
-**Frontend:** Bootstrap & jQuery
-**Database:** MySQL
-**Payment Gateway:** Razorpay
-**Storage:** Local / Cloud
+**Backend:** Laravel 12 (PHP 8+)  
+**Frontend:** React Js & Bootstrap
+**Database:** MySQL  
+**Payment Gateway:** Razorpay 
+**Storage:** Local Storage
 
 ⚙️ Installation
 1️⃣ Clone the Repository
@@ -40,10 +40,6 @@ php artisan migrate --seed
 5️⃣ Serve the Application
 ```bash
 php artisan serve
-```
-
-```bash
-Access at 👉 http://localhost:8000
 ```
 
 🧠💻 Developer
