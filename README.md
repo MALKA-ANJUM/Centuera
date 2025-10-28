@@ -6,6 +6,7 @@ The platform enables learners to browse certification courses, enroll in live se
 
 🧩 Tech Stack
 
+
 **Backend:** Laravel 12 (PHP 8+)  
 **Frontend:** React Js & Bootstrap
 **Database:** MySQL  
