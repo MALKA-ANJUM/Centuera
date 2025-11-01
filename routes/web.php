@@ -130,9 +130,7 @@ Route::get('register', [UserLogincontroller::class, 'register'])->name('register
 
 Route::prefix('user')->name('user.')->group(function () {
     Route::post('login-details-submit', [UserLogincontroller::class, 'loginDetailsSubmit'])->name('login.details.submit');
-
     Route::post('register-details-submit', [UserLogincontroller::class, 'registerDetailsSubmit'])->name('register.details.submit');
-
     Route::middleware(['auth:web'])->group(function () {
         //Protected Route start
         Route::get('logout', [UserController::class, 'logout'])->name('logout');
