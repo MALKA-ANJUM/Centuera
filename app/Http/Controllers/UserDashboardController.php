@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\Order;
 use App\Models\TimeZone;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserDashboardController extends Controller
 {
     public function dashboard()
     {
-        $countries = Country::with('getTimeZone')->get();
-        $timezones = TimeZone::get();
-        return view('user.dashboard', compact('countries', 'timezones'));
+        $countries = Country::get();
+        $orders = Order::orderBy('id', 'desc')->paginate(10);
+        return view('user.dashboard', compact('countries', 'orders'));
     }
 
     public function updateBasic(Request $request)
@@ -35,12 +39,12 @@ class UserDashboardController extends Controller
             $user = User::where('id', Auth()->user()->id)->first();
 
             // Handle file upload if exists
-            if($request->image != null){
+            if ($request->image != null) {
                 $image = date('Ymd') . '_' . rand() . '.' . $request->image->getClientOriginalExtension();
                 $request->image->move('user/profile', $image);
                 $user->image = $image;
             }
-          
+
             // Update user fields
             $user->title = $request->title;
             $user->first_name = $request->first_name;
@@ -79,7 +83,7 @@ class UserDashboardController extends Controller
             $user->country = $request->country;
             $user->state = $request->state;
             $user->city = $request->city;
-            $user->timezone_id = $request->timezone_id; 
+            $user->timezone_id = $request->timezone_id;
             $user->address = $request->address;
             $user->save();
 
@@ -89,5 +93,45 @@ class UserDashboardController extends Controller
             session()->flash('error', $ex->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+            'c_password' => 'required|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator) // send validation errors
+                ->withInput()            // keep old input
+                ->with('error', implode(' ', $validator->errors()->all())); // combine all errors into one string
+        }
+
+        try {
+            $user = User::findOrFail(Auth::id());
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            return redirect()->back()->with('success', 'User Password Updated successfully!');
+        } catch (\Exception $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function termsCondition()
+    {
+        return view('user.terms-and-conditions');
+    }
+
+    public function privacyPolicy()
+    {
+        return view('user.privacy-policy');
+    }
+
+    public function refundPolicy()
+    {
+        return view('user.refund-policy');
     }
 }

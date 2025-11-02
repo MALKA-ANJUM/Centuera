@@ -71,11 +71,13 @@
     </style>
 @endpush
 @push('script')
-    <script>
-        ClassicEditor
-            .create(document.querySelector('.editor4'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('.editor4'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
 @endpush

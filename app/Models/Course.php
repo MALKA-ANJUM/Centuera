@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Course extends Model
 {
     use HasFactory;
-
+    
     protected $table = 'courses';
     protected $fillable = [
         'title',
@@ -27,6 +28,13 @@ class Course extends Model
         'duration',
         'category',
         'cover_image',
+        'training_course',
+        'learner_field',
+        'authorized_training_partner',
+        'rating',
+        'number_of_user_rating',
+        'exam_pass_guarantee',
+        'money_back_guarantee'
     ];
     public function keyFeatures()
     {
@@ -67,5 +75,54 @@ class Course extends Model
     {
         return $this->belongsTo(Category::class, 'category');
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(CourseSchedule::class, 'course_id');
+    }
+
+    public function getBenefits()
+    {
+        return $this->hasMany(Benefit::class, 'course_id');
+    }
+
+    public function getCourseCurriculum()
+    {
+        return $this->hasMany(CourseCurriculum::class, 'course_id');
+    }
+
+    public function getCourseCertificate()
+    {
+        return $this->hasMany(CourseCertification::class, 'course_id');
+    }
+
+    public function getCourseVideo()
+    {
+        return $this->hasMany(CourseVideo::class, 'course_id');
+    }
+
+    public function getCourseSchedule()
+    {
+        return $this->hasOne(CourseSchedule::class, 'course_id')->where('start_date', '>=', now())->with('prices');
+    }
+
+    public function getCourseScheduleMany()
+    {
+        return $this->hasMany(CourseSchedule::class, 'course_id')->where('start_date', '>=', now())->with('prices');
+    }
+
+    public function getSeoData()
+    {
+        return $this->belongsTo(Seo::class, 'id', 'course_id');
+    }
+
+    // public function getTimeZoneFromCountry()
+    // {
+    //     return $this->belongsTo(Country::class);
+    // }
+
+    protected $casts = [
+        'training_course' => 'array',
+    ];
     
 }

@@ -29,7 +29,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('custom-payment.store') }}" method="POST">
+                <form action="" method="POST">
                     @csrf
                     <div class="row g-3">
                         <!-- Full Name -->
@@ -73,47 +73,46 @@
                         </div>
 
                         <!-- Course -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Course <span class="text-danger">*</span></label>
-                            <select class="form-select select2" name="course">
-                                <option>Select course</option>
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                                @endforeach
-                            </select>
-                            @error('course')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                            <button type="button" class="btn btn-primary w-100 mt-2 fw-semibold" style="background:#0d2c6c;">
-                                Add Course +
+                        <div id="courseRepeater" class="col-md-6">
+                            <div class="col-11 mb-2">
+                                <label class="form-label fw-semibold">Course <span class="text-danger">*</span></label>
+                                <select class="form-select select2 courseSelect" name="courses[]">
+                                    <option value="">Select course</option>
+                                </select>
+                            </div>
+                            {{-- <div class="removeCourse text-danger col-md-1" style="cursor: pointer">X</div> --}}
+                            {{-- <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger removeCourse">X</button>
+                            </div> --}}
+                        </div>
+                        <div class="col-6"></div>
+                        <div class="col-6 d-flex align-items-end">
+                            <button type="button" id="addCourse" class="btn btn-primary w-100 fw-semibold" style="background:#0d2c6c;">
+                                Add +
                             </button>
                         </div>
 
-                        <!-- Currency -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Currency <span class="text-danger">*</span></label>
-                            <input type="text" name="currency" id="currency" class="form-control" readonly>
-                        </div>
+                        <div class="row">
+                            <!-- Currency -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Currency <span class="text-danger">*</span></label>
+                                <input type="text" name="currency" id="currency" value="USD" class="form-control" readonly>
+                            </div>
 
-                        <!-- Total Amount -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Total Amount <span class="text-danger">*</span></label>
-                            <input type="text" name="amount" class="form-control" placeholder="Total Amount">
-                            @error('amount')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
+                            <!-- Total Amount -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Total Amount <span class="text-danger">*</span></label>
+                                <input type="text" name="amount" class="form-control" placeholder="Total Amount">
+                                @error('amount')
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Workshop Date -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Workshop Date</label>
-                            <input type="text" name="date" class="form-control" placeholder="dd-mm-yyyy,dd-mm-yyyy">
-                        </div>
-
-                        <!-- Referral -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Referral Code (Optional)</label>
-                            <input type="text" name="referral" class="form-control" placeholder="Enter Referral Code">
+                            <input type="text" name="date" class="form-control datepicker" placeholder="dd-mm-yyyy,dd-mm-yyyy">
                         </div>
                     </div>
 
@@ -122,36 +121,10 @@
                         <div class="col-md-3">
                             <div class="p-3 border rounded-3 shadow-sm">
                                 <img src="/images/stripe.png" class="mb-2" style="height:30px;">
-                                <button class="btn btn-danger w-100">Pay with Stripe</button>
+                                <button type="button" class="btn btn-danger w-100" id="payWithStripe">Pay with Stripe</button>
                                 <small class="text-muted d-block mt-1">Major Credit / Debit Cards accepted.</small>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="p-3 border rounded-3 shadow-sm">
-                                <img src="/images/paypal.png" class="mb-2" style="height:30px;">
-                                <button class="btn btn-danger w-100">Pay with PayPal</button>
-                                <small class="text-muted d-block mt-1">Major Credit / Debit Cards accepted.</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3 border rounded-3 shadow-sm">
-                                <img src="/images/splitit.png" class="mb-2" style="height:30px;">
-                                <button class="btn btn-danger w-100">Pay with Splitit</button>
-                                <small class="text-muted d-block mt-1">Credit Cards only.</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="p-3 border rounded-3 shadow-sm">
-                                <img src="/images/affirm.png" class="mb-2" style="height:30px;">
-                                <button class="btn btn-danger w-100">Pay with Affirm</button>
-                                <small class="text-muted d-block mt-1">Credit option available.</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary w-100 mt-2 fw-semibold" style="background:#0d2c6c;">
-                            Submit
-                        </button>
                     </div>
                 </form>
             </div>
@@ -185,15 +158,140 @@
 // for auto-select currency
     $(document).ready(function() {
     // On change of country code
-    $('.phone-flag').on('change', function() {
-        let currency = $(this).find(':selected').data('currency');
-        $('#currency').val(currency);
-    });
+    // $('.phone-flag').on('change', function() {
+    //     let currency = $(this).find(':selected').data('currency');
+    //     $('#currency').val(currency);
+    // });
 
     // Trigger change once on page load (so default selection also works)
     $('.phone-flag').trigger('change');
     });
+
+    //SHOW COURSE USING AJAX
+    $(document).ready(function () {
+        let courseOptions = '<option value="">Select course</option>';
+
+        // Load courses via AJAX once
+        $.ajax({
+            url: "{{ route('get.courses') }}",
+            type: "GET",
+            success: function(courses) {
+                $.each(courses, function(index, course) {
+                    courseOptions += '<option value="'+course.id+'">'+course.title+'</option>';
+                });
+
+                // Fill the first dropdown
+                $(".courseSelect").html(courseOptions).select2();
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+
+        // Add new repeater row
+        $("#addCourse").click(function () {
+            let newRow = `
+            <div class="course-item row mb-2">
+                <div class="col-md-11">
+                    <select class="form-select select2 courseSelect" name="courses[]">
+                        ${courseOptions}
+                    </select>
+                </div>
+                <div class="removeCourse text-danger col-md-1" style="cursor: pointer">X</div>
+            </div>`;
+
+            $("#courseRepeater").append(newRow);
+
+            // Reinitialize select2 for the new dropdown
+            $("#courseRepeater .select2").last().select2();
+        });
+
+        // Remove row
+        $(document).on("click", ".removeCourse", function () {
+            $(this).closest(".course-item").remove();
+        });
+    });
+
+    //flatpickr
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr(".datepicker", {
+            mode: "range",
+            dateFormat: "d-m-Y",
+            // defaultDate: ["2016-10-10", "2016-10-20"]
+        });
+    });
 </script>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    $(document).ready(function () {
+        let stripe = Stripe("{{ config('services.stripe.key') }}"); // ✅ your publishable key
+
+        $("#payWithStripe").click(function (e) {
+            e.preventDefault();
+
+            let valid = true;
+            let errors = [];
+
+            // Required fields
+            let name = $("input[name='name']").val().trim();
+            let email = $("input[name='email']").val().trim();
+            let phone = $("input[name='phone']").val().trim();
+            let country_code = $("select[name='country_code']").val();
+            let amount = $("input[name='amount']").val().trim();
+            let courses = $("select[name='courses[]']").map(function(){ return $(this).val(); }).get();
+
+            // Validation checks
+            if (!name) { valid = false; errors.push("Name is required"); }
+            if (!email) { valid = false; errors.push("Email is required"); }
+            if (!phone) { valid = false; errors.push("Phone number is required"); }
+            if (!country_code) { valid = false; errors.push("Country code is required"); }
+            if (!amount || isNaN(amount) || amount <= 0) { valid = false; errors.push("Valid amount is required"); }
+            if (courses.length === 0 || !courses[0]) { valid = false; errors.push("At least one course must be selected"); }
+
+            // Show error messages
+            if (!valid) {
+                alert("Please fix the following errors:\n\n" + errors.join("\n"));
+                return false; // ⛔ Stop before Stripe request
+            }
+
+            // ✅ Proceed only if valid
+            let formData = {
+                _token: "{{ csrf_token() }}",
+                fullname: name,
+                email: email,
+                phone: phone,
+                country_code: country_code,
+                course_id: courses,
+                currency: $("#currency").val(),
+                total_amount: amount,
+                workshop_start_date: $("input[name='date']").val().split(',')[0] ?? null,
+                workshop_end_date: $("input[name='date']").val().split(',')[1] ?? null,
+                participants: 1,
+                price: amount
+            };
+
+            $.ajax({
+                url: "{{ route('checkout.session') }}",
+                method: "POST",
+                data: formData,
+                success: function (response) {
+                    if (response.id) {
+                        stripe.redirectToCheckout({ sessionId: response.id });
+                    } else {
+                        alert("Payment initialization failed.");
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    alert("Error: Unable to initialize payment.");
+                }
+            });
+        });
+
+    });
+</script>
+
 @endpush 
 
 @push('style')

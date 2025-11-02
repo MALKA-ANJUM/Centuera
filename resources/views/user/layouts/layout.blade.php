@@ -1,8 +1,12 @@
- <!--HEADER INCLUDE-->
-@include('user.layouts.header')
+ 
+    <!--HEADER INCLUDE-->
+    @include('user.layouts.header')
 
-<!--MAIN CONTENT -->
-@yield('content')
+    {{-- toaster --}}
+    @include('user.layouts.toster')
 
-<!--FOOTER INCLUDE-->
-@include('user.layouts.footer')
+    <!--MAIN CONTENT -->
+    @yield('content')
+    
+    <!--FOOTER INCLUDE-->
+    @include('user.layouts.footer')

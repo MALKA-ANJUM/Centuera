@@ -1,20 +1,31 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ShiftController;
-use App\Http\Controllers\Auth\UserLogincontroller;
-use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DynamicController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\UserCourseController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\CustomPaymentController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\Auth\UserLogincontroller;
+use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\GeneralsettingsController;
 use App\Http\Controllers\RoleAndPermissionController;
-use App\Http\Controllers\WebsiteController;
+use App\Models\CustomPayment;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +61,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('change-user-status', [AdminController::class, 'changeUserStatus'])->name('change-user-status');
         Route::post('add-user', [AdminController::class, 'addUser'])->name('add-user');
         Route::get('edit-user/{id}', [AdminController::class, 'editUser'])->name('edit-user');
+        Route::get('contacts-list', [AdminController::class, 'contactus'])->name('contacts.list');
+        Route::get('leads-list', [AdminController::class, 'leadsList'])->name('leads.list');
         Route::post('update-user/{id}', [AdminController::class, 'updateUser'])->name('update-user');
         Route::get('change-user-password/{id}', [AdminController::class, 'changeUserPassword'])->name('change-user-password');
         Route::get('delete-user/{id}', [AdminController::class, 'deleteUser'])->name('delete-user');
@@ -99,6 +112,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('gallery-update/{id}', [GalleryController::class, 'galleryUpdate'])->name('gallery.update');
         Route::get('gallery-delete/{id}', [GalleryController::class, 'galleryDelete'])->name('gallery.delete');
 
+        //request-callback
+        Route::get('request-callback', [UserController::class, 'requestCallback'])->name('request.callback');
+        Route::get('export', [UserController::class, 'requestExport'])->name('request.export');
+
+        //CUSTOM PAYMENT
+        Route::get('custom-payment', [CustomPaymentController::class, 'customList'])->name('custom.list');
+
         //add photo
          Route::get('photo/{id}', [PhotoController::class, 'photo'])->name('photo');
          Route::post('photo/add/{id}', [PhotoController::class, 'photoAdd'])->name('photo.add');
@@ -111,6 +131,54 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('delete-banner/{image}', [WebsiteController::class, 'deleteBanner'])->name('delete.banner');
         Route::get('delete-user-banner/{image}', [WebsiteController::class, 'deleteUserBanner'])->name('delete.user.banner');
 
+        //subscriptions
+        Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+            Route::get('/', [AdminController::class, 'subscriptions'])->name('index');
+            Route::get('/export', [AdminController::class, 'export'])->name('export');
+        });
+
+        //category
+        Route::prefix('categories')->name('categories.')->group(function () {
+            Route::get('/', [CategoriesController::class, 'index'])->name('index');
+            Route::get('create', [CategoriesController::class, 'create'])->name('create');
+            Route::post('store', [CategoriesController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [CategoriesController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [CategoriesController::class, 'destroy'])->name('delete');
+            Route::post('update-feature', [CategoriesController::class, 'updateFeature'])->name('update.feature');
+        });
+        //country
+        Route::get('country-list', [CountryController::class, 'countryList'])->name('country.list');
+        Route::get('country-edit/{id}', [CountryController::class, 'countryEdit'])->name('country.edit');
+        Route::post('country-update/{id}', [CountryController::class, 'countryUpdate'])->name('country.update');
+        //course
+        Route::prefix('course')->name('course.')->group(function () {
+            Route::get('/', [CourseController::class, 'index'])->name('index');
+            Route::get('create', [CourseController::class, 'create'])->name('create');
+            Route::post('store', [CourseController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [CourseController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [CourseController::class, 'update'])->name('update');
+        });
+
+        //Schedule
+        Route::prefix('schedule')->name('schedule.')->group(function () {
+            Route::get('/', [ScheduleController::class, 'index'])->name('index');
+            Route::get('course/schedules/{id}', [ScheduleController::class, 'courseSchedules'])->name('course.schedules');
+            Route::get('create/{id}', [ScheduleController::class, 'create'])->name('create');
+            Route::post('store', [ScheduleController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [ScheduleController::class, 'edit'])->name('edit');
+            Route::post('update/{id}', [ScheduleController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [ScheduleController::class, 'destroy'])->name('delete');
+        });
+        //Coupons
+        Route::prefix('coupons')->name('coupons.')->group(function () {
+            Route::get('/', [CouponController::class, 'index'])->name('index');
+            Route::get('create', [CouponController::class, 'create'])->name('create');
+            Route::post('store', [CouponController::class, 'store'])->name('store');
+            Route::get('edit/{coupon}', [CouponController::class, 'edit'])->name('edit');
+            Route::post('update/{coupon}', [CouponController::class, 'update'])->name('update');
+            Route::get('delete/{coupon}', [CouponController::class, 'destroy'])->name('delete');
+        });
         // General Settings Routes
         Route::get('general-settings', [GeneralsettingsController::class, 'generalsettingscreate'])->name('general.settings');
         Route::post('generalsettings_form', [GeneralsettingsController::class, 'generalsettingsstore'])->name('general.setting.update');
@@ -123,16 +191,81 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-
-Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
+Route::get('/', [UserController::class, 'index'])->name('index');
 Route::get('login', [UserLogincontroller::class, 'login'])->name('login');
+Route::post('login-details-submit', [UserLogincontroller::class, 'loginDetailsSubmit'])->name('login.details.submit');
 Route::get('register', [UserLogincontroller::class, 'register'])->name('register');
+Route::post('register-details-submit', [UserLogincontroller::class, 'registerDetailsSubmit'])->name('register.details.submit');
+Route::get('get-countries', [UserLogincontroller::class, 'getCountries'])->name('get.countries');
+Route::get('get-states', [UserLogincontroller::class, 'getStates'])->name('get.states');
+
+
+Route::post('subscribe', [UserController::class, 'subscribe'])->name('subscribe');
+Route::post('callback', [UserController::class, 'callback'])->name('request.callback');
+Route::post('lead', [UserController::class, 'lead'])->name('lead');
+
+Route::get('about', [UserController::class, 'about'])->name('about');
+
+Route::get('blog', [UserController::class, 'userBlog'])->name('blog');
+Route::get('blog-details/{slug}', [UserController::class, 'viewBlog'])->name('blog.view');
+
+Route::get('contact', [UserController::class, 'contact'])->name('contact');
+Route::post('contact', [UserController::class, 'storeContact'])->name('store.contact');
+
+//CUSTOM PAYMENT PAGE
+Route ::get('custom-payment-page',[CustomPaymentController::class, 'customPayment'])->name('custom.payment');
+Route::post('/custom-payment/store', [CustomPaymentController::class, 'store'])->name('custom-payment.store');
+Route::get('/get-courses', [CustomPaymentController::class, 'getCourses'])->name('get.courses');
+
+Route::get('courses', [UserCourseController::class, 'courseList'])->name('course.list');
+Route::get('course-details/{slug}', [UserCourseController::class, 'courseDetails'])->name('course.details');
+Route::get('/{slug}', [UserController::class, 'showDynamicPage'])->name('dynamic_content');
+Route::get('privacy-policy', [UserDashboardController::class, 'privacyPolicy'])->name('privacy.policy');
+Route::get('refund-policy', [UserDashboardController::class, 'refundPolicy'])->name('course.policy');
+
 
 Route::prefix('user')->name('user.')->group(function () {
+    Route::get('login', [UserLogincontroller::class, 'login'])->name('login');
     Route::post('login-details-submit', [UserLogincontroller::class, 'loginDetailsSubmit'])->name('login.details.submit');
+    Route::get('register', [UserLogincontroller::class, 'register'])->name('register');
     Route::post('register-details-submit', [UserLogincontroller::class, 'registerDetailsSubmit'])->name('register.details.submit');
+    Route::get('get-countries', [UserLogincontroller::class, 'getCountries'])->name('get.countries');
+    Route::get('get-states', [UserLogincontroller::class, 'getStates'])->name('get.states');
+
+
+    Route::post('subscribe', [UserController::class, 'subscribe'])->name('subscribe');
+    Route::post('callback', [UserController::class, 'callback'])->name('request.callback');
+    Route::post('lead', [UserController::class, 'lead'])->name('lead');
+
+    Route::get('blog', [UserController::class, 'userBlog'])->name('blog');
+    Route::get('blog-details/{slug}', [UserController::class, 'viewBlog'])->name('blog.view');
+
+    Route::get('contact', [UserController::class, 'contact'])->name('contact');
+    Route::post('contact', [UserController::class, 'storeContact'])->name('store.contact');
+
+    Route::get('courses', [UserCourseController::class, 'courseList'])->name('course.list');
+    Route::get('details/{slug}', [UserCourseController::class, 'courseDetails'])->name('course.details');
+    Route::get('schedule/{slug}', [UserCourseController::class, 'courseSchedule'])->name('course.schedule');
+    Route::post('/set-country', [UserCourseController::class, 'setCountry'])->name('set.country');
+
+    Route::get('/search-courses', [UserCourseController::class, 'searchCourses'])->name('search.course');
+
+    Route::get('order-summary/{id}', [UserOrderController::class, 'orderSummary'])->name('order.summary');
+    Route::post('order-submit/{id}', [UserOrderController::class, 'orderSubmit'])->name('order.submit');
+
     Route::middleware(['auth:web'])->group(function () {
         //Protected Route start
+        Route::get('dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+        Route::post('update-basic', [UserDashboardController::class, 'updateBasic'])->name('update.basic');
+        Route::post('update-contact', [UserDashboardController::class, 'updateContact'])->name('update.contact');
+        Route::post('update-password', [UserDashboardController::class, 'updatePassword'])->name('update.password');
         Route::get('logout', [UserController::class, 'logout'])->name('logout');
     });
 });
+
+Route::get('payment', [PaymentController::class, 'paymentForm'])->name('payment.form');
+Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout.session');
+Route::get('/stripe/success', [PaymentController::class, 'success'])->name('stripe.success');
+Route::get('/stripe/cancel', [PaymentController::class, 'cancel'])->name('stripe.cancel');
+
+// Route::post('payment-submit', [PaymentController::class, 'paymentSubmit'])->name('payment.submit');

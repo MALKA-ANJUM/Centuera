@@ -22,7 +22,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header border-bottom">
-                                    <form action="" method="GET" class="d-flex ms-3">
+                                    <form action="" method="GET" class="d-flex">
                                         {{-- From Date --}}
                                         <input type="text" name="from_date" class="form-control datepicker"
                                             placeholder="From Date" value="{{ request('from_date') }}">
@@ -35,11 +35,11 @@
                                         <button type="submit" class="btn btn-primary"> <i class="fa fa-search"></i></button>
 
                                         {{-- Status Filter --}}
-                                        <select name="status" class="form-control" style="margin-left:50px">
+                                        <select name="status" class="form-control" style="margin-left:50px" onchange="this.form.submit()">
                                             <option value="">All Status</option>
-                                            <option value="pending"{{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                            <option value="paid"{{ request('status') == 'paid' ? 'selected' : '' }}>Paid</option>
-                                            <option value="cancelled"{{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                         </select>
 
                                         {{-- Search filter --}}

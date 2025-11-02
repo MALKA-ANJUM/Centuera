@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Faq;
+use App\Models\Seo;
+use Illuminate\Support\Facades\Log;
 use App\Models\Course;
 use App\Models\Benefit;
 use App\Models\Category;
@@ -11,8 +13,11 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CourseCurriculum;
 use App\Models\CourseKeyFeature;
+use Illuminate\Support\Facades\DB;
 use App\Models\CourseCertification;
 use App\Models\CourseSkillsCovered;
+use App\Http\Controllers\Controller;
+use App\Models\CoursePremierPartner;
 use App\Models\CourseTrustedPartner;
 
 class CourseController extends Controller
@@ -31,14 +36,25 @@ class CourseController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('admin.courses.create', compact('categories'));
+        $courses = Course::orderBy('id', 'desc')->get();
+        return view('admin.courses.create', compact('categories', 'courses'));
     }
 
     public function store(Request $request)
     {
+        // return $request;
+        $request->validate([
+            'title'     => 'required',
+            'short_title'     => 'required',
+            'category'  => 'required',
+        ]);
+
         try {
-            $course = new Course();
+            $courseId = $request->course_id;
+            $course = $courseId ? Course::findOrFail($courseId) : new Course();
+
             $course->title                   = $request->title;
+            $course->short_title             = $request->short_title;
             $course->short_description       = $request->short_description;
             $course->description             = $request->description;
             $course->duration                = $request->duration;
@@ -48,117 +64,212 @@ class CourseController extends Controller
             $course->business_with_skilled   = $request->business_with_skilled;
             $course->video_url               = $request->video_url;
             $course->category                = $request->category;
-            $course->benefits                = $request->benefits_description;
+            $course->learner_field           = $request->learner_field;
+            $course->exam_pass_guarantee     = $request->exam_pass_guarantee;
+            $course->money_back_guarantee    = $request->money_back_guarantee;
+            $course->rating                  = $request->rating;
+            $course->number_of_user_rating   = $request->number_of_user_rating;
+            $course->benefits                = $request->benefit_description;
+            $course->related_courses         = json_encode($request->related_courses);
 
+            // ✅ Premier Partners (images + text)
+            $premierPartners = [];
+            if ($request->premier_partner) {
+                foreach ($request->premier_partner as $partner) {
+                    $imagePath = null;
+                    if (isset($partner['image']) && $partner['image'] instanceof \Illuminate\Http\UploadedFile && $partner['image']->isValid()) {
+                        $img = $partner['image'];
+                        $imgName = time() . '_' . $img->getClientOriginalName();
+                        $img->move(public_path('uploads/premier_partner'), $imgName);
+                        $imagePath = $imgName;
+                    }
+                    $premierPartners[] = [
+                        'image' => $imagePath,
+                        'text'  => $partner['text'] ?? null
+                    ];
+                }
+            }
+            $course->authorized_training_partner = json_encode($premierPartners);
 
+            // ✅ Images
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '_image.' . $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/courses'), $imageName);
+                $imageName = time() . '_image.' . $request->image->getClientOriginalExtension();
+                $request->image->move(public_path('uploads/courses'), $imageName);
                 $course->image = $imageName;
             }
             if ($request->hasFile('cover_image')) {
-                $image = $request->file('cover_image');
-                $imageName = time() . '_cover.' . $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/courses'), $imageName);
+                $imageName = time() . '_cover.' . $request->cover_image->getClientOriginalExtension();
+                $request->cover_image->move(public_path('uploads/cover_image'), $imageName);
                 $course->cover_image = $imageName;
             }
-
             if ($request->hasFile('certification_image')) {
-                $certImage = $request->file('certification_image');
-                $certImageName = time() . '_cert.' . $certImage->getClientOriginalExtension();
-                $certImage->move(public_path('uploads/certifications'), $certImageName);
+                $certImageName = time() . '_cert.' . $request->certification_image->getClientOriginalExtension();
+                $request->certification_image->move(public_path('uploads/certifications'), $certImageName);
                 $course->certification_image = $certImageName;
             }
 
-            $baseSlug   = Str::slug($request->title);
-            $slug       = $baseSlug;
-            $counter    = 1;
-            while (Course::where('slug', $slug)->exists()) {
-                $slug   = $baseSlug . '-' . $counter++;
+            // ✅ Slug (only if new course OR title changed)
+            if (!$course->id || $course->isDirty('title')) {
+                $baseSlug   = Str::slug($request->title);
+                $slug       = $baseSlug;
+                $counter    = 1;
+                while (Course::where('slug', $slug)->where('id', '!=', $course->id)->exists()) {
+                    $slug   = $baseSlug . '-' . $counter++;
+                }
+                $course->slug = $slug;
             }
-            $course->slug = $slug;
+
+            // ✅ Training course
+            if ($request->has('training_course') && is_array($request->training_course)) {
+                $trainingData = [];
+                foreach ($request->training_course as $type => $data) {
+                    $trainingData[$type] = [
+                        'status'      => !empty($data['status']) ? 1 : 0,
+                        'level_name'  => $data['level_name'] ?? '',
+                        'description' => $data['description'] ?? '',
+                    ];
+                }
+                $course->training_course = json_encode($trainingData);
+            }
+
             $course->save();
 
+            // ✅ Related Data (clear old if updating)
+            if ($request->course_id) {
+                CourseKeyFeature::where('course_id', $course->id)->delete();
+                CourseSkillsCovered::where('course_id', $course->id)->delete();
+                CourseCurriculum::where('course_id', $course->id)->delete();
+                CourseCertification::where('course_id', $course->id)->delete();
+                CourseTrustedPartner::where('course_id', $course->id)->delete();
+                CourseVideo::where('course_id', $course->id)->delete();
+                Faq::where('course_id', $course->id)->delete();
+                Benefit::where('course_id', $course->id)->delete();
+                Seo::where('course_id', $course->id)->delete();
+            }
+
+            // ✅ Save Features
             if ($request->feature) {
                 foreach ($request->feature as $feature) {
+                    if (empty($feature)) {
+                        continue;
+                    }
                     CourseKeyFeature::create([
-                        'course_id'     => $course->id,
-                        'feature'       => $feature
+                        'course_id' => $course->id,
+                        'feature'   => $feature
                     ]);
                 }
             }
 
+            // ✅ Save Skills
             if ($request->skill_name) {
                 foreach ($request->skill_name as $skill) {
+                    if (empty($skill)) {
+                        continue;
+                    }
                     CourseSkillsCovered::create([
-                        'course_id'     => $course->id,
-                        'skill_name'    => $skill
+                        'course_id'  => $course->id,
+                        'skill_name' => $skill
                     ]);
                 }
             }
 
-           
+            // ✅ SEO
+            if ($request->meta_title || $request->meta_description || $request->meta_keywords) {
+                Seo::create([
+                    'course_id'       => $course->id,
+                    'meta_title'      => $request->meta_title,
+                    'meta_description'=> $request->meta_description,
+                    'meta_keyword'    => $request->meta_keywords,
+                ]);
+            }
+
+            // ✅ Curriculum
             if ($request->curriculum_title) {
                 foreach ($request->curriculum_title as $index => $title) {
+                    if (empty($title) && empty($description)) {
+                        continue;
+                    }
                     CourseCurriculum::create([
-                        'course_id'     => $course->id,
-                        'title'         => $title,
-                        'description'   => $request->curriculum_description[$index] ?? null
+                        'course_id'   => $course->id,
+                        'title'       => $title,
+                        'description' => $request->curriculum_description[$index] ?? null
                     ]);
                 }
             }
 
-           
+            // ✅ Certifications
             if ($request->certifications) {
                 foreach ($request->certifications as $cert) {
+                    if (empty($cert['title']) && empty($cert['description'])) {
+                        continue;
+                    }
                     CourseCertification::create([
-                        'course_id'     => $course->id,
-                        'title'         => $cert['title'] ?? null,
-                        'description'   => $cert['description'] ?? null
+                        'course_id'   => $course->id,
+                        'title'       => $cert['title'] ?? null,
+                        'description' => $cert['description'] ?? null
                     ]);
                 }
             }
 
+            // ✅ Trusted Partners
             if ($request->partners) {
                 foreach ($request->partners as $partner) {
-                    $logoPath           = null;
+                    $logoPath = null;
                     if (isset($partner['logo']) && $partner['logo']->isValid()) {
-                        $logo           = $partner['logo'];
-                        $logoName       = time() . '_' . $logo->getClientOriginalName();
-                        $logo->move(public_path('uploads/partners'), $logoName);
-                        $logoPath       = $logoName;
+                        $logoName = time() . '_' . $partner['logo']->getClientOriginalName();
+                        $partner['logo']->move(public_path('uploads/partners'), $logoName);
+                        $logoPath = $logoName;
                     }
-
+                    // Skip if both name and logo are null/empty
+                    if (empty($partner['name']) && empty($logoPath)) {
+                        continue;
+                    }
                     CourseTrustedPartner::create([
-                        'course_id'     => $course->id,
-                        'name'          => $partner['name'] ?? null,
-                        'logo'          => $logoPath
+                        'course_id' => $course->id,
+                        'name'      => $partner['name'] ?? null,
+                        'logo'      => $logoPath
                     ]);
                 }
             }
 
+            // ✅ Videos
             if ($request->videos) {
                 foreach ($request->videos as $video) {
+                    if (empty($video['title']) && empty($video['description'])) {
+                        continue;
+                    }
                     CourseVideo::create([
-                        'course_id'     => $course->id,
-                        'title'         => $video['title'] ?? null,
-                        'description'   => $video['description'] ?? null
+                        'course_id'   => $course->id,
+                        'title'       => $video['title'] ?? null,
+                        'description' => $video['description'] ?? null
                     ]);
                 }
             }
 
+            // ✅ FAQs
             if ($request->faqs) {
                 foreach ($request->faqs as $faq) {
+                    if (empty($faq['title']) && empty($faq['description'])) {
+                        continue;
+                    }
                     Faq::create([
-                        'course_id'     => $course->id,
-                        'title'         => $faq['title'] ?? null,
-                        'description'   => $faq['description'] ?? null
+                        'course_id'   => $course->id,
+                        'title'       => $faq['title'] ?? null,
+                        'description' => $faq['description'] ?? null
                     ]);
                 }
             }
+
+            // ✅ Benefits
             if ($request->benefits) {
                 foreach ($request->benefits as $benefitData) {
+                    if (
+                        empty($benefitData['designation']) &&
+                        empty($benefitData['salary_min']) &&
+                        empty($benefitData['salary_max'])
+                    ) {
+                        continue; // don't insert this benefit
+                    }
                     $companyImages = [];
                     if (isset($benefitData['company_images']) && is_array($benefitData['company_images'])) {
                         foreach ($benefitData['company_images'] as $image) {
@@ -178,36 +289,305 @@ class CourseController extends Controller
                     $avgMax = ($max !== null && $average !== null) ? ($max + $average) / 2 : null;
 
                     Benefit::create([
-                        'course_id'    => $course->id,
-                        'designation'  => $benefitData['designation'] ?? null,
-                        'salary'       => json_encode([
+                        'course_id'   => $course->id,
+                        'designation' => $benefitData['designation'] ?? null,
+                        'salary'      => json_encode([
                             'min'      => $min,
                             'max'      => $max,
                             'average'  => $average,
                             'avg_min'  => $avgMin,
                             'avg_max'  => $avgMax
                         ]),
-                        'company'      => json_encode($companyImages)
+                        'company'     => json_encode($companyImages)
                     ]);
                 }
             }
-            return redirect()->route('admin.course.index')->with('success', 'Course created successfully');
+            if($request->auto_save == true){
+                return response()->json([
+                    'id' => $course->id,
+                ]);
+            }
+            return redirect()->route('admin.course.index')
+                ->with('success', $request->course_id ? 'Course updated successfully' : 'Course created successfully');
+
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the course: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 
     public function edit($id)
     {
-        $course = Course::findOrFail($id);
-        return view('admin.courses.edit', compact('course'));
+    $course = Course::findOrFail($id);
+    $curriculums = $course->curriculum()->get();
+    $courses = Course::orderBy('id', 'desc')->get();
+    $seo = $course->getSeoData()->first();
+    $benefits = $course->getBenefits()->get();
+    return view('admin.courses.edit', compact('course', 'curriculums', 'courses', 'seo', 'benefits'));
     }
 
     public function update(Request $request, $id)
     {
-        // Code to update a course
-    }
+        // return $request;
+        try {
+            $course = Course::findOrFail($id);
 
+            $course->title                   = $request->title;
+            $course->short_description       = $request->short_description;
+            $course->description             = $request->description;
+            $course->duration                = $request->duration;
+            $course->overview                = $request->overview;
+            $course->eligibility             = $request->eligibility;
+            $course->prerequisites           = $request->prerequisites;
+            $course->business_with_skilled   = $request->business_with_skilled;
+            $course->video_url               = $request->video_url;
+            $course->category                = $request->category;
+            $course->learner_field           = $request->learner_field;
+            $course->exam_pass_guarantee     = $request->exam_pass_guarantee;
+            $course->money_back_guarantee    = $request->money_back_guarantee;
+            $course->rating                  = $request->rating;
+            $course->number_of_user_rating   = $request->number_of_user_rating;
+            // Use benefit_description if present, else fallback to benefits (save as JSON if array)
+            if ($request->filled('benefit_description')) {
+                $course->benefits = $request->benefit_description;
+            } elseif (is_array($request->benefits)) {
+                $course->benefits = json_encode($request->benefits);
+            } else {
+                $course->benefits = $request->benefits;
+            }
+            $course->related_courses         = json_encode($request->related_courses);
+
+            // ✅ Premier Partners (images + text)
+            $premierPartners = [];
+            if ($request->premier_partner) {
+                foreach ($request->premier_partner as $partner) {
+                    $imagePath = null;
+                    if (isset($partner['image']) && $partner['image'] instanceof \Illuminate\Http\UploadedFile && $partner['image']->isValid()) {
+                        $img = $partner['image'];
+                        $imgName = time() . '_' . $img->getClientOriginalName();
+                        $img->move(public_path('uploads/premier_partner'), $imgName);
+                        $imagePath = $imgName;
+                    }
+                    $premierPartners[] = [
+                        'image' => $imagePath,
+                        'text'  => $partner['text'] ?? null
+                    ];
+                }
+            }
+            $course->authorized_training_partner = json_encode($premierPartners);
+
+            // ✅ Images
+            if ($request->hasFile('image')) {
+                $imageName = time() . '_image.' . $request->image->getClientOriginalExtension();
+                $request->image->move(public_path('uploads/courses'), $imageName);
+                $course->image = $imageName;
+            }
+            if ($request->hasFile('cover_image')) {
+                $imageName = time() . '_cover.' . $request->cover_image->getClientOriginalExtension();
+                $request->cover_image->move(public_path('uploads/cover_image'), $imageName);
+                $course->cover_image = $imageName;
+            }
+            if ($request->hasFile('certification_image')) {
+                $certImageName = time() . '_cert.' . $request->certification_image->getClientOriginalExtension();
+                $request->certification_image->move(public_path('uploads/certifications'), $certImageName);
+                $course->certification_image = $certImageName;
+            }
+
+            // ✅ Slug (only if title changed)
+            if ($course->isDirty('title')) {
+                $baseSlug   = Str::slug($request->title);
+                $slug       = $baseSlug;
+                $counter    = 1;
+                while (Course::where('slug', $slug)->where('id', '!=', $course->id)->exists()) {
+                    $slug   = $baseSlug . '-' . $counter++;
+                }
+                $course->slug = $slug;
+            }
+
+            // ✅ Training course
+            if ($request->has('training_course') && is_array($request->training_course)) {
+                $trainingData = [];
+                foreach ($request->training_course as $type => $data) {
+                    $trainingData[$type] = [
+                        'status'      => !empty($data['status']) ? 1 : 0,
+                        'level_name'  => $data['level_name'] ?? '',
+                        'description' => $data['description'] ?? '',
+                    ];
+                }
+                $course->training_course = json_encode($trainingData);
+            }
+
+            $saved = $course->save();
+
+            // ✅ Related Data (clear old if updating)
+            CourseKeyFeature::where('course_id', $course->id)->delete();
+            CourseSkillsCovered::where('course_id', $course->id)->delete();
+            CourseCurriculum::where('course_id', $course->id)->delete();
+            CourseCertification::where('course_id', $course->id)->delete();
+            CourseTrustedPartner::where('course_id', $course->id)->delete();
+            CourseVideo::where('course_id', $course->id)->delete();
+            Faq::where('course_id', $course->id)->delete();
+            Benefit::where('course_id', $course->id)->delete();
+            Seo::where('course_id', $course->id)->delete();
+
+            // ...existing code for saving features, skills, SEO, curriculum, certifications, partners, videos, faqs, benefits...
+            if ($request->feature) {
+                foreach ($request->feature as $feature) {
+                    if (empty($feature)) {
+                        continue;
+                    }
+                    CourseKeyFeature::create([
+                        'course_id' => $course->id,
+                        'feature'   => $feature
+                    ]);
+                }
+            }
+
+            if ($request->skill_name) {
+                foreach ($request->skill_name as $skill) {
+                    if (empty($skill)) {
+                        continue;
+                    }
+                    CourseSkillsCovered::create([
+                        'course_id'  => $course->id,
+                        'skill_name' => $skill
+                    ]);
+                }
+            }
+
+            if ($request->meta_title || $request->meta_description || $request->meta_keywords) {
+                Seo::create([
+                    'course_id'       => $course->id,
+                    'meta_title'      => $request->meta_title,
+                    'meta_description'=> $request->meta_description,
+                    'meta_keyword'    => $request->meta_keywords,
+                ]);
+            }
+
+            if ($request->curriculum_title) {
+                foreach ($request->curriculum_title as $index => $title) {
+                    if (empty($title) && empty($description)) {
+                        continue;
+                    }
+                    CourseCurriculum::create([
+                        'course_id'   => $course->id,
+                        'title'       => $title,
+                        'description' => $request->curriculum_description[$index] ?? null
+                    ]);
+                }
+            }
+
+            if ($request->certifications) {
+                foreach ($request->certifications as $cert) {
+                    if (empty($cert['title']) && empty($cert['description'])) {
+                        continue;
+                    }
+                    CourseCertification::create([
+                        'course_id'   => $course->id,
+                        'title'       => $cert['title'] ?? null,
+                        'description' => $cert['description'] ?? null
+                    ]);
+                }
+            }
+
+            if ($request->partners) {
+                foreach ($request->partners as $partner) {
+                    $logoPath = null;
+                    if (isset($partner['logo']) && $partner['logo']->isValid()) {
+                        $logoName = time() . '_' . $partner['logo']->getClientOriginalName();
+                        $partner['logo']->move(public_path('uploads/partners'), $logoName);
+                        $logoPath = $logoName;
+                    }
+                    // Skip if both name and logo are null/empty
+                    if (empty($partner['name']) && empty($logoPath)) {
+                        continue;
+                    }
+                    CourseTrustedPartner::create([
+                        'course_id' => $course->id,
+                        'name'      => $partner['name'] ?? null,
+                        'logo'      => $logoPath
+                    ]);
+                }
+            }
+
+            if ($request->videos) {
+                foreach ($request->videos as $video) {
+                    if (empty($video['title']) && empty($video['description'])) {
+                        continue;
+                    }
+                    CourseVideo::create([
+                        'course_id'   => $course->id,
+                        'title'       => $video['title'] ?? null,
+                        'description' => $video['description'] ?? null
+                    ]);
+                }
+            }
+
+            if ($request->faqs) {
+                foreach ($request->faqs as $faq) {
+                    if (empty($faq['title']) && empty($faq['description'])) {
+                        continue;
+                    }
+                    Faq::create([
+                        'course_id'   => $course->id,
+                        'title'       => $faq['title'] ?? null,
+                        'description' => $faq['description'] ?? null
+                    ]);
+                }
+            }
+
+            if ($request->benefits) {
+                foreach ($request->benefits as $benefitData) {
+                    if (
+                        empty($benefitData['designation']) &&
+                        empty($benefitData['salary_min']) &&
+                        empty($benefitData['salary_max'])
+                    ) {
+                        continue; // don't insert this benefit
+                    }
+                    $companyImages = [];
+                    if (isset($benefitData['company_images']) && is_array($benefitData['company_images'])) {
+                        foreach ($benefitData['company_images'] as $image) {
+                            if ($image->isValid()) {
+                                $imgName = time() . '_' . $image->getClientOriginalName();
+                                $image->move(public_path('uploads/company_images'), $imgName);
+                                $companyImages[] = $imgName;
+                            }
+                        }
+                    }
+
+                    $min = isset($benefitData['salary_min']) ? (float) $benefitData['salary_min'] : null;
+                    $max = isset($benefitData['salary_max']) ? (float) $benefitData['salary_max'] : null;
+
+                    $average = ($min !== null && $max !== null) ? ($min + $max) / 2 : null;
+                    $avgMin = ($min !== null && $average !== null) ? ($min + $average) / 2 : null;
+                    $avgMax = ($max !== null && $average !== null) ? ($max + $average) / 2 : null;
+
+                    Benefit::create([
+                        'course_id'   => $course->id,
+                        'designation' => $benefitData['designation'] ?? null,
+                        'salary'      => json_encode([
+                            'min'      => $min,
+                            'max'      => $max,
+                            'average'  => $average,
+                            'avg_min'  => $avgMin,
+                            'avg_max'  => $avgMax
+                        ]),
+                        'company'     => json_encode($companyImages)
+                    ]);
+                }
+            }
+            if($request->auto_save == true){
+                return response()->json([
+                    'id' => $course->id,
+                ]);
+            }
+            return redirect()->route('admin.course.index')
+                ->with('success', 'Course updated successfully');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
     public function destroy($id)
     {
         // Code to delete a course

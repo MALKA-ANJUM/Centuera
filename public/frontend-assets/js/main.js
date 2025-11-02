@@ -31,19 +31,19 @@
 	};
 
 	// Price Range slider JS
-	$(function () {
-		$("#slider-range").slider({
-			range: true,
-			min: 130,
-			max: 500,
-			values: [130, 250],
-			slide: function (event, ui) {
-				$("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
-			}
-		});
-		$("#amount").val("$" + $("#slider-range").slider("values", 0) +
-			" - $" + $("#slider-range").slider("values", 1));
-	});
+	// $(function () {
+	// 	$("#slider-range").slider({
+	// 		range: true,
+	// 		min: 130,
+	// 		max: 500,
+	// 		values: [130, 250],
+	// 		slide: function (event, ui) {
+	// 			$("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+	// 		}
+	// 	});
+	// 	$("#amount").val("$" + $("#slider-range").slider("values", 0) +
+	// 		" - $" + $("#slider-range").slider("values", 1));
+	// });
 
 
 	// Hero Slider JS
@@ -577,101 +577,101 @@ $('.input-counter').each(function () {
 
 
 /*-----------benefits-section----------*/
-var salaryChart;
+// var salaryChart;
 
-var data = {
-	softwareEngineer: {
-		salaries: [20000, 35000, 80000, 55000, 30000],
-		companies: [
-			'layout/img/all-img/cmp-log-1.png',
-			'layout/img/all-img/cmp-log-2.png',
-			'layout/img/all-img/cmp-log-3.png',
-			'layout/img/all-img/cmp-log-4.png',
-			'layout/img/all-img/cmp-log-5.png'
-		]
-	},
-	softwareDeveloper: {
-		salaries: [10000, 65000, 20000, 55000, 30000],
-		companies: [
-			'layout/img/all-img/cmp-log-12.png',
-			'layout/img/all-img/cmp-log-9.png',
-			'layout/img/all-img/cmp-log-5.png',
-			'layout/img/all-img/cmp-log-3.png',
-			'layout/img/all-img/cmp-log-8.png'
-		]
-	},
-	projectManager: {
-		salaries: [40000, 85000, 40000, 35000, 20000],
-		companies: [
-			'layout/img/all-img/cmp-log-6.png',
-			'layout/img/all-img/cmp-log-7.png',
-			'layout/img/all-img/cmp-log-8.png',
-			'layout/img/all-img/cmp-log-9.png',
-			'layout/img/all-img/cmp-log-10.png'
-		]
-	},
-	dataScientist: {
-		salaries: [90000, 35000, 50000, 95000, 40000],
-		companies: [
-			'layout/img/all-img/cmp-log-11.png',
-			'layout/img/all-img/cmp-log-12.png',
-			'layout/img/all-img/cmp-log-1.png',
-			'layout/img/all-img/cmp-log-2.png',
-			'layout/img/all-img/cmp-log-3.png'
-		]
-	}
-};
+// var data = {
+// 	softwareEngineer: {
+// 		salaries: [20000, 35000, 80000, 55000, 30000],
+// 		companies: [
+// 			'layout/img/all-img/cmp-log-1.png',
+// 			'layout/img/all-img/cmp-log-2.png',
+// 			'layout/img/all-img/cmp-log-3.png',
+// 			'layout/img/all-img/cmp-log-4.png',
+// 			'layout/img/all-img/cmp-log-5.png'
+// 		]
+// 	},
+// 	softwareDeveloper: {
+// 		salaries: [10000, 65000, 20000, 55000, 30000],
+// 		companies: [
+// 			'layout/img/all-img/cmp-log-12.png',
+// 			'layout/img/all-img/cmp-log-9.png',
+// 			'layout/img/all-img/cmp-log-5.png',
+// 			'layout/img/all-img/cmp-log-3.png',
+// 			'layout/img/all-img/cmp-log-8.png'
+// 		]
+// 	},
+// 	projectManager: {
+// 		salaries: [40000, 85000, 40000, 35000, 20000],
+// 		companies: [
+// 			'layout/img/all-img/cmp-log-6.png',
+// 			'layout/img/all-img/cmp-log-7.png',
+// 			'layout/img/all-img/cmp-log-8.png',
+// 			'layout/img/all-img/cmp-log-9.png',
+// 			'layout/img/all-img/cmp-log-10.png'
+// 		]
+// 	},
+// 	dataScientist: {
+// 		salaries: [90000, 35000, 50000, 95000, 40000],
+// 		companies: [
+// 			'layout/img/all-img/cmp-log-11.png',
+// 			'layout/img/all-img/cmp-log-12.png',
+// 			'layout/img/all-img/cmp-log-1.png',
+// 			'layout/img/all-img/cmp-log-2.png',
+// 			'layout/img/all-img/cmp-log-3.png'
+// 		]
+// 	}
+// };
 
 
 // function updateData(role) {
 // 	updateChart(data[role].salaries);
-// 	updateCompanies(data[role].companies);
+// 	// updateCompanies(data[role].companies);
 // }
 
-// function updateChart(salaries) {
-// 	if (salaryChart) {
-// 		salaryChart.destroy();
-// 	}
-// 	var ctx = document.getElementById('salaryChart').getContext('2d');
-// 	salaryChart = new Chart(ctx, {
-// 		type: 'bar',
-// 		data: {
-// 			labels: ['2019', '2020', '2021', '2022', '2023'],
-// 			datasets: [{
-// 				label: 'Annual Salary',
-// 				data: salaries,
-// 				backgroundColor: 'rgba(54, 162, 235, 0.6)',
-// 				borderColor: 'rgba(54, 162, 235, 1)',
-// 				borderWidth: 1
-// 			}]
-// 		},
-// 		options: {
-// 			scales: {
-// 				y: {
-// 					beginAtZero: true
-// 				}
-// 			}
-// 		}
+// // function updateChart(salaries) {
+// // 	if (salaryChart) {
+// // 		salaryChart.destroy();
+// // 	}
+// // 	var ctx = document.getElementById('salaryChart').getContext('2d');
+// // 	salaryChart = new Chart(ctx, {
+// // 		type: 'bar',
+// // 		data: {
+// // 			labels: ['2019', '2020', '2021', '2022', '2023'],
+// // 			datasets: [{
+// // 				label: 'Annual Salary',
+// // 				data: salaries,
+// // 				backgroundColor: 'rgba(54, 162, 235, 0.6)',
+// // 				borderColor: 'rgba(54, 162, 235, 1)',
+// // 				borderWidth: 1
+// // 			}]
+// // 		},
+// // 		options: {
+// // 			scales: {
+// // 				y: {
+// // 					beginAtZero: true
+// // 				}
+// // 			}
+// // 		}
+// // 	});
+// // }
+
+// // function updateCompanies(companies) {
+// // 	var companyLogosDiv = document.getElementById('companyLogos');
+// // 	companyLogosDiv.innerHTML = '';
+// // 	companies.forEach(function (company) {
+// // 		var img = document.createElement('img');
+// // 		img.src = company;
+// // 		img.alt = 'Company Logo';
+// // 		companyLogosDiv.appendChild(img);
+// // 	});
+// // }
+
+// document.querySelectorAll('.designation-list li').forEach(function (item) {
+// 	item.addEventListener('click', function () {
+// 		var role = this.getAttribute('data-role');
+// 		updateData(role);
 // 	});
-// }
-
-function updateCompanies(companies) {
-	var companyLogosDiv = document.getElementById('companyLogos');
-	companyLogosDiv.innerHTML = '';
-	companies.forEach(function (company) {
-		var img = document.createElement('img');
-		img.src = company;
-		img.alt = 'Company Logo';
-		companyLogosDiv.appendChild(img);
-	});
-}
-
-document.querySelectorAll('.designation-list li').forEach(function (item) {
-	item.addEventListener('click', function () {
-		var role = this.getAttribute('data-role');
-		updateData(role);
-	});
-});
+// });
 
 // Initialize with the first designation
 // updateData('softwareEngineer');

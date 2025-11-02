@@ -27,8 +27,6 @@
 <script src="{{asset('app-assets/js/core/app-menu.js')}}"></script>
 <script src="{{asset('app-assets/js/core/app.js')}}"></script>
 <!-- END: Theme JS-->
- <!-- CKEditor CDN -->
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <!-- BEGIN: Page JS-->
 {{-- <script src="{{asset('app-assets/js/scripts/pages/dashboard-ecommerce.js')}}"></script> --}}
 <!-- END: Page JS-->
@@ -39,7 +37,6 @@
 <!-- END: fontawesome JS-->
 <script src="{{asset('app-assets/js/scripts/forms/form-validation.js')}}"></script>
 <script src="{{asset('app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js')}}"></script>
-
 <!-- BEGIN:Custom Page JS-->
 <script src="{{asset('assets/js/scripts.js')}}"></script>
 <script src="{{asset('assets/js/graph.js')}}"></script>
@@ -56,6 +53,7 @@
  <script src="{{asset('app-assets/vendors/js/forms/repeater/jquery.repeater.min.js')}}"></script>
  <script src="{{asset('app-assets/js/scripts/forms/form-repeater.js')}}"></script>
  {{-- <script src="{{asset('app-assets/js/scripts/charts/chart-chartjs.js')}}"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
  <script>
     $(window).on('load', function() {
         if (feather) {
@@ -65,12 +63,16 @@
             });
         }
     })
+    function restrictToNumbers(input) {
+      	input.value = input.value.replace(/[^0-9]/g, '');
+    }
   </script>
 @stack('modal')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 @include('sweetalert::alert')
 @stack('script')
+<!-- CKEditor 5 CDN (only one include, latest version recommended) -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 </body>
 <!-- END: Body-->
-
 </html>

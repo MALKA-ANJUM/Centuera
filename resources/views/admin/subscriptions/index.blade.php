@@ -75,7 +75,7 @@
                                             @endforeach
                                         @else
                                             <tr class="text-center">
-                                                <td colspan="3">No subscriptions found.</td>
+                                                <td colspan="4">No subscriptions found.</td>
                                             </tr>
                                         @endif
                                     </tbody>

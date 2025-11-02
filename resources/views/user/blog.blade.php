@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Blogs')
 @section('content')
 <!-- BEGIN: Content-->
 
@@ -29,7 +29,7 @@
                         <div class="col-lg-4 col-sm-6">
                             <div class="single-blog-box">
                                 <div class="image position-relative">
-                                    <a href="{{ route('user.blog.view', $blog->slug) }}">
+                                    <a href="{{ route('blog.view', $blog->slug) }}">
                                         <img src="{{ asset('admin/blog/'. $blog->image) }}" alt="image" style="min-height: 275px">
                                     </a>
                                 </div>
@@ -39,9 +39,9 @@
                                         <li><i class="ri-price-tag-3-line"></i><span>{{ $blog->categories }}</span></li>
                                     </ul>
                                     <h3 class="mb-15 fs-20">
-                                        <a href="{{ route('user.blog.view', $blog->slug) }}">{{ \Illuminate\Support\Str::limit($blog->title, 20) }}</a>
+                                        <a href="{{ route('blog.view', $blog->slug) }}">{{ \Illuminate\Support\Str::limit($blog->title, 20) }}</a>
                                     </h3>
-                                    <p class="mb-0"><a href="{{ route('user.blog.view', $blog->slug) }}">{!! Str::limit(strip_tags($blog->description), 70) !!}</a></p>
+                                    <p class="mb-0"><a href="{{ route('blog.view', $blog->slug) }}">{!! Str::limit(strip_tags($blog->description), 70) !!}</a></p>
                                 </div>
                             </div>
                         </div>

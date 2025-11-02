@@ -47,13 +47,27 @@
                                     <textarea class="form-control" name="description" id="description">{{ $Testimonial->description }}</textarea>
                                 </div>
                             </div>
-                            <div class="col-md-12 mb-2">
-                                <label for="image" class="form-label">@lang('Image')</label>
-                                <input type="file" class="form-control" name="image" id="image">
-                                @if ($Testimonial->image)
-                                    <a href="{{ asset('admin/testimonials/' . $Testimonial->image) }}" target="_blank">view
-                                        image</a>
-                                @endif
+                            <div class="row mb-2">
+                                <div class="col-md-6 mb-2">
+                                    <label for="image" class="form-label">@lang('Image')</label>
+                                    <input type="file" class="form-control" name="image" id="image">
+                                    @if ($Testimonial->image)
+                                        <a href="{{ asset('admin/testimonials/' . $Testimonial->image) }}" target="_blank">view
+                                            image</a>
+                                    @endif
+                                </div>
+                                <!-- Rating Dropdown -->
+                                <div class="col-md-6">
+                                    <label for="rating" class="form-label">@lang('Rating')</label>
+                                    <select name="rating" id="rating" class="form-control" required>
+                                        <option value="">Select Rating</option>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <option value="{{ $i }}" {{ $Testimonial->rating == $i ? 'selected' : '' }}>
+                                                {{ $i }} - {{ str_repeat('★', $i) . str_repeat('☆', 5 - $i) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('Update')</button>
                         </form>
@@ -64,3 +78,23 @@
     </div>
     <!-- END: Content-->
 @endsection
+
+@push('script')
+<script>
+    ClassicEditor
+    .create(document.querySelector('#description'))
+    .catch(error => {
+        console.error(error);
+    });
+</script>
+@endpush
+
+@push('style')
+<style>
+.ck.ck-editor__editable_inline>:last-child
+{
+    margin-bottom: var(--ck-spacing-large);
+    height: 120px;
+}
+</style>
+@endpush

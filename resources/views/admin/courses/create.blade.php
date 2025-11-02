@@ -28,8 +28,10 @@
             @endif
 
             <div class="content-body">
-                <form action="{{ route('admin.course.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="course-form" action="{{ route('admin.course.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="course_id" value="" id="courseId">
+
                     <div class="row"> <!-- Start row -->
                         {{-- Left Column --}}
                         <div class="col-md-8">
@@ -38,9 +40,34 @@
                                     {{-- Title --}}
                                      <h3 class="mb-2">@lang('Course Details')</h3>
                                     <div class="mb-2">
-                                        <label class="form-label">@lang('Title')</label>
+                                        <label class="form-label">@lang('Title') <span class="text-danger">*</span></label>
                                         <input type="text" name="title" value="{{ old('title') }}" class="form-control">
                                         @error('title')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Short Title --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Short Title') <span class="text-danger">*</span></label>
+                                        <input type="text" name="short_title" value="{{ old('short_title') }}" class="form-control">
+                                        @error('short_title')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Category --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>
+                                        <select name="category" class="form-select">
+                                            <option value="">@lang('Select Category')</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('category') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('category')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -62,22 +89,6 @@
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    
-                                    {{-- Category --}}
-                                    <div class="mb-2">
-                                        <label class="form-label">@lang('Category')</label>
-                                        <select name="category" class="form-select">
-                                            <option value="">@lang('Select Category')</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" {{ old('category') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('category')
-                                            <div class="alert alert-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
 
                                     {{-- Overview --}}
                                     <div class="mb-2">
@@ -87,27 +98,6 @@
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
-
-                                    {{-- Eligibility --}}
-                                    <div class="mb-2">
-                                        <label class="form-label">@lang('Eligibility')</label>
-                                        <textarea name="eligibility" id="editor4" class="form-control" rows="2">{{ old('eligibility') }}</textarea>
-                                        @error('eligibility')
-                                            <div class="alert alert-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Prerequisites --}}
-                                    <div class="mb-2">
-                                        <label class="form-label">@lang('Prerequisites')</label>
-                                        <textarea name="prerequisites" id="editor5" class="form-control" rows="2">{{ old('prerequisites') }}</textarea>
-                                        @error('prerequisites')
-                                            <div class="alert alert-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                   
-
                                     {{-- Business with Skilled --}}
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Business With Skilled')</label>
@@ -117,9 +107,16 @@
                                         @enderror
                                     </div>
                                     <div class="mb-2">
-                                        <label class="form-label">@lang('Duration')</label>
-                                        <input type="text" name="duration" value="{{ old('duration') }}" class="form-control">
+                                        <label class="form-label">@lang('Duration(In Minutes)')</label>
+                                        <input type="text" name="duration" value="{{ old('duration') }}" oninput="restrictToNumbers(this)" class="form-control">
                                         @error('duration')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Learners')</label>
+                                        <input type="number" name="learner_field" value="{{ old('learner_field') }}" oninput="restrictToNumbers(this)" class="form-control">
+                                        @error('learner_field')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -150,6 +147,8 @@
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Video URL')</label>
                                         <input type="text" name="video_url" class="form-control">
+                                        <small class="text-danger">Add Embed Url 
+                                            (e.g., https://www.youtube.com/embed/vakdDdP8hvw?si=nXKAPDSDNZa1rQNU)</small>
                                         @error('video_url')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
@@ -162,7 +161,24 @@
                                 <div class="card-body">
                                     <h3 class="mb-2">@lang('Course Curriculum')</h3>
                                     <div id="curriculum-container">
-                                        <div class="curriculum-item mb-3 border p-2 rounded">
+                                          {{-- Eligibility --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Eligibility')</label>
+                                        <textarea name="eligibility" id="editor4" class="form-control" rows="2">{{ old('eligibility') }}</textarea>
+                                        @error('eligibility')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Prerequisites --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Pre-requisites')</label>
+                                        <textarea name="prerequisites" id="editor5" class="form-control" rows="2">{{ old('prerequisites') }}</textarea>
+                                        @error('prerequisites')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                        <div class="curriculum-item mb-2 border p-2 rounded">
                                             <div class="mb-2">
                                                 <label class="form-label">@lang('Title')</label>
                                                 <input type="text" name="curriculum_title[]" value="{{ old('curriculum_title.0') }}" class="form-control"
@@ -183,17 +199,87 @@
                                                 disabled><i class="fas fa-trash"></i></button>
                                         </div>
                                     </div>
-                                    <button type="button" id="add-curriculum" class="btn btn-sm btn-primary mt-1">
+                                    <button type="button" id="add-curriculum" class="btn btn-sm btn-primary">
                                         + @lang('Add More Curriculum')
                                     </button>
                                 </div>
                             </div>
+
+                           <div class="card mt-2">
+                                <div class="card-body">
+                                    <h3 class="mb-2">@lang('Training Course Types')</h3>
+                                    @php
+                                        $trainingTypes = [
+                                            'classroom' => 'Classroom Training',
+                                            'online_bootcamp' => 'Online Bootcamp',
+                                            'corporate' => 'Corporate Training'
+                                        ];
+                                    @endphp
+                                    @foreach ($trainingTypes as $type => $label)
+                                        <div class="curriculum-item mb-1 border p-2 rounded">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h5>{{ $label }}</h5>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" name="training_course[{{ $type }}][status]" value="1" checked>
+                                                </div>
+                                            </div>
+                                                <input type="hidden" name="training_course[{{ $type }}][level_name]" value="{{ $label }}">
+                                            <div class="mb-2">
+                                                <label class="form-label">@lang('Description')</label>
+                                                <textarea name="training_course[{{ $type }}][description]" class="form-control ckeditor" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            {{-- Rating Section Card --}}
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <h3 class="mb-1">@lang('Rating')</h3>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Rating</label>
+                                            <input type="number" step="0.1" min="0" max="5" name="rating" value="{{ old('rating') }}" class="form-control" placeholder="Enter rating (0-5)">
+                                            @error('rating')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Number of User Ratings</label>
+                                            <input type="number" min="0" name="number_of_user_rating" value="{{ old('number_of_user_rating') }}" class="form-control" placeholder="Enter number of user ratings">
+                                            @error('number_of_user_rating')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Guarantee Section Card -->
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h3 class="mb-1">Guarantee</h3>
+                                    <div class="mb-2">
+                                        <label class="form-label">Exam Pass Guarantee</label>
+                                        <textarea name="exam_pass_guarantee" id="exam_pass_guarantee_editor" class="form-control ckeditor" rows="2" placeholder="Enter exam pass guarantee">{{ old('exam_pass_guarantee') }}</textarea>
+                                        @error('exam_pass_guarantee')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">100% Money Back Guarantee</label>
+                                        <textarea name="money_back_guarantee" id="money_back_guarantee_editor" class="form-control ckeditor" rows="2" placeholder="Enter 100% money back guarantee">{{ old('money_back_guarantee') }}</textarea>
+                                        @error('money_back_guarantee')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Course Videos Card -->
                         </div>
 
                         {{-- Right Column (Features) --}}
                         <div class="col-md-4">
-                            {{-- Card 1: Courses Key Features --}}
                             <div class="card mb-2">
                                 <div class="card-body">
                                     <h3 class="mb-2">@lang('Courses Key Features')</h3>
@@ -237,7 +323,7 @@
 
                             <div class="card">
                                 <div class="card-body">
-                                    <h3 class="mb-2">@lang('PMP Exam and Certification')</h3>
+                                    <h3 class="mb-2">@lang('Exam and Certification')</h3>
                                     <div id="certification-container" class="flex-grow-1">
                                         <div class="border rounded p-2 mb-2 certification-group">
                                             <input type="text" name="certifications[0][title]"
@@ -266,12 +352,14 @@
                                             @error('partners.0.name')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
-                                            <input type="file" name="partners[0][logo]" class="form-control mb-2"
+                                            <input type="file" name="partners[0][logo]" class="form-control partner-logo"
                                                 placeholder="Logo">
+                                            <small class="text-danger mb-2 partner-logo-error">Partner logo must be up to 200×200 pixels.</small><br>
+                                            <!-- <div class="error text-danger small logo-error"></div> -->
                                             @error('partners.0.logo')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
-                                            <button type="button" class="btn btn-danger btn-sm remove-partner"
+                                            <button type="button" class="btn btn-danger btn-sm remove-partner mt-2"
                                                 disabled><i class="fas fa-trash"></i></button>
                                         </div>
                                     </div>
@@ -282,7 +370,7 @@
                             </div>
                             <div class="card mt-2">
                                 <div class="card-body">
-                                    <h3 class="mb-2">@lang('Why Choose Our Online PMP Bootcamp?')</h3>
+                                    <h3 class="mb-2">@lang('Why Choose Our Online Bootcamp?')</h3>
                                     <div id="video-container">
                                         <div class="video-item mb-3 border p-2 rounded">
                                             <div class="mb-2">
@@ -369,6 +457,8 @@
                                         <div class="mb-2">
                                             <label class="form-label">@lang('Company Images')</label>
                                             <input type="file" name="benefits[0][company_images][]" class="form-control" multiple>
+                                            <small class="text-danger mb-2 partner-logo-error">Company Images must be up to 200×200 pixels.</small><br>
+
                                         </div>
 
                                         <button type="button" class="btn btn-danger btn-sm remove-benefit" disabled>
@@ -383,9 +473,71 @@
                             </div>
                         </div>
 
+                         {{-- SEO Section Card --}}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h3 class="mb-2">SEO Section</h3>
+                                <div class="mb-2">
+                                    <label class="form-label">Meta Title</label>
+                                    <input type="text" name="meta_title" value="{{ old('meta_title') }}" class="form-control" placeholder="Enter meta title">
+                                    @error('meta_title')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Meta Description</label>
+                                    <textarea name="meta_description" id="meta_description_editor" class="form-control ckeditor" rows="2" placeholder="Enter meta description">{{ old('meta_description') }}</textarea>
+                                    @error('meta_description')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Meta Keywords</label>
+                                    <input type="text" name="meta_keywords" value="{{ old('meta_keywords') }}" class="form-control" placeholder="Enter meta keywords">
+                                    @error('meta_keywords')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Premier Authorized Training Partner Card --}}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h3 class="mb-2">Premier Authorized Training Partner</h3>
+                                <div id="premier-partner-container">
+                                    <div class="premier-partner-item border rounded p-2 mb-2">
+                                        <div class="mb-2">
+                                            <label class="form-label">Image</label>
+                                            <input type="file" name="premier_partner[0][image]" class="form-control" accept="image/*">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">Text</label>
+                                            <input type="text" name="premier_partner[0][text]" class="form-control" placeholder="Enter text">
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm remove-premier-partner" disabled><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <button type="button" id="add-premier-partner" class="btn btn-sm btn-primary mt-1">
+                                    + Add More
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Related Course -->
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h3 class="mb-2">Related Courses</h3>
+                                    <select name="related_courses[]" id="related_courses" class="form-select select2" multiple>
+                                        <option value="">Select</option>
+                                        @foreach($courses as $course)
+                                            <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2">@lang('Add Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn">@lang('Add Course')</button>
                 </form>
             </div>
         </div>
@@ -401,10 +553,18 @@
             color: black;
             font-family: emoji;
         }
+        .form-label{
+            font-size: 1rem;
+        }
     </style>
 @endpush
 @push('script')
     <script>
+        $(document).ready(function () {
+            $('.ckeditor').each(function () {
+                ClassicEditor.create(this).catch(error => console.error(error));
+            });
+        });
         let curriculumEditorIndex = 1;
 
         window.addEventListener("load", function() {
@@ -454,7 +614,7 @@
             $('#add-curriculum').on('click', function() {
                 let newEditorId = `curriculum-editor-${curriculumEditorIndex}`;
                 let curriculumItem = `
-                <div class="curriculum-item mb-3 border p-2 rounded">
+                <div class="curriculum-item mb-2 border p-2 rounded">
                     <div class="mb-2">
                         <label class="form-label">@lang('Title')</label>
                         <input type="text" name="curriculum_title[]" class="form-control" placeholder="Enter title" value="{{ old('curriculum_title.0') }}">
@@ -627,7 +787,186 @@
                 $(this).closest('.benefit-item').remove();
             });
 
+            let premierPartnerIndex = 1;
+            $('#add-premier-partner').on('click', function() {
+                const item = `
+                <div class="premier-partner-item border rounded p-2 mb-2">
+                    <div class="mb-2">
+                        <label class="form-label">Image</label>
+                        <input type="file" name="premier_partner[${premierPartnerIndex}][image]" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Text</label>
+                        <input type="text" name="premier_partner[${premierPartnerIndex}][text]" class="form-control" placeholder="Enter text">
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-premier-partner"><i class="fas fa-trash"></i></button>
+                </div>
+                `;
+                $('#premier-partner-container').append(item);
+                premierPartnerIndex++;
+            });
+            $(document).on('click', '.remove-premier-partner', function() {
+                $(this).closest('.premier-partner-item').remove();
+            });
+
         });
         
     </script>
+
+    <script>
+        // Auto-save functionality
+        let autoSaveInterval;
+        let isAutoSaving = false;
+        let hasUnsavedChanges = false;
+
+        $(document).ready(function() {
+            // Start auto-save when the page loads
+            startAutoSave();
+            
+            // Track form changes
+            $('#course-form').on('change input', function() {
+                hasUnsavedChanges = true;
+            });
+
+            // Manual save button (if exists)
+            $('#save-draft-btn').click(function(e) {
+                e.preventDefault();
+                autoSaveForm();
+            });
+        });
+
+        function startAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+
+            // Set up new interval (10 seconds = 10000 milliseconds)
+            autoSaveInterval = setInterval(function() {
+                if (hasUnsavedChanges && !isAutoSaving) {
+                    autoSaveForm();
+                }
+            }, 60000);
+        }
+
+        function autoSaveForm() {
+            if (isAutoSaving) return;
+            
+            isAutoSaving = true;
+            hasUnsavedChanges = false;
+
+            // Sync CKEditor data back into textareas before saving
+            if (typeof ClassicEditor !== 'undefined') {
+                document.querySelectorAll('.ck-editor__editable')
+                    .forEach(editable => {
+                        let editorInstance = editable.ckeditorInstance;
+                        if (editorInstance) {
+                            let textarea = editable.closest('.ck-editor').previousElementSibling;
+                            if (textarea) {
+                                textarea.value = editorInstance.getData();
+                            }
+                        }
+                    });
+            }
+
+            
+            let formData = new FormData($('#course-form')[0]);
+            formData.append('auto_save', true);
+            
+            $.ajax({
+                url: $('#course-form').attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) { debugger;
+                    Toastify({
+                        text: "Auto-saved sucessfully!!",
+                        duration: 2000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#4fbe87",
+                    }).showToast();
+
+                    
+                    // If first save returns ID → switch to update mode
+                    if (response.id) {
+                        $('#courseId').val(response.id);
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = "Error auto-saving course data";
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON.errors) {
+                            errorMessage = Object.values(xhr.responseJSON.errors).join('\n');
+                        }
+                    }
+                    Toastify({
+                        text: errorMessage,
+                        duration: 5000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f3616d",
+                    }).showToast();
+                    Toastify({
+                        text: "Auto-saving failed!",
+                        duration: 2000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "rgb(243, 97, 109)",
+                    }).showToast();
+                    $("#submitBtn").on("click", function (e) {
+                        if (hasUnsavedChanges) {
+                            e.preventDefault();
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Please fill all required fields!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    hasUnsavedChanges = false;
+                                }
+                            });
+                        }
+                    });
+                    hasUnsavedChanges = true; // allow retry
+                },
+                complete: function() {
+                    isAutoSaving = false;
+                }
+            });
+        }
+ 
+    // $(document).on("change", ".partner-logo", function () { debugger;
+    //     let input = $(this);
+    //     let file = this.files[0];
+    //     let errorBox = input.siblings(".logo-error");
+
+    //     if (file) {
+    //         let img = new Image();
+    //         let objectUrl = URL.createObjectURL(file);
+
+    //         img.onload = function () {
+    //             if (this.width > 100 || this.height > 100) {
+    //                 errorBox.text("Partner logo must be up to 200×200 pixels.");
+    //                 input.val(""); // clear invalid file
+    //                 $('.partner-logo-error').addClass('d-none')
+    //             } else {
+    //                 errorBox.text("");
+    //             }
+    //             URL.revokeObjectURL(objectUrl);
+    //         };
+
+    //         img.src = objectUrl;
+    //     } else {
+    //         errorBox.text("Logo is required.");
+    //     }
+    // });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @endpush

@@ -23,6 +23,3 @@ use App\Http\Controllers\API\LeadsController;
 Route::middleware('auth:sanctum')->group(function(){
     
 });
-
-Route::post('leads-insert', [LeadsController::class, 'insertLeads'])->name('leads.insert');
-

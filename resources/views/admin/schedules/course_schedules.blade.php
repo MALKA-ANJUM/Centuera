@@ -54,6 +54,7 @@
                                                 <th>Course</th>
                                                 <th>Batch Type</th>
                                                 <th>Batch</th>
+                                                <th>Start Date</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -64,8 +65,9 @@
                                                     <td>{{ $schedule->getCourse->title ?? '-' }}</td>
                                                     <td>{{ $schedule->type ?? '-' }}</td>
                                                     <td>{{ $schedule->batche ?? '-' }}</td>
+                                                    <td>{{ $schedule->start_date ?? '-' }}</td>
                                                     <td>
-                                                        <a class="btn btn-outline-success btn-sm"
+                                                        <a class="btn btn-outline-primary btn-sm" title="Edit"
                                                             href="{{ route('admin.schedule.edit', $schedule->id) }}">
                                                             <i class="fa fa-edit"></i>
                                                         </a>
@@ -76,7 +78,7 @@
                                                 </tr>
                                             @empty
                                                 <tr class="text-center">
-                                                    <td colspan="7">No schedules found</td>
+                                                    <td colspan="6">No schedules found</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

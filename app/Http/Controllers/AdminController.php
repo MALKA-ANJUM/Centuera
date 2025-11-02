@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use Exception;
+use App\Models\Admin;
+use App\Models\Contact;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+use App\Exports\SubscriptionExport;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
@@ -143,5 +147,46 @@ class AdminController extends Controller
 
       alert()->success('Success', 'Profile Updated Successfully');
       return redirect()->back();
+  }
+
+  public function subscriptions()
+  {
+      $subscriptions = Subscription::orderBy('id', 'desc')->paginate(20);
+      return view('admin.subscriptions.index', compact('subscriptions'));
+  }
+  public function export()
+  {
+      return Excel::download(new SubscriptionExport, 'subscriptions.xlsx');
+  }
+  public function contactus(Request $request)
+  {
+      $query = Contact::query();
+
+      if ($request->filled('search')) {
+          $search = $request->search;
+          $query->where(function ($q) use ($search) {
+              $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('subject', 'like', "%{$search}%");
+          });
+      }
+
+      $contacts = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+      return view('admin.contacts.index', compact('contacts'));
+  }
+  public function leadsList(Request $request)
+  {
+    $query = \App\Models\Lead::query();
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('phone', 'like', "%{$search}%");
+        });
+    }
+    $leads = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+    return view('admin.leads.index', compact('leads'));
   }
 }

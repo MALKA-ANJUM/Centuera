@@ -511,7 +511,7 @@
   box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.05);
 }
 .responsive-navbar .offcanvas-header {
-  padding: 25px 30px;
+  padding: 11px 22px;
   border-bottom: 1px solid rgba(0, 86, 67, 0.2);
 }
 .responsive-navbar .offcanvas-header .close-btn {

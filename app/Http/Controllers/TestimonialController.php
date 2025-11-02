@@ -27,12 +27,14 @@ class TestimonialController extends Controller
     {
         $request->validate([
         'title'         => 'required',
-        'description'   => 'required'
+        'description'   => 'required',
+        'rating'      => 'required|integer|min:1|max:5',
         ]);
         try {
         $Testimonial = new Testimonial();
         $Testimonial->title = $request->title;
         $Testimonial->description = $request->description;
+        $Testimonial->rating = $request->rating;
         $folder_path = public_path('admin/testimonials/');
         if (!File::exists($folder_path)) {
             File::makeDirectory($folder_path, 0777, true, true);
@@ -60,6 +62,7 @@ class TestimonialController extends Controller
         $Testimonial = Testimonial::findOrFail($id);
         $Testimonial->title = $request->title;
         $Testimonial->description = $request->description;
+        $Testimonial->rating = $request->rating;
         $folder_path = public_path('admin/testimonials/');
     if (!File::exists($folder_path)) {
             File::makeDirectory($folder_path, 0777, true, true);

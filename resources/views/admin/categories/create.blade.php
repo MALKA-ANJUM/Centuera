@@ -44,17 +44,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="row mb-2">
-                                <div class="col-12">
-                                    <label for="features" class="form-label">@lang('Features')</label>
-                                    <textarea class="form-control" name="features" id="features"
-                                        placeholder="Enter features"></textarea>
-                                    @error('features')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <br>
                             <button type="submit" class="btn btn-primary">@lang('Add')</button>
                         </form>
                     </div>

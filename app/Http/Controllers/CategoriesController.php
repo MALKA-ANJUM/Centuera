@@ -28,11 +28,9 @@ class CategoriesController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'features' => 'nullable|string',
         ]);
         $category           = new Category();
         $category->name     = $request->name;
-        $category->features = $request->features;
         $category->save();
         return redirect()->route('admin.categories.index')->with('message', 'Category added successfully.');
     }
@@ -47,11 +45,9 @@ class CategoriesController extends Controller
     {
         $request->validate([
             'name'      => 'required',
-            'features'  => 'nullable|string',
         ]);
         $category = Category::findOrFail($id);
         $category->name     = $request->name;
-        $category->features = $request->features;
         $category->save();
         return redirect()->route('admin.categories.index')->with('message', 'Category updated successfully.');
     }
@@ -62,4 +58,16 @@ class CategoriesController extends Controller
         $category->delete();
         return redirect()->route('admin.categories.index')->with('message', 'Category deleted successfully.');
     }
+
+    public function updateFeature(Request $request)
+    {
+        $category = Category::find($request->id);
+        if ($category) {
+            $category->features = $request->features;
+            $category->save();
+        }
+
+        return back()->with('success', 'Feature status updated successfully.');
+    }
+
 }

@@ -23,5 +23,4 @@ class UserOrderController extends Controller
     {
         return $request;
     }
-
 }

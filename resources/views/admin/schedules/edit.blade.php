@@ -28,7 +28,7 @@
         @endif
 
         <div class="content-body">
-            <form action="{{ route('admin.schedule.update', $schedule->id) }}" method="POST">
+            <form action="{{ route('admin.schedule.update', $schedule->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="course_id" value="{{ $schedule->course_id }}">
 
@@ -38,7 +38,7 @@
                         <div class="card w-100">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-6 mb-2">
                                         <label class="form-label">Type</label>
                                         <select name="type" class="form-control" required>
                                             <option value="">Select</option>
@@ -46,8 +46,7 @@
                                             <option value="Weekend" {{ $schedule->type == 'Weekend' ? 'selected' : '' }}>Weekend</option>
                                         </select>
                                     </div>
-
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-6 mb-2">
                                         <label class="form-label">Batche</label>
                                         <select name="batche" class="form-control" required>
                                             <option value="">Select</option>
@@ -55,35 +54,63 @@
                                             <option value="Live Online Class" {{ $schedule->batche == 'Live Online Class' ? 'selected' : '' }}>Live Online Class</option>
                                         </select>
                                     </div>
-
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-4 mb-2">
                                         <label class="form-label">Start Date</label>
                                         <input type="text" name="start_date" value="{{ $schedule->start_date }}" class="form-control start-date" required>
                                     </div>
-
-                                    <div class="col-md-3 mb-2">
+                                    <div class="col-md-4 mb-2">
                                         <label class="form-label">End Date</label>
                                         <input type="text" name="end_date" value="{{ $schedule->end_date }}" class="form-control end-date" required>
                                     </div>
-
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Total days of training</label>
+                                        <input type="text" name="total_days_of_training" value="{{ $schedule->total_days_of_training }}" class="form-control">
+                                    </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Time Zone</label>
                                         <select name="time_zone" class="form-control ctrm_select2" required>
                                             <option value="">Select Time Zone</option>
-                                            @foreach (timezone_identifiers_list() as $tz)
-                                                <option value="{{ $tz }}" {{ $schedule->time_zone == $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                                            @foreach($countries as $country)
+                                                @foreach(json_decode($country->timezones) as $time)
+                                                    <option value="{{ $time->zoneName }}" 
+                                                        {{ $schedule->time_zone == $time->zoneName ? 'selected' : '' }}>
+                                                        {{ $time->zoneName }} ({{ $time->abbreviation }})
+                                                    </option>
+                                                @endforeach
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Start Time</label>
                                         <input type="time" name="starttime" value="{{ $schedule->starttime }}" class="form-control" required step="60">
                                     </div>
-
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">End Time</label>
                                         <input type="time" name="end_time" value="{{ $schedule->end_time }}" class="form-control" required step="60">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Trainer Name</label>
+                                        <input type="text" name="trainner_name" value="{{ $schedule->trainner_name }}" class="form-control" placeholder="Enter trainer name">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Trainer Image</label>
+                                        <input type="file" name="trainner_image" class="form-control">
+                                        @if($schedule->trainner_image)
+                                            <img src="{{ asset('uploads/trainners/' . $schedule->trainner_image) }}" alt="Trainer Image" style="max-width:60px;max-height:60px;border-radius:6px;margin-top:6px;">
+                                        @endif
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label">Language</label>
+                                        <select name="language" class="form-control ctrm_select2" required>
+                                            <option value="">Select Language</option>
+                                            @foreach($languages as $lang)
+                                                <option value="{{ $lang->value }}" {{ $schedule->language == $lang->value ? 'selected' : '' }}>{{ $lang->value }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-label">Trainer Description</label>
+                                        <textarea name="trainner_description" id="trainner_description" class="form-control" rows="4" placeholder="Trainer description">{{ $schedule->trainner_description }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +125,7 @@
                                 <button type="button" id="add-more-pricing" class="btn btn-sm btn-primary">+ Add More</button>
                             </div>
                             <div class="card-body" id="pricing-container">
-                                @foreach($schedule->prices as $index => $price)
+                                @foreach($schedule->getPrices as $index => $price)
                                     <div class="pricing-item mb-3">
                                         <div class="row g-2 align-items-end">
                                             <div class="col-md-4 country-col">
@@ -113,15 +140,21 @@
                                                 <div class="country-error text-danger" style="display:none;">You have already selected this country in another row.</div>
                                             </div>
 
-                                            <div class="col-md-3">
+                                           <div class="col-md-3">
                                                 <label class="form-label">Discount Price</label>
-                                                <input type="number" step="0.01" name="discount_price[]" class="form-control" value="{{ $price->discount_price }}" required>
+                                                <input type="text" step="0.01" name="discount_price[]"
+                                                    class="form-control discount-price" value="{{ $price->discount_price }}" required>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <label class="form-label">Original Price</label>
-                                                <input type="number" step="0.01" name="original_price[]" class="form-control" value="{{ $price->original_price }}" required>
+                                                <input type="text" step="0.01" name="original_price[]"
+                                                    class="form-control original-price" oninput="restrictToNumbers(this)" value="{{ $price->original_price }}" required>
+                                                <div class="price-error text-danger" style="display:none; font-size: 12px;">
+                                                    Original Price must be greater than Discount.
+                                                </div>
                                             </div>
+
 
                                             <div class="col-md-2 d-flex align-items-end">
                                                 <button type="button" class="btn btn-sm btn-danger remove-pricing">Delete</button>
@@ -169,6 +202,9 @@
         }
         .country-error.text-danger {
             color: #dc3545 !important;
+        }
+        .ck-editor__editable[role="textbox"] {
+            min-height: 200px;
         }
     </style>
 @endpush
@@ -250,6 +286,46 @@
                     if ($err.length) {
                         $('html, body').animate({ scrollTop: $err.offset().top - 100 }, 300);
                     }
+                }
+            });
+            ClassicEditor
+            .create(document.querySelector('#trainner_description'))
+            .then(function(editor) {
+                $(editor.ui.view.editable.element).css('min-height', '200px');
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+             function validatePrices($row) {
+                let discount = parseFloat($row.find('.discount-price').val()) || 0;
+                let original = parseFloat($row.find('.original-price').val()) || 0;
+
+                if (discount >= original && discount > 0 && original > 0) {
+                    $row.find('.price-error').show();
+                    return false;
+                } else {
+                    $row.find('.price-error').hide();
+                    return true;
+                }
+            }
+
+            // Attach keyup/change validation
+            $(document).on('keyup change', '.discount-price, .original-price', function () {
+                let $row = $(this).closest('.pricing-item');
+                validatePrices($row);
+            });
+
+            // Prevent submit if any invalid
+            $('form').on('submit', function(e) {
+                let valid = true;
+                $('#pricing-container .pricing-item').each(function () {
+                    if (!validatePrices($(this))) {
+                        valid = false;
+                    }
+                });
+                if (!valid) {
+                    e.preventDefault();
+                    alert("Please fix pricing errors before submitting.");
                 }
             });
         });

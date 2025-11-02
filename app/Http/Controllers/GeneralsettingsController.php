@@ -2,131 +2,91 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Models\Generalsettings;
 use Illuminate\Support\Facades\File;
 
 class GeneralsettingsController extends Controller
 {
-public function generalsettingscreate()
-{
-    $existingSettings = Generalsettings::first();
-    return view("admin.generalsetting.form_generalsettingslisting", compact('existingSettings'));
-}
-public function generalsettingsstore(Request $request)
-{
-$existingSettings = Generalsettings::first();
-if ($existingSettings == null) {
-    $settings = new Generalsettings();
-    $settings->name = $request->input('name');
-    $settings->email = $request->input('email');
-    $settings->mobile = $request->input('mobile');
-    $settings->address = $request->input('address');
-    $settings->facebook = $request->input('facebook');
-    $settings->twitter = $request->input('twitter');
-    $settings->instagram = $request->input('instagram');
-    $settings->linkedin = $request->input('linkedin');
-    $settings->printest = $request->input('printest');
-    $settings->meta_title = $request->input('meta_title');
-    // $settings->meta_description = $request->input('meta_description');
-    // $settings->keyword = $request->input('keyword');
-    // $settings->email_type = $request->input('email_type');
-    // $settings->email_setting = $request->input('email_setting');
-    // $settings->mail_password = $request->input('mail_password');
-    // $settings->smtp_mailhost = $request->input('smtp_mailhost');
-    $folder_path = public_path('admin/icon/');
-    if (!File::exists($folder_path)) {
-    File::makeDirectory($folder_path, 0777, true, true);
-    }
-    if ($request->hasFile('icon')) {
-    $sl = rand();
-    $imageName = date('Ymd') . '_' . $sl . '.' . $request->icon->getClientOriginalExtension();
-    $request->icon->move($folder_path, $imageName);
-    $settings->icon = $imageName;
-    }
-    $folder_path = public_path('admin/generalSetting/');
-    if (!File::exists($folder_path)) {
-    File::makeDirectory($folder_path, 0777, true, true);
-    }
-    if ($request->hasFile('logo')) {
-    $sl = rand();
-    $imageName = date('Ymd') . '_' . $sl . '.' . $request->logo->getClientOriginalExtension();
-    $request->logo->move($folder_path, $imageName);
-    $settings->logo = $imageName;
-    }
-    $settings->save();
-    } else {
-    $settings = Generalsettings::first();
-    if ($request->input('name') !== null) {
-    $settings->name = $request->input('name');
-    }
-    if ($request->input('email') !== null) {
-    $settings->email = $request->input('email');
-    }
-    if ($request->input('mobile') !== null) {
-    $settings->mobile = $request->input('mobile');
-    }
-    if ($request->input('address') !== null) {
-    $settings->address = $request->input('address');
-    }
-    if ($request->input('facebook') !== null) {
-    $settings->facebook = $request->input('facebook');
-    }
-    if ($request->input('twitter') !== null) {
-    $settings->twitter = $request->input('twitter');
-    }
-    if ($request->input('instagram') !== null) {
-    $settings->instagram = $request->input('instagram');
-    }
-    if ($request->input('linkedin') !== null) {
-    $settings->linkedin = $request->input('linkedin');
-    }
-    if ($request->input('printest') !== null) {
-    $settings->printest = $request->input('printest');
-    }
-    if ($request->input('meta_title') !== null) {
-        $settings->meta_title = $request->input('meta_title');
-    }
-    // if ($request->input('meta_description') !== null) {
-    //     $settings->meta_description = $request->input('meta_description');
-    // }
-    // if ($request->input('keyword') !== null) {
-    //     $settings->keyword = $request->input('keyword');
-    // }
-    // if ($request->input('email_type') !== null) {
-    //     $settings->email_type = $request->input('email_type');
-    // }
-    // if ($request->input('email_setting') !== null) {
-    //     $settings->email_setting = $request->input('email_setting');
-    //     if ($request->input('mail_password') !== null) {
-    //         $settings->mail_password = $request->input('mail_password');
-    //     }
-    //     if ($request->input('smtp_mailhost') !== null) {
-    //         $settings->smtp_mailhost = $request->input('smtp_mailhost');
-    //     }
-    $folder_path = public_path('admin/icon/');
-    if (!File::exists($folder_path)) {
-    File::makeDirectory($folder_path, 0777, true, true);
-    }
-    if ($request->hasFile('icon')) {
-    $sl = rand();
-    $imageName = date('Ymd') . '_' . $sl . '.' . $request->icon->getClientOriginalExtension();
-    $request->icon->move($folder_path, $imageName);
-    $settings->icon = $imageName;
-    }
-    $folder_path = public_path('admin/generalSetting/');
-    if (!File::exists($folder_path)) {
-    File::makeDirectory($folder_path, 0777, true, true);
-    }
-    if ($request->hasFile('logo')) {
-    $sl = rand();
-    $imageName = date('Ymd') . '_' . $sl . '.' . $request->logo->getClientOriginalExtension();
-    $request->logo->move($folder_path, $imageName);
-    $settings->logo = $imageName;
-    }
-    $settings->save();
-    }
-    return redirect()->back()->with('success', 'Settings updated successfully!');
-    }
+    public function generalsettingscreate()
+    {
+        $existingSettings = Generalsettings::first();
+        $countries = Country::all();
+        
+        // Decode JSON into array for easy looping
+        $savedCountryPhones = [];
+        if ($existingSettings && $existingSettings->country_rule) {
+            $savedCountryPhones = json_decode($existingSettings->country_rule, true);
+            // Backward compatibility: convert country name to id if needed
+            foreach ($savedCountryPhones as &$row) {
+                if (isset($row['country']) && !isset($row['country_id'])) {
+                    $country = Country::where('name', $row['country'])->first();
+                    $row['country_id'] = $country ? $country->id : null;
+                }
+            }
+        }
+
+        return view("admin.generalsetting.form_generalsettingslisting", compact(
+            'existingSettings',
+            'countries',
+            'savedCountryPhones'
+        ));
     }
 
+    public function generalsettingsstore(Request $request)
+    {
+        $countryRules = [];
+        if ($request->has('country') && $request->has('phone')) {
+            foreach ($request->country as $index => $country_id) {
+                if (!empty($country_id) || !empty($request->phone[$index])) {
+                    $country = Country::find($country_id);
+                    $countryRules[] = [
+                        'country_id' => $country_id,
+                        'country'    => $country ? $country->name : '',
+                        'phone'      => $request->phone[$index] ?? '',
+                    ];
+                }
+            }
+        }
+
+        $settings = Generalsettings::first() ?? new Generalsettings();
+
+        $settings->name       = $request->input('name');
+        $settings->email      = $request->input('email');
+        $settings->mobile     = $request->input('mobile');
+        $settings->address    = $request->input('address');
+        $settings->facebook   = $request->input('facebook');
+        $settings->twitter    = $request->input('twitter');
+        $settings->instagram  = $request->input('instagram');
+        $settings->linkedin   = $request->input('linkedin');
+        $settings->printest   = $request->input('printest');
+        $settings->meta_title = $request->input('meta_title');
+        $settings->country_rule = json_encode($countryRules);
+
+        if ($request->hasFile('icon')) {
+            $iconPath = public_path('admin/icon/');
+            if (!File::exists($iconPath)) {
+                File::makeDirectory($iconPath, 0777, true, true);
+            }
+            $imageName = date('Ymd') . '_' . rand() . '.' . $request->icon->getClientOriginalExtension();
+            $request->icon->move($iconPath, $imageName);
+            $settings->icon = $imageName;
+        }
+
+        if ($request->hasFile('logo')) {
+            $logoPath = public_path('admin/generalSetting/');
+            if (!File::exists($logoPath)) {
+                File::makeDirectory($logoPath, 0777, true, true);
+            }
+            $imageName = date('Ymd') . '_' . rand() . '.' . $request->logo->getClientOriginalExtension();
+            $request->logo->move($logoPath, $imageName);
+            $settings->logo = $imageName;
+        }
+
+        $settings->save();
+
+        return redirect()->back()->with('success', 'Settings updated successfully!');
+    }
+
+}

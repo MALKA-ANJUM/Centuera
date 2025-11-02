@@ -63,6 +63,7 @@
                                             <tr>
                                                 <th>@lang('ID')</th>
                                                 <th>@lang('Title')</th>
+                                                <th>@lang('Featured Category')</th>
                                                 <th>@lang('Action')</th>
                                             </tr>
                                         </thead>
@@ -72,6 +73,26 @@
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{ $category->name }}</td>
+                                                        <th>
+<form action="{{ route('admin.categories.update.feature') }}" method="POST">
+    @csrf
+    <input type="hidden" name="id" value="{{ $category->id }}">
+    <div class="form-check form-check-primary form-switch">
+        {{-- Hidden input ensures 0 is sent when checkbox is unchecked --}}
+        <input type="hidden" name="features" value="0">
+        <input 
+            type="checkbox" 
+            name="features" 
+            value="1" 
+            class="form-check-input" 
+            onchange="this.form.submit()" 
+            @if($category->features == 1) checked @endif
+        />
+    </div>
+</form>
+
+                                                        </th>
+
                                                         <td>
                                                             <a class="btn btn-outline-success"
                                                                 href="{{route('admin.categories.edit',$category->id)}}"

@@ -11,7 +11,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <div class="content">
-                                <h4 class="sub-title mb-25">The Leader In Online Learning</h4>
+                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
                                 <h1 class="fs-50 mb-25">Grow Your <span class="gradient-style">Skills</span> Advance
                                     Your Career Path.</h1>
                                 <p>In the dynamic landscape of today's professional world, the key to success lies
@@ -41,7 +41,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <div class="content">
-                                <h4 class="sub-title mb-25">The Leader In Online Learning</h4>
+                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
                                 <h1 class="fs-50 mb-25">Welcome To <span class="gradient-style">Online</span>
                                     Education Solutions.</h1>
                                 <p>In the dynamic landscape of today's professional world, the key to success lies
@@ -49,9 +49,9 @@
                                     technology advances,</p>
 
                                 <div class="her-btns mt-40">
-                                    <a href="courses.html" class="btn style-one mr-20">Browse Course <img
+                                    <a href="{{ route('course.list') }}" class="btn style-one mr-20">Browse Course <img
                                             src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                    <a href="about.html" class="btn style-two">Explore More<img
+                                    <a href="{{ route('about') }}" class="btn style-two">Explore More<img
                                             src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
                                 </div>
 
@@ -71,7 +71,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <div class="content">
-                                <h4 class="sub-title mb-25">The Leader In Online Learning</h4>
+                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
                                 <h1 class="fs-50 mb-25">Grow Your <span class="gradient-style">Skills</span> Advance
                                     Your Career Path.</h1>
                                 <p>In the dynamic landscape of today's professional world, the key to success lies
@@ -79,9 +79,9 @@
                                     technology advances,</p>
 
                                 <div class="her-btns mt-40">
-                                    <a href="courses.html" class="btn style-one mr-20">Browser Course <img
+                                    <a href="{{ route('course.list') }}" class="btn style-one mr-20">Browser Course <img
                                             src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                    <a href="about.html" class="btn style-two">Explore More<img
+                                    <a href="{{ route('about') }}" class="btn style-two">Explore More<img
                                             src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
                                 </div>
 
@@ -143,14 +143,15 @@
 <!-- Scrolling Banner Section start -->
 
 <!-- Category Section Start -->
-<div class="category-section ptb-100">
+@if($categories->count() > 0)
+<div class="category-section pb-5">
     <div class="container">
         <div class="main-max-width">
-            <div class="section-title mb-50">
+            <div class="section-title mb-3">
                 <div class="row">
                     <div class="col-lg-7 col-sm-7">
                         <div class="content">
-                            <h4 class="sub-title mb-25"># Browse Category</h4>
+                            <h4 class="sub-title mb-4"># Browse Category</h4>
                             <h2 class="mb-0 fs-35">Top Courses Categories</h2>
                         </div>
                     </div>
@@ -158,68 +159,35 @@
             </div>
 
             <div class="row">
+                @foreach($categories as $category)
                 <div class="col-lg-4 col-sm-6">
                     <div class="cetg-card d-flex align-items-center position-relative mb-25 box-shadow-2">
                         <div class="icon">
                             <img src="{{ asset('frontend-assets/img/icon/catg-icon-1.svg') }}" alt="icon">
                         </div>
                         <div class="text">
-                            <h4 class="fs-16"><a href="courses.html">Project Management</a></h4>
-                            <p class="m-0 fs-15">3 Courses <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
+                            <h4 class="fs-16"><a href="{{ route('course.list') }}">{{ $category->name }}</a></h4>
+                            <p class="m-0 fs-15">{{ $category->getCourses->count() }} Courses <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
                             </p>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="cetg-card d-flex align-items-center position-relative mb-25 box-shadow-2">
-                        <div class="icon">
-                            <img src="{{ asset('frontend-assets/img/icon/catg-icon-2.svg') }}" alt="icon">
-                        </div>
-                        <div class="text">
-                            <h4 class="fs-16"><a href="courses.html">Quality Management</a></h4>
-                            <p class="m-0 fs-15">2 Courses <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="cetg-card d-flex align-items-center position-relative mb-25 box-shadow-2">
-                        <div class="icon">
-                            <img src="{{ asset('frontend-assets/img/icon/catg-icon-3.svg') }}" alt="icon">
-                        </div>
-                        <div class="text">
-                            <h4 class="fs-16"><a href="courses.html">Agile & Scrum</a></h4>
-                            <p class="m-0 fs-15">3 Courses <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-sm-6">
-                    <div class="cetg-card d-flex align-items-center position-relative mb-25 box-shadow-2">
-                        <div class="icon">
-                            <img src="{{ asset('frontend-assets/img/icon/catg-icon-1.svg') }}" alt="icon">
-                        </div>
-                        <div class="text">
-                            <h4 class="fs-16"><a href="courses.html">IT Service Management</a></h4>
-                            <p class="m-0 fs-15">1 Course <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 </div>
+@endif
 <!-- Category Section End -->
 
 <!-- About Section Start -->
-<div class="about-section pb-100" id="about-sec">
+<div class="about-section pb-5" id="about-sec">
     <div class="container">
         <div class="main-max-width">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="content">
-                        <h4 class="sub-title mb-25"># About Us</h4>
+                        <h4 class="sub-title mb-4"># About Us</h4>
                         <h2 class="mb-50 fs-35">Why Will You Choose Our?</h2>
                         <p class="mb-30">Delve into Centuera guided by industry experts and seasoned professionals.
                             Our carefully curated curriculum is Designed to impart not just theoretical knowledge
@@ -230,7 +198,7 @@
                     </div>
                     <div class="about-meta d-flex align-items-center mt-40">
                         <div class="about-btn mr-20">
-                            <a href="about.html" class="btn style-one box-shadow-1">About More<img
+                            <a href="{{ route('about') }}" class="btn style-one box-shadow-1">About More<img
                                     src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
                         </div>
                         <div class="info">
@@ -290,11 +258,11 @@
 
 <!-- Course Section Start -->
 @if(count($courses) > 0)
-<div class="course-section pb-100" id="course-sec">
+<div class="course-section pb-5" id="course-sec">
     <div class="container">
         <div class="main-max-width">
-            <div class="section-title mb-50 position-relative">
-                <h4 class="sub-title mb-25"># Our Courses List</h4>
+            <div class="section-title mb-3 position-relative">
+                <h4 class="sub-title mb-4"># Our Courses List</h4>
                 <h2 class="fs-35">Broad Selection Of Course</h2>
             </div>
             <div id="mix-wrapper" class="course-mix-wrapper">
@@ -303,45 +271,59 @@
                     <div class="col-lg-4 col-sm-6 mix-target Business Design">
                         <div class="single-courses-box mb-25 box-shadow-2">
                             <div class="image mb-20 position-relative">
-                                <a href="{{ route('user.course.details', $course->slug) }}">
+                                <a href="{{ route('course.details', $course->slug) }}">
                                     <img src="{{ asset('uploads/courses/'. $course->image) }}" alt="image">
                                 </a>
 
                                 <div class="cr-tag">
-                                    <a href="{{ route('user.course.details', $course->slug) }}">{{ $course->getCategory->name ?? '' }}</a>
+                                    <a href="{{ route('course.details', $course->slug) }}">{{ $course->getCategory->name ?? '' }}</a>
                                 </div>
                             </div>
                             <div class="content">
-                                <div class="meta-info mb-20 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-1 fs-20"><a href="{{ route('user.course.details', $course->slug) }}">{{ $course->title }}</a></h3>
+                                <div class="meta-info d-flex align-items-center justify-content-between">
+                                    <h3 class="mb-1 fs-20"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></h3>
 
-                                    <div class="cr-price">
-                                        <h5 class="fs-16"><span class="price">$1145/</span> <span
-                                                class="old-price">$1599</span></h5>
+                                    <div class="cr-price px-2">
+                                        <h5 class="fs-16 text-nowrap"><span class="price"> {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 ? 'USD ' : $currency }} {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span>
+                                        <br>
+                                        @if($course->getCourseSchedule && $course->getCourseSchedule)
+                                            <span class="old-price">
+                                               {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 ? 'USD ' : $currency }} {{ $course->getCourseSchedule->prices->original_price ?? 0 }}
+                                            </span>
+                                        @endif
+
                                     </div>
                                 </div>
 
                             </div>
                             <div class="d-flex justify-content-center align-items-center rating-section">
+                                @php
+                                    $rating = round($course->rating);
+                                    $maxStars = 5;
+                                @endphp
+
                                 <ul class="d-flex list-unstyle customer-ratings">
-                                    <li><i class="ri-star-fill"></i></li>
-                                    <li><i class="ri-star-fill"></i></li>
-                                    <li><i class="ri-star-fill"></i></li>
-                                    <li><i class="ri-star-fill"></i></li>
-                                    <li><i class="ri-star-fill"></i></li>
-                                    <li><span>(4.5)</span></li>
+                                    @for ($i = 1; $i <= $maxStars; $i++)
+                                        @if ($i <= $rating)
+                                            <li><i class="ri-star-fill"></i></li>
+                                        @else
+                                            <li><i class="ri-star-line"></i></li>
+                                        @endif
+                                    @endfor
+                                    <li><span>({{ $course->rating }})</span></li>
                                 </ul>
+
                                 <ul
                                     class="cr-items d-flex align-items-center justify-content-center gap-2 list-unstyle">
-                                    <li class="mr-15"><i class="ri-team-fill"></i> <span>85,396 Learners</span> </li>
-                                    <li><i class="ri-time-line"></i> <span>{{ $course->duration }} Hrs</span></li>
+                                    <li class="mr-15"><i class="ri-team-fill"></i> <span>{{ number_format(($course->learner_field ?? 0) + 10000) }} Learners</span> </li>
+                                    <li><i class="ri-time-line"></i> <span>{{ round($course->duration / 60 , 2)  }} Hrs</span></li>
                                 </ul>
                             </div>
                             <div class="curriculum-certificate">
-                                    <a href="{{ asset('uploads/certifications/'. $course->certification_image ) }}" class="view-certification" target="_blank">
-                                        View Certification
-                                    </a>
-                                <a href="{{ route('user.course.details', $course->slug) }}">
+                                <a href="{{ asset('uploads/certifications/'. $course->certification_image ) }}" class="view-certification" target="_blank">
+                                    View Certification
+                                </a>
+                                <a href="{{ route('course.details', $course->slug) }}">
                                     <button class="view-curiculum"><i class="ri-download-line"></i><span>Curriculum</span></button></a>
                             </div>
                         </div>
@@ -350,7 +332,7 @@
                 </div>
                 <div class="col-lg-5 col-sm-5">
                     <div class="section-btn">
-                        <a href="{{ route('user.course.list') }}" class="btn style-one box-shadow-1">View All <img
+                        <a href="{{ route('course.list') }}" class="btn style-one box-shadow-1">View All <img
                                 src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
                     </div>
                 </div>
@@ -521,13 +503,13 @@
 
 <!-- Testimonial Section Start -->
 @if(count($testimonials) > 0)
-<div class="testimonial-section custom-nav pb-100">
+<div class="testimonial-section custom-nav pb-5">
     <div class="container">
         <div class="main-max-width">
             <div class="row">
                 <div class="col-lg-5">
                     <div class="content">
-                        <h4 class="sub-title mb-25"># Client’s Testimonials</h4>
+                        <h4 class="sub-title mb-4"># Client’s Testimonials</h4>
                         <h2 class="mb-30 fs-35">Let's what our student says</h2>
                         <p class="mb-50">The community created within the program is supportive and collaborative.
                             I've had the opportunity to connect with fellow learners, share experiences, and even
@@ -636,17 +618,17 @@
 <div class="blog-section pb-75">
     <div class="container">
         <div class="main-max-width">
-            <div class="section-title mb-50">
+            <div class="section-title mb-3">
                 <div class="row">
                     <div class="col-lg-7 col-sm-7">
                         <div class="content">
-                            <h4 class="sub-title mb-25"># Blog</h4>
+                            <h4 class="sub-title mb-4"># Blog</h4>
                             <h2 class="mb-0 fs-35">Latest News & Articles</h2>
                         </div>
                     </div>
                     <div class="col-lg-5 col-sm-5">
                         <div class="section-btn text-end">
-                            <a href="{{ route('user.blog') }}" class="btn style-one box-shadow-1">View All <img
+                            <a href="{{ route('blog') }}" class="btn style-one box-shadow-1">View All <img
                                     src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
                         </div>
                     </div>
@@ -778,30 +760,7 @@
     </div>
 </div>
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#subscribeForm').on('submit', function(e) {
-            e.preventDefault();
+@push('script')
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
-            let email = $('#emailInput').val();
-
-            $.ajax({
-                url: "{{ route('user.subscribe') }}",
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    email: email
-                },
-                success: function(response) {
-                    $('#subscribeMessage').html('<span style="color:green;">' + response.message + '</span>');
-                    $('#emailInput').val('');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    $('#subscribeMessage').html('<span style="color:red;">Something went wrong.</span>');
-                }
-            });
-        });
-    });
-</script>
+@endpush

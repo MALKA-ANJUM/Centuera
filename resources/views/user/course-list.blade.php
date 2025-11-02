@@ -226,33 +226,45 @@
                                     </a>
 
                                     <div class="cr-tag">
-                                        <a href="{{ $course->getCategory->name ?? '' }}">Project Management</a>
+                                        <a href="{{ $course->getCategory->name ?? '' }}">{{ $course->getCategory->name ?? '' }}</a>
                                     </div>
                                 </div>
                                 <div class="content">
                                     <div class="meta-info mb-20 d-flex align-items-center justify-content-between">
                                         <h3 class="mb-1 fs-20"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></h3>
 
-                                        <div class="cr-price">
-                                            <h5 class="fs-16"><span class="price">$1145/</span> <span
-                                                    class="old-price">$1599</span></h5>
+                                        <div class="cr-price px-2">
+                                            <h5 class="fs-16 text-nowrap"><span class="price">{{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}  {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span> 
+                                            @if($course->getCourseSchedule && $course->getCourseSchedule->prices)
+                                            <br>
+                                                <span class="old-price">
+                                                    {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}  {{ $course->getCourseSchedule->prices->original_price }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
 
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center rating-section">
+                                    @php
+                                        $rating = round($course->rating);
+                                        $maxStars = 5;
+                                    @endphp
+
                                     <ul class="d-flex list-unstyle customer-ratings">
-                                        <li><i class="ri-star-fill"></i></li>
-                                        <li><i class="ri-star-fill"></i></li>
-                                        <li><i class="ri-star-fill"></i></li>
-                                        <li><i class="ri-star-fill"></i></li>
-                                        <li><i class="ri-star-fill"></i></li>
-                                        <li><span>(4.5)</span></li>
+                                        @for ($i = 1; $i <= $maxStars; $i++)
+                                            @if ($i <= $rating)
+                                                <li><i class="ri-star-fill"></i></li>
+                                            @else
+                                                <li><i class="ri-star-line"></i></li>
+                                            @endif
+                                        @endfor
+                                        <li><span>({{ $course->rating }})</span></li>
                                     </ul>
                                     <ul
                                         class="cr-items d-flex align-items-center justify-content-center gap-2 list-unstyle">
-                                        <li class="mr-15"><i class="ri-team-fill"></i> <span>85,396 Learners</span> </li>
-                                        <li><i class="ri-time-line"></i> <span>{{ $course->duration }} Hrs</span></li>
+                                        <li class="mr-15"><i class="ri-team-fill"></i> <span>{{ number_format(($course->learner_field ?? 0) + 10000) }} Learners</span> </li>
+                                        <li><i class="ri-time-line"></i> <span>{{ round($course->duration/60, 2) }} Hrs</span></li>
                                     </ul>
                                 </div>
                                 <div class="curriculum-certificate">
@@ -268,14 +280,30 @@
                     </div>
                 </div>
             </div>
-            <ul class="page-nav list-style text-start p-0 mt-40">
-                <li><a href="courses"><img src="layout/img/icon/long-arrow.svg" alt="icon"></a></li>
-                <li><a class="active" href="courses">01</a></li>
-                <li><a href="courses">02</a></li>
-                <li><a href="courses">03</a></li>
-                <li><a href="courses">04</a></li>
-                <li><a href="courses"><img src="layout/img/icon/long-arrow.svg" alt="icon"></a></li>
-            </ul>
+            @if ($courses->count() > 0)
+                <ul class="page-nav list-style text-end p-0 mt-40">
+                    @if ($courses->onFirstPage())
+                        <li><span><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></span></li>
+                    @else
+                        <li><a href="{{ $courses->previousPageUrl() }}"><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></a></li>
+                    @endif
+
+                    @for ($i = 1; $i <= $courses->lastPage(); $i++)
+                        <li>
+                            <a class="{{ $courses->currentPage() == $i ? 'active' : '' }}"
+                            href="{{ $courses->url($i) }}">
+                            {{ $i }}
+                            </a>
+                        </li>
+                    @endfor
+
+                    @if ($courses->hasMorePages())
+                        <li><a href="{{ $courses->nextPageUrl() }}"><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></a></li>
+                    @else
+                        <li><span><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></span></li>
+                    @endif
+                </ul>
+            @endif
         </div>
     </div>
 </div>

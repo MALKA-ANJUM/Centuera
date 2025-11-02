@@ -10,4 +10,10 @@ class Faq extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $table = 'faqs';
+    protected $fillable = [
+        'course_id',
+        'title',
+        'description',
+    ];  
 }

@@ -45,15 +45,28 @@
                             <div class="row mb-2">
                                 <div class="col-12">
                                     <label for="description" class="form-label">@lang('Description')</label>
-                                    <textarea class="form-control" name="description" id="description" required></textarea>
+                                    <textarea class="form-control" name="description" id="description"></textarea>
                                     @error('description')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <label for="image" class="form-label">@lang('Image')</label>
-                                <input type="file" class="form-control" name="image" id="image">
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label for="image" class="form-label">@lang('Image')</label>
+                                    <input type="file" class="form-control" name="image" id="image">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="rating" class="form-label">@lang('Rating')</label>
+                                    <select name="rating" id="rating" class="form-control" required>
+                                        <option value="">Select Rating</option>
+                                        <option value="1">1 - ★☆☆☆☆</option>
+                                        <option value="2">2 - ★★☆☆☆</option>
+                                        <option value="3">3 - ★★★☆☆</option>
+                                        <option value="4">4 - ★★★★☆</option>
+                                        <option value="5">5 - ★★★★★</option>
+                                    </select>
+                                </div>
                             </div>
                             <br>
                             <button type="submit" class="btn btn-primary">@lang('Add')</button>
@@ -65,37 +78,22 @@
     </div>
     <!-- END: Content-->
 @endsection
-
 @push('script')
-    <script>
-        $(document).ready(function() {
-            $("#blogForm").validate({
-                rules: {
-                    title: {
-                        required: true,
+<script>
+    ClassicEditor
+    .create(document.querySelector('#description'))
+    .catch(error => {
+        console.error(error);
+    });
+</script>
+@endpush
 
-                    },
-
-                    description: {
-                        required: true
-                    }
-
-                },
-                messages: {
-                    title: {
-                        required: "*Title is required",
-
-                    },
-
-                    description: {
-                        required: "*Description is required",
-                    },
-
-                },
-
-            });
-
-
-        });
-    </script>
+@push('style')
+<style>
+.ck.ck-editor__editable_inline>:last-child
+{
+    margin-bottom: var(--ck-spacing-large);
+    height: 120px;
+}
+</style>
 @endpush

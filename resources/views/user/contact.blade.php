@@ -109,7 +109,7 @@
                                     </div>
                                     <div class="text">
                                         <h5 class="fs-16">Phone</h5>
-                                        <a href="tel:{{$contactpage->mobile}}">{{$contactpage->mobile}}</a>
+                                        <a href="#" id="dynamic-contact-country-phone">{{$contactpage->mobile}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -150,3 +150,38 @@
    
 <!-- END: Content-->
 @endsection
+
+@php
+    $generalSetting = App\Models\Generalsettings::first();
+@endphp
+@push('script')
+<script>
+    var countryPhones = @json(
+        $generalSetting && $generalSetting->country_rule
+            ? collect(json_decode($generalSetting->country_rule, true))
+                ->mapWithKeys(function($row) { return [$row['country_id'] => $row['phone']]; })
+            : []
+    );
+    var usCountryId = @json(optional(App\Models\Country::where('name', 'United States')->first())->id);
+    var ukCountryId = @json(optional(App\Models\Country::where('name', 'United Kingdom')->first())->id);
+    var defaultMobile = @json($contactpage->mobile);
+
+    $(document).ready(function () {
+        var selectedCountryId = localStorage.getItem('selected_country_id');
+        var phone = countryPhones[selectedCountryId] || null;
+        var $phoneLink = $('#dynamic-contact-country-phone');
+
+        if (!$phoneLink.length) return;
+
+        if (selectedCountryId == usCountryId || selectedCountryId == ukCountryId) {
+            $phoneLink.text(defaultMobile).attr('href', 'tel:+' + defaultMobile);
+        } 
+        else if (phone) {
+            $phoneLink.text(phone).attr('href', 'tel:+' + phone);
+        } 
+        else {
+            $phoneLink.text(defaultMobile).attr('href', 'tel:+' + defaultMobile);
+        }
+    });
+</script>
+@endpush

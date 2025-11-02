@@ -84,6 +84,14 @@
                                     <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            {{-- <div class="col-md-6">
+                                <label for="slug" class="form-label">@lang('Slug')</label>
+                                <input type="text" class="form-control" name="slug" id="slug">
+                                @error('slug')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div> --}}
                     </div>
                     <button type="submit" class="btn btn-primary">@lang('Add')</button>
                     </form>
@@ -95,3 +103,23 @@
     </div>
     <!-- END: Content-->
 @endsection
+
+@push('script')
+<script>
+    ClassicEditor
+    .create(document.querySelector('#description'))
+    .catch(error => {
+        console.error(error);
+    });
+</script>
+@endpush
+
+@push('style')
+<style>
+.ck.ck-editor__editable_inline>:last-child
+{
+    margin-bottom: var(--ck-spacing-large);
+    height: 120px;
+}
+</style>
+@endpush

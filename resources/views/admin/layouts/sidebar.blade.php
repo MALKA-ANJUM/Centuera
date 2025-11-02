@@ -41,14 +41,101 @@
                 </a>
             </li>
             @endcan --}}
-            <li class="@if ( (request()->is('admin/faq-list'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.faq.list') }}"><i data-feather="message-circle"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Faq')</span></a></li>
+            {{-- <li class="@if ( (request()->is('admin/faq-list'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.faq.list') }}"><i data-feather="message-circle"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Faq')</span></a></li> --}}
             <li class="@if (request()->is('admin/blog_list') || request()->is('admin/blog_form') || request()->is('admin/blog/edit*')) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.blog.list') }}"><i data-feather="book"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Blog')</span></a></li>
             <li class="@if ( (request()->is('admin/testimonial-list')) || (request()->is('admin/testimonial-form')) || (request()->is('admin/testimonial/edit*'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.testimonial.list') }}"><i data-feather="user"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Testimonial')</span></a></li>
              <li class="@if ( (request()->is('admin/dynamic-list')) || (request()->is('admin/dynamic-add-form')) ||  (request()->is('admin/dynamic-edit*'))) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.dynamic.list') }}"><i data-feather="square"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Dynamic Content')</span></a></li>
              <li class="@if (request()->is('admin/banner')) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.banner') }}"><i class="fa fa-image"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">Banner</span></a></li>
-            <li class="@if ( (request()->is('admin/gallery-list'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.gallery.list') }}"><i data-feather="image"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Gallery')</span></a></li>
+            {{-- <li class="@if (request()->is('admin/subscriptions.index')) active @endif nav-item">
+                <a class="d-flex align-items-center" href="{{ route('admin.subscriptions.index') }}">
+                    <i class="fa fa-envelope"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Subscriptions">Subscriptions</span>
+                </a>
+            </li> --}}
+            <li class="nav-item has-sub {{ request()->is('admin/request-callback') || request()->is('admin/subscriptions') || request()->is('admin/contacts-list') || request()->is('admin/leads-list') ? 'open' : '' }}">
+                <a class="d-flex align-items-center" href="#">
+                    <i data-feather="users"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Leads">@lang('Leads')</span>
+                </a>
+                <ul class="menu-content">
+                    <li class="{{ request()->is('admin/request-callback') ? 'active' : '' }}">
+                        <a class="d-flex align-items-center" href="{{ route('admin.request.callback') }}">
+                            <i data-feather="phone"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Request">Request Callback</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->is('admin/subscriptions') ? 'active' : '' }}">
+                        <a class="d-flex align-items-center" href="{{ route('admin.subscriptions.index') }}">
+                            <i data-feather="mail"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Subscriptions">Subscriptions</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->is('admin/contacts-list') ? 'active' : '' }}">
+                        <a class="d-flex align-items-center" href="{{ route('admin.contacts.list') }}">
+                            <i data-feather="phone-call"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Contacts">Contact Us</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->is('admin/leads-list') ? 'active' : '' }}">
+                        <a class="d-flex align-items-center" href="{{ route('admin.leads.list') }}">
+                            <i data-feather="users"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Leads">Lead</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+            {{-- <li class="@if ( (request()->is('admin/gallery-list'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.gallery.list') }}"><i data-feather="image"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Gallery')</span></a></li> --}}
+
+            {{-- <li class="@if (request()->is('admin/request-callback-list')) active @endif nav-item">
+                <a class="d-flex align-items-center" href="{{ route('admin.request.callback') }}">
+                    <i data-feather="phone"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Request">@lang('Request Callback')</span>
+                </a>
+            </li> --}}
+
+            <li class="nav-item ">
+                <a class="d-flex align-items-center" href="#">
+                    <i data-feather="book-open"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Course">@lang('Course')</span>
+                </a>
+
+                <ul class="menu-content">
+                    <li class="@if ( (request()->is('admin/course*'))) active  @endif nav-item">
+                        <a class="d-flex align-items-center" href="{{ route('admin.course.index') }}">
+                            <i data-feather="folder"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Categories">@lang('All Course')</span>
+                        </a>
+                    </li>
+                    <li class="@if ( (request()->is('admin/schedule*'))) active  @endif nav-item">
+                        <a class="d-flex align-items-center" href="{{ route('admin.schedule.index') }}">
+                            <i data-feather="folder"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Categories">@lang('Schedule')</span>
+                        </a>
+                    </li>
+                    <li class="@if ( (request()->is('admin/categories*'))) active  @endif nav-item">
+                        <a class="d-flex align-items-center" href="{{ route('admin.categories.index') }}">
+                            <i data-feather="folder"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Categories">@lang('Categories')</span>
+                        </a>
+                    </li>
+                    <li class="@if (request()->is('admin/coupons*')) active @endif nav-item">
+                        <a class="d-flex align-items-center" href="{{ route('admin.coupons.index') }}">
+                            <i data-feather="tag"></i>
+                            <span class="menu-title text-truncate font-size-12px" data-i18n="Coupons">@lang('Coupons')</span>
+                        </a>
+                    </li>
+
+
+                </ul>
+            </li>
+
             <li class="@if (request()->is('admin/general-settings')) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.general.settings') }}"><i data-feather="settings"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('General setting')</span></a></li>
+            <li class="@if (request()->is('admin/country-list')) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.country.list') }}"><i data-feather="globe"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Country')</span></a></li>
+
             <li class=" nav-item"><a class="d-flex align-items-center" href="#"><i data-feather="settings"></i><span class="menu-title text-truncate" data-i18n="Datatable">Setting permission</span></a>
+
             <ul class="menu-content">
                     @can('admin.add-user-form')
                 <li class="@if (request()->is('admin/user-list') || request()->is('admin/add-user-form') || request()->is('admin/edit-user')) active @endif nav-item">
