@@ -254,66 +254,6 @@
 
     <!-- Simple modal background -->
     <style>
-        /* Professional form styling for callback modal */
-        /* .modal-form form {
-            background: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 24px;
-        }
-        .modal-form h4 {
-            font-weight: 700;
-            color: #2a4d8f;
-            margin-bottom: 12px;
-        }
-        .modal-form p {
-            color: #6c757d;
-            margin-bottom: 18px;
-        }
-        .modal-form .form-label {
-            font-weight: 600;
-            color: #2a4d8f;
-        }
-        .modal-form .form-control, .modal-form .form-select {
-            border-radius: 6px;
-            border: 1px solid #d1d5db;
-            font-size: 1rem;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-            transition: border-color 0.2s;
-        }
-        .select2-container .select2-selection--single {
-            height: 31px !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 32px !important;
-        }
-        .modal-form .form-control:focus, .modal-form .form-select:focus {
-            border-color: #2a4d8f;
-            box-shadow: 0 0 0 2px rgba(42,77,143,0.15);
-        }
-        .modal-form .input-group {
-            gap: 8px;
-        }
-        .modal-form .btn-primary {
-            background: linear-gradient(90deg, #2a4d8f 0%, #3b82f6 100%);
-            border: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 12px 0;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(42,77,143,0.08);
-        }
-        .modal-form .btn-primary:hover {
-            background: linear-gradient(90deg, #3b82f6 0%, #2a4d8f 100%);
-        }
-        .modal-form .form-check-label {
-            font-size: 0.97rem;
-            color: #444;
-        }
-        .modal-form .form-check-input {
-            accent-color: #2a4d8f;
-        } */
         .callbackmodal {
             position: fixed;
             top: 0;
@@ -544,7 +484,7 @@
                 $('#flag-display').attr('class', 'select__flag ' + flagClass);
             }
 
-            $('#country-select').on('change', function() {
+            $('#countgry-select').on('change', function() {
                 updateFlag();
                 localStorage.setItem('selected_country_id', $(this).val());
                 localStorage.setItem('scrollToTop', 'true');
