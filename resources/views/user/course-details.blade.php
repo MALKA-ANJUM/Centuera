@@ -735,7 +735,7 @@
                             <div class="program-box p-3 shadow-sm rounded">
                                 <h6 class="fw-bold mb-2">{{ $course->title }}</h6>
                                 <small class="fw-bold text-primary bg-light px-2 py-1">
-                                    {{ $course->getCategory->name }}
+                                    {{ $course->getCategory->name ?? '' }}
                                 </small>
 
                                 <div class="rating text-warning d-flex justify-content-between">
