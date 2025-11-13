@@ -84,6 +84,16 @@ class GeneralsettingsController extends Controller
             $settings->logo = $imageName;
         }
 
+        if ($request->hasFile('display_offer')) {
+            $displayOfferPath = public_path('admin/display_offer/');
+            if (!File::exists($displayOfferPath)) {
+                File::makeDirectory($displayOfferPath, 0777, true, true);
+            }
+            $imageName = date('Ymd') . '_' . rand() . '.' . $request->display_offer->getClientOriginalExtension();
+            $request->display_offer->move($displayOfferPath, $imageName);
+            $settings->display_offer = $imageName;
+        }
+
         $settings->save();
 
         return redirect()->back()->with('success', 'Settings updated successfully!');

@@ -46,12 +46,19 @@
             <li class="@if ( (request()->is('admin/testimonial-list')) || (request()->is('admin/testimonial-form')) || (request()->is('admin/testimonial/edit*'))) active  @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.testimonial.list') }}"><i data-feather="user"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Testimonial')</span></a></li>
              <li class="@if ( (request()->is('admin/dynamic-list')) || (request()->is('admin/dynamic-add-form')) ||  (request()->is('admin/dynamic-edit*'))) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.dynamic.list') }}"><i data-feather="square"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">@lang('Dynamic Content')</span></a></li>
              <li class="@if (request()->is('admin/banner')) active @endif nav-item"><a class="d-flex align-items-center" href="{{ route('admin.banner') }}"><i class="fa fa-image"></i><span class="menu-title text-truncate font-size-12px" data-i18n="Dashboards">Banner</span></a></li>
-            {{-- <li class="@if (request()->is('admin/subscriptions.index')) active @endif nav-item">
-                <a class="d-flex align-items-center" href="{{ route('admin.subscriptions.index') }}">
-                    <i class="fa fa-envelope"></i>
-                    <span class="menu-title text-truncate font-size-12px" data-i18n="Subscriptions">Subscriptions</span>
+            <li class="@if (request()->is('admin/order-list')) active @endif nav-item">
+                <a class="d-flex align-items-center" href="{{ route('admin.order.list') }}">
+                    <i class="fa fa-wallet"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Orders">Orders</span>
                 </a>
-            </li> --}}
+            </li>
+
+            <li class="@if (request()->is('admin/rating-list')) active @endif nav-item">
+                <a class="d-flex align-items-center" href="{{ route('admin.rating.list') }}">
+                    <i class="fa fa-star"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Rating">Rating</span>
+                </a>
+            </li>
             <li class="nav-item has-sub {{ request()->is('admin/request-callback') || request()->is('admin/subscriptions') || request()->is('admin/contacts-list') || request()->is('admin/leads-list') ? 'open' : '' }}">
                 <a class="d-flex align-items-center" href="#">
                     <i data-feather="users"></i>

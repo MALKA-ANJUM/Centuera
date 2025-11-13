@@ -24,10 +24,8 @@ class CouponController extends Controller
     public function create()
     {
     $letters = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 3));
-    $number = rand(1000, 9999);
-    $autoCode = $letters . $number;
     $courses = Course::select('id', 'title')->orderBy('title')->get();
-    return view('admin.coupons.create', compact('autoCode', 'courses'));
+    return view('admin.coupons.create', compact('courses'));
     }
 
     public function store(Request $request)

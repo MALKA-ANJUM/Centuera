@@ -49,6 +49,37 @@
         <div class="footer-widget-info pb-5">
             <div class="container">
                 <div class="main-max-width">
+                    <div class="row text-white">
+                        <div class="col-md-3 mt-4 col-6">
+                            <div class="d-flex">
+                                <span class="fi fi-us font-large-1"></span>
+                                <p class="mb-1 ms-2">USA</p>
+                            </div>
+                            <p class="mb-0">+1 713 900 9707 </p>
+                        </div>
+                         <div class="col-md-3 mt-4 col-6">
+                            <div class="d-flex">
+                                <span class="fi fi-ca font-large-1"></span>
+                                <p class="mb-1 ms-2">Canada</p>
+                            </div>
+                            <p class="mb-0">+1 713 925 5626 </p>
+                        </div>
+                         <div class="col-md-3 mt-4 col-6">
+                            <div class="d-flex">
+                                <span class="fi fi-gb font-large-1"></span>
+                                <p class="mb-1 ms-2">UK</p>
+                            </div>
+                            <p class="mb-0">+44 747 697 5480</p>
+                        </div>
+                         <div class="col-md-3 mt-4 col-6">
+                            <div class="d-flex">
+                                <span class="fi fi-au font-large-1"></span>
+                                <p class="mb-1 ms-2">Australia</p>
+                            </div>
+                            <p class="mb-0">+61 261 528 662</p>
+                        </div>
+                    </div>
+                    <hr>
                     <div class="row">
                         <div class="col-lg-4 col-sm-6 col-md-6">
                             <div class="footer-widget info-web">
@@ -190,24 +221,32 @@
     <div id="callbackModal" class="modal callbackmodal" style="display: none;">
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
-            <div class="modal-body">
+            <div class="modal-body p-0">
                 <!-- Left: Image -->
                 <div class="modal-image">
-                    <img src="{{ asset('frontend-assets/img/callback-popup.jpg') }}" alt="Request Callback">
+                        <div class="desc p-4 pb-0">
+                            <h3 class="text-center" style="color: #EFA601">Being Friends & Colleagues</h3>
+                            <p class="fw-bold text-center" style="color: #EFA601">Avail Group Discount</p>
+                            <ul class="text-white ps-0" style="list-style: none;">
+                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Enroll with your groups or friends</li>
+                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Get details on our social group enrollment pricing</li>
+                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Group learning boosts completion rates by 30% and improves outcomes</li>
+                            </ul>
+                        </div>
+                    <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
                 </div>
                 <!-- Right: Form -->
-                <div class="modal-form">
-                    <h4>Request a Callback</h4>
-                    <hr>
+                <div class="modal-form py-2">
+                    <h4 class="border-bottom">Request a Callback</h4>
                     <p>Leave your details and Our training consultant will get back to you</p>
-                    <form action="{{route('request.callback')}}" method="POST">
+                    <form action="{{route('request.callback')}}" method="POST" class="mt-5">
                         @csrf
-                        <div class="mb-1">
+                        <div class="mb-3">
                             <input type="text" name="name" class="form-control" placeholder="Name *" required>
                         </div>
-                        <div class="mb-1">
+                        <div class="mb-3">
                             <div class="input-group">
-                                <select name="country_code" id="phone-flag" class="form-select rounded-start-3 me-0 select2" required>
+                                <select name="country_code" id="phone-flag" class="form-select select2" required>
                                     @foreach($countries as $country)
                                         <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
                                             +{{ $country->phonecode }} {!! $country->flag !!}
@@ -217,19 +256,19 @@
                                 <input type="text" 
                                     id="phone" 
                                     name="phone" 
-                                    class="form-control rounded-end-3 border p-2" 
+                                    class="form-control ps-2" 
                                     placeholder="9090909090" 
                                     required 
                                     autocomplete="tel">
                             </div>
                         </div>
 
-                        <div class="mb-1">
+                        <div class="mb-3">
                             <input type="email" name="email" class="form-control" placeholder="Email *">
                         </div>
 
-                        <div class="mb-1">
-                            <select name="course_id" id="course_id" class="form-control ctrm_select" required>
+                        <div class="mb-3">
+                            <select name="course_id" id="course_id" class="form-control select2" required>
                                 <option value="">Select Program</option>
                                 @foreach($courses as $course)
                                     <option value="{{ $course->id }}">{{ $course->title }}</option>
@@ -238,7 +277,7 @@
                             </select>
                         </div>
 
-                        <div class="mb-2 form-check">
+                        <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="policy" name="policy" required>
                             <label class="form-check-label" for="policy">
                                 By providing your contact details, you agree to our 
@@ -268,8 +307,8 @@
         }
 
         .callbackmodal .modal-content {
-            width: 100%;
-            max-width: 750px; 
+            width: 90%;
+            max-width: 800px; 
             background: #fff;
             padding: 25px 20px;
             border-radius: 8px;
@@ -292,13 +331,12 @@
 
         .callbackmodal .modal-image {
             flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+           
+            background-color: #79CAF6;
         }
 
         .callbackmodal .modal-image img {
-            border-radius: 8px;
+            /* border-radius: 8px; */
             max-width: 100%;
             max-height: 320px;
             object-fit: cover;
@@ -306,6 +344,14 @@
 
         .callbackmodal .modal-form {
             flex: 1;
+        }
+        .callbackmodal .select2-container .select2-selection--single{
+            height: 37px;
+        }
+        .callbackmodal .select2-container--default .select2-selection--single{
+            border: 0;
+            border-bottom: 1px solid #aaa;
+            border-radius: 0;
         }
 
         /* Mobile responsive */
@@ -392,7 +438,7 @@
     <script src="{{ asset('frontend-assets/js/owl.carousel.min.js')}}"></script>
     <script src="{{ asset('frontend-assets/js/carousel-thumbs.min.js')}}"></script>
     <script src="{{ asset('frontend-assets/js/main.js')}}"></script>
-    <script src="{{ asset('frontend-assets/js/chatbot.js')}}"></script>
+    <!-- <script src="{{ asset('frontend-assets/js/chatbot.js')}}"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
@@ -484,7 +530,7 @@
                 $('#flag-display').attr('class', 'select__flag ' + flagClass);
             }
 
-            $('#countgry-select').on('change', function() {
+            $('#country-select').on('change', function() {
                 updateFlag();
                 localStorage.setItem('selected_country_id', $(this).val());
                 localStorage.setItem('scrollToTop', 'true');
@@ -633,6 +679,10 @@
         function restrictToNumbers(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
         }
+
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#contactUsModal')
+        });
     </script>
     </body>
     <script>

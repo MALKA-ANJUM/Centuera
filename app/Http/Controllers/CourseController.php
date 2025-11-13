@@ -42,7 +42,6 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        // return $request;
         $request->validate([
             'title'     => 'required',
             'short_title'     => 'required',
@@ -76,16 +75,15 @@ class CourseController extends Controller
             $premierPartners = [];
             if ($request->premier_partner) {
                 foreach ($request->premier_partner as $partner) {
-                    $imagePath = null;
-                    if (isset($partner['image']) && $partner['image'] instanceof \Illuminate\Http\UploadedFile && $partner['image']->isValid()) {
-                        $img = $partner['image'];
-                        $imgName = time() . '_' . $img->getClientOriginalName();
-                        $img->move(public_path('uploads/premier_partner'), $imgName);
-                        $imagePath = $imgName;
+                    if (empty($partner['image'])) {
+                        continue;
                     }
+                    $img = $partner['image'];
+                    $imgName = time() . '_' . $img->getClientOriginalName();
+                    $img->move(public_path('uploads/premier_partner'), $imgName);
                     $premierPartners[] = [
-                        'image' => $imagePath,
-                        'text'  => $partner['text'] ?? null
+                        'image' => $imgName,
+                        'text'  => $partner['text'] ?? null,
                     ];
                 }
             }
@@ -107,6 +105,12 @@ class CourseController extends Controller
                 $request->certification_image->move(public_path('uploads/certifications'), $certImageName);
                 $course->certification_image = $certImageName;
             }
+            if ($request->hasFile('upload_curriculum')) {
+                $currImageName = time() . '_curr.' . $request->upload_curriculum->getClientOriginalExtension();
+                $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
+                $course->upload_curriculum = $currImageName;
+            }
+
 
             // ✅ Slug (only if new course OR title changed)
             if (!$course->id || $course->isDirty('title')) {
@@ -322,12 +326,18 @@ class CourseController extends Controller
     $courses = Course::orderBy('id', 'desc')->get();
     $seo = $course->getSeoData()->first();
     $benefits = $course->getBenefits()->get();
-    return view('admin.courses.edit', compact('course', 'curriculums', 'courses', 'seo', 'benefits'));
+    $categories = Category::orderby('id', 'desc')->get();
+    return view('admin.courses.edit', compact('course', 'curriculums', 'courses', 'seo', 'benefits', 'categories'));
     }
 
     public function update(Request $request, $id)
     {
-        // return $request;
+        $request->validate([
+            'title'         => 'required',
+            'short_title'   => 'required',
+            'category'      => 'required',
+            'slug'          => 'required|unique:courses,slug'
+        ]);
         try {
             $course = Course::findOrFail($id);
 
@@ -390,6 +400,11 @@ class CourseController extends Controller
                 $certImageName = time() . '_cert.' . $request->certification_image->getClientOriginalExtension();
                 $request->certification_image->move(public_path('uploads/certifications'), $certImageName);
                 $course->certification_image = $certImageName;
+            }
+            if ($request->hasFile('upload_curriculum')) {
+                $currImageName = time() . '_curr.' . $request->upload_curriculum->getClientOriginalExtension();
+                $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
+                $course->upload_curriculum = $currImageName;
             }
 
             // ✅ Slug (only if title changed)

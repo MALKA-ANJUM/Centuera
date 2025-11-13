@@ -4,175 +4,240 @@
 <section class="course-container-pmp">
     <div class="container p-0">
         <h2 class="schedule-heading">Schedule for {{ $course->title ?? 'Course' }}</h2>
-        <h4 class="sparkling-box"><span><i class="ri-checkbox-circle-line"></i></span> {{ request('batche') }}</h4>
-        <div class="filter-tittle">
-            <h4 class="countSchedules">{{ $schedules->total() }} Schedules Available</h4>
-        </div>
-
-        {{-- Filter Form --}}
-        <div class="button-group">
-            <form method="GET" action="{{ route('user.course.schedule', $course->slug) }}" id="filterForm" style="display: flex; gap: 10px; flex-wrap: wrap;">
-
-                {{-- Weekday / Weekend Dropdown --}}
-                <select name="type" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">Select Schedule Type</option>
-                    <option value="weekday" {{ request('type') == 'weekday' ? 'selected' : '' }}>Weekday</option>
-                    <option value="weekend" {{ request('type') == 'weekend' ? 'selected' : '' }}>Weekend</option>
-                </select>
-
-                {{-- Month --}}
-                <select name="month" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">Select Month</option>
-                    @foreach(['August','September','October','November','December'] as $month)
-                    <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>{{ $month }}</option>
-                    @endforeach
-                </select>
-
-                {{-- Class Type --}}
-                <select name="batche" onchange="document.getElementById('filterForm').submit()">
-                    <option value="">Select Class Type</option>
-                    <option value="Live Online Class" {{ request('batche') == 'Live Online Class' ? 'selected' : '' }}>Live Online Class</option>
-                    <option value="Classroom" {{ request('batche') == 'Classroom' ? 'selected' : '' }}>Classroom</option>
-                </select>
-            </form>
-        </div>
 
         {{-- Schedules --}}
         <div class="schedule-section">
             <div class="left-section">
+                <h4 class="sparkling-box"><span><i class="ri-checkbox-circle-line"></i></span> {{ request('batche') ?? 'Live Online Class, Classroom' }}</h4>
+                <div class="filter-tittle">
+                    <h4 class="countSchedules">{{ $schedules->total() }} Schedules Available</h4>
+                </div>
 
+                {{-- Filter Form --}}
+                <div class="button-group">
+                    <form method="GET" action="{{ route('user.course.schedule', $course->slug) }}" id="filterForm" style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+                        {{-- Weekday / Weekend Dropdown --}}
+                        <select name="type" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">Select Schedule Type</option>
+                            <option value="weekday" {{ request('type') == 'weekday' ? 'selected' : '' }}>Weekday</option>
+                            <option value="weekend" {{ request('type') == 'weekend' ? 'selected' : '' }}>Weekend</option>
+                        </select>
+
+                        {{-- Month --}}
+                        <select name="month" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">Select Month</option>
+                            @foreach(['August','September','October','November','December'] as $month)
+                            <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>{{ $month }}</option>
+                            @endforeach
+                        </select>
+
+                        {{-- Class Type --}}
+                        <select name="batche" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">Select Class Type</option>
+                            <option value="Live Online Class" {{ request('batche') == 'Live Online Class' ? 'selected' : '' }}>Live Online Class</option>
+                            <option value="Classroom" {{ request('batche') == 'Classroom' ? 'selected' : '' }}>Classroom</option>
+                        </select>
+                    </form>
+                </div>
                 @if($schedules->count() > 0)
-                @foreach($schedules as $schedule)
-                <div class=" mb-3 shadow-sm border rounded-3">
-                    <div class="row g-0 align-items-center p-3">
+                    @foreach($schedules as $schedule)
+                        <div class="mb-3 shadow-sm border rounded-3">
+                            <div class="row g-0 align-items-center p-3">
+                                {{-- LEFT SECTION --}}
+                                <div class="col-md-4 border-end pe-2">
+                                    <div class="batch-one"> 
+                                        <h4 class="ms-0"> 
+                                            <span class='w3-text-red bold500'> 
+                                                {{ ucfirst($schedule->batche ?? '') }} Batch 
+                                            </span> 
+                                        </h4> 
+                                    </div>
+                                    <h5 class="mb-0 fw-bold text-primary">
+                                        {{ \Carbon\Carbon::parse($schedule->start_date)->format('M d') }}
+                                        <sup>{{ \Carbon\Carbon::parse($schedule->start_date)->format('S') }}</sup>
+                                        -
+                                        {{ \Carbon\Carbon::parse($schedule->end_date)->format('M d') }}
+                                        <sup>{{ \Carbon\Carbon::parse($schedule->end_date)->format('S') }}</sup>
+                                    </h5>
 
-                        {{-- LEFT SECTION --}}
-                        <div class="col-md-8 border-end pe-2">
-                            <div class="batch-one d-flex justify-content-between">
-                                <h4 class="ms-0">
-                                    <span class='w3-text-red bold500'>
-                                        {{ ucfirst($schedule->batche ?? '') }} Batch
-                                    </span>
-                                </h4>
-                                <p class="mb-0 small text-success fw-bold">
-                                    <i class="ri-time-globe me-1"></i>
-                                    {{ ucfirst($schedule->type ?? '') }} Batch
-                                </p>
-                            </div>
-                            {{-- Date & Batch --}}
-                            <h5 class="mb-0 fw-bold text-primary">
-                                {{ \Carbon\Carbon::parse($schedule->start_date)->format('M d') }}
-                                <sup>{{ \Carbon\Carbon::parse($schedule->start_date)->format('S') }}</sup>
-                                -
-                                {{ \Carbon\Carbon::parse($schedule->end_date)->format('M d') }}
-                                <sup>{{ \Carbon\Carbon::parse($schedule->end_date)->format('S') }}</sup>
-                            </h5>
-                           
-                            {{-- Time & Duration --}}
-                            <p class="mb-1">
-                                <i class="ri-time-line me-1"></i> 
-                                @php
-			                        $timezones = json_decode($schedule->country->timezones, true);
-                                @endphp
-                                {{ $timezones[0]['abbreviation'] }}
-                                {{ date("g:i A", strtotime($schedule->starttime)) }} - {{ date("g:i A", strtotime($schedule->end_time)) }} {{ $schedule->time_zone }}
-                                | {{ $schedule->total_days_of_training ?? '' }} Days
-                            </p>
-                            {{-- Trainer --}}
-                            <div class="d-flex align-items-center mb-1">
-                                <img src="{{ asset('uploads/trainners/' . ($schedule->trainner_image ?? 'default.png')) }}"
-                                    alt="Trainer" class="rounded-circle me-2" style="height:50px;width:50px;">
-                                <div>
-                                    <p class="mb-0 fw-semibold">{{ $schedule->trainner_name ?? '' }}</p>
-                                    <small class="text-muted">Language: {{ $schedule->language ?? 'English' }}</small>
+                                    <p class="mb-0 small text-success fw-bold">
+                                        <i class="ri-time-globe me-1"></i>
+                                        {{ ucfirst($schedule->type ?? '') }} Batch
+                                    </p>
+
+                                    <p class="mb-1 small">
+                                        <i class="ri-time-line me-1"></i>
+                                        @php
+                                            $timezones = json_decode($schedule->country->timezones, true);
+                                        @endphp
+                                        {{ $timezones[0]['abbreviation'] ?? '' }}
+                                        {{ date("g:i A", strtotime($schedule->starttime)) }} - 
+                                        {{ date("g:i A", strtotime($schedule->end_time)) }} {{ $schedule->time_zone }}
+                                        | {{ $schedule->total_days_of_training ?? '' }} Days
+                                    </p>
+
+                                    {{-- Trainer --}}
+                                    <div class="d-flex align-items-center mb-1">
+                                        <img src="{{ asset('uploads/trainners/' . ($schedule->trainner_image ?? 'default.png')) }}"
+                                            alt="Trainer" class="rounded-circle me-2" style="height:50px;width:50px;">
+                                        <div>
+                                            <p class="mb-0 fw-semibold">{{ $schedule->trainner_name ?? '' }}</p>
+                                            <small class="text-muted">Language: {{ $schedule->language ?? 'English' }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- MIDDLE SECTION --}}
+                                <div class="col-md-4 text-center border-end">
+                                    <a href="#" class="d-block mb-2 text-decoration-none text-primary fw-semibold">
+                                        <i class="ri-download-2-line me-1"></i> Download Curriculum
+                                    </a>
+
+                                    <div class="d-flex justify-content-center align-items-center mb-2 mx-auto border border-2 px-3 py-2" style="width: max-content;border-radius: 50px">
+                                        <button class="btn btn-outline-secondary btn-sm counter-btn p-2" data-type="minus">-</button>
+                                        <span class="mx-3 counter-value">1</span>
+                                        <button class="btn btn-outline-secondary btn-sm counter-btn p-2" data-type="plus">+</button>
+                                    </div>
+
+                                    <p class="small text-danger fw-bold mb-0">Only few seats left</p>
+                                    <p class="small mt-1 mb-0">
+                                        More than 5 Participants?
+                                        <a class="text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#contactUsModal">
+                                            Enquire Now.
+                                        </a>
+                                    </p>
+                                </div>
+
+                                {{-- RIGHT SECTION --}}
+                                <div class="col-md-4 text-center">
+                                    <h5 class="fw-bold text-success mb-1">
+                                        {{ $course->getCourseSchedule && $course->getCourseSchedule->prices->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}
+                                        {{ $schedule->prices->discount_price ?? 0 }}
+                                    </h5>
+
+                                    <p class="mb-1">
+                                        <del>
+                                            {{ $course->getCourseSchedule && $course->getCourseSchedule->prices->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}
+                                            {{ $schedule->prices->original_price ?? 0 }}
+                                        </del>
+
+                                        @if($schedule->prices != null)
+                                            <span class="badge bg-danger ms-2">
+                                                {{ round(100 - ($schedule->prices->discount_price / $schedule->prices->original_price * 100)) }}% off
+                                            </span>
+                                        @endif
+                                    </p>
+
+                                    <a href="{{ route('user.order.summary', ['id' => $schedule->id]) }}"
+                                        class="btn btn-danger w-75 fw-bold enroll-btn">
+                                        ENROLL NOW
+                                    </a>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                 <a href="#" class="d-block mb-0 text-decoration-none text-primary fw-semibold">
-                                    <i class="ri-download-2-line me-1"></i> Download Curriculum
-                                </a>
-                                <p class="mb-0">More than 5 Participants? <a class="text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#contactUsModal">Enquire Now.</a></p>
-                            </div>
                         </div>
+                    @endforeach
 
-                        {{-- RIGHT SECTION --}}
-                        <div class="col-md-4 text-center">
-                            <h5 class="fw-bold text-success mb-1">{{ $course->getCourseSchedule && $course->getCourseSchedule->prices->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }} {{ $schedule->prices->discount_price ?? 0 }}</h5>
-                            <p class="mb-1">
-                                <del>{{ $course->getCourseSchedule && $course->getCourseSchedule->prices->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }} {{ $schedule->prices->original_price ?? 0 }}</del>
-                                @if($schedule->prices != null)
-                                <span class="badge bg-danger ms-2">
-                                    {{ round(100 - ($schedule->prices->discount_price / $schedule->prices->original_price * 100)) }}% off
-                                </span>
-                                @endif
-                            </p>
-                            <!-- <form action="{{ route('checkout.session') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger w-75 fw-bold">
-                                    ENROLL NOW
-                                </button>
-                            </form> -->
-
-                            <a href="{{ route('user.order.summary', ['id' => $schedule->id]) }}" class="btn btn-danger w-75 fw-bold">
-                                ENROLL NOW
-                            </a>
-
-                        </div>
+                    {{-- Pagination --}}
+                    <div class="pagination-wrapper">
+                        {{ $schedules->links() }}
                     </div>
-                </div>
-                @endforeach
-
-
-                {{-- Pagination --}}
-                <div class="pagination-wrapper">
-                    {{ $schedules->links() }}
-                </div>
                 @else
-                <div class="no-data" style="padding: 20px; background: #f8d7da; color: #721c24; border-radius: 8px; text-align: center; margin-top: 20px;">
-                    <i class="ri-error-warning-line" style="font-size: 24px;"></i>
-                    <p style="margin: 10px 0 0;">No schedules found for the selected filters.</p>
-                </div>
+                    <div class="no-data" style="padding: 20px; background: #f8d7da; color: #721c24; border-radius: 8px; text-align: center; margin-top: 20px;">
+                        <i class="ri-error-warning-line" style="font-size: 24px;"></i>
+                        <p style="margin: 10px 0 0;">No schedules found for the selected filters.</p>
+                    </div>
                 @endif
-
             </div>
 
             {{-- Sidebar --}}
-            <div class="right-section">
+            <div class="right-section p-0 mb-3">
                 <div class="review-box">
-                    <h3>Reviews</h3>
-                    <p>4.5</p>
-                    <p>
-                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-                        <i class="ri-star-fill"></i>
-                    </p>
+                    @php
+                        $rating = round($course->rating);
+                        $maxStars = 5;
+                    @endphp
+                    <h3 class="text-white">Reviews</h3>
+                    <ul class="d-flex list-unstyle customer-ratings justify-content-center">
+                        @for ($i = 1; $i <= $maxStars; $i++)
+                            @if ($i <= $rating)
+                                <li><i class="ri-star-fill"></i></li>
+                            @else
+                                <li><i class="ri-star-line"></i></li>
+                            @endif
+                        @endfor
+                        <li><span>({{ $course->rating }})</span></li>
+                    </ul>
                 </div>
+                @php 
+                    $generalSetting = App\Models\Generalsettings::first();
+                @endphp
+                @if($generalSetting->display_offer != null)
                 <div class="offer-box">
-                    <h3>Limited Offer</h3>
-                    <p>Save up to 33%</p>
+                    <img src="{{ asset('admin/display_offer/'. $generalSetting->display_offer) }}" class="w-100" alt="{{ $generalSetting->name }}">
                 </div>
-                <div class="info-form">
+                @endif
+                <div class="border rounded p-3">
                     <h4>Register for More Information</h4>
-                    <form action="#">
-                        <input type="text" placeholder="Full Name*" required>
-                        <div class="phone-input">
-                            <select>
-                                <option>+1</option>
-                                <option>+91</option>
-                                <option>+44</option>
-                            </select>
-                            <input type="text" placeholder="Phone Number*" required>
+                    <form method="POST" class="mt-3" action="{{ route('lead') }}">
+                        @csrf
+                        <input type="hidden" name="course_id" value="{{ $course->id }}">
+                        <input type="hidden" name="type" value="enquiry">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="name" placeholder="Name*" required>
                         </div>
-                        <input type="email" placeholder="Email*" required>
-                        <textarea placeholder="Message"></textarea>
-                        <button type="submit">Submit</button>
-                        <div class="form-filed">
-                            <p>
-                                <input type="checkbox" checked>
-                                By submitting your information, you agree to our Terms of Use and Privacy Policy.
-                            </p>
+
+                        <div class="mb-3">
+                            <input type="email" class="form-control" name="email" id="email" placeholder="Email*" required>
                         </div>
-                    </form>
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label mb-0">
+                                Mobile No. <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
+                                    @foreach($countries as $country)
+                                    <option
+                                        value="{{ $country->phonecode }}"
+                                        data-flag='{!! $country->flag !!}'
+                                        data-id="{{ $country->id }}">
+                                        +{{ $country->phonecode }} {!! $country->flag !!}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control p-2" name="phone" placeholder="9090909090" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 enquiry-field">
+                            <label for="enquiry_for">Enquiry for :</label>
+                            <div class="form-check">
+                                <input class="form-check-input enquiryFor" type="radio" name="enquiry_for" id="myself"
+                                    value="myself" checked>
+                                <label class="form-check-label" for="myself">Myself</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input enquiryFor" type="radio" name="enquiry_for" id="company"
+                                    value="company">
+                                <label class="form-check-label company" for="company">My Company</label>
+                            </div>
+                        </div>
+                        <!-- Company name -->
+                        <div class="mb-3 company_name d-none">
+                            <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name" >
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                            <label class="form-check-label" for="privacyPolicy">By providing your contact details,
+                                you agree to our privacy policy</label>
+                        </div>
+                        <!--  <div class="form-group mt-3">
+                                <textarea class="form-control" rows="3" placeholder="Message"></textarea>
+                            </div> -->
+                        <div class="text-center">
+                            <button class="btn btn-primary mt-4" data-animation="fadeInRight" data-delay=".8s" type="submit"><span>Submit<i class="fa fa-spinner fa-spin" id="submitSpin" style="display:none;"></i></span></button>
+                        </div>
+                    </form>     
                 </div>
             </div>
         </div>
@@ -232,6 +297,11 @@
                             </div>
                         </div>
 
+                        <!-- Company name -->
+                        <div class="mb-3 company_name d-none">
+                            <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name" >
+                        </div>
+
                         <div class="mb-2 form-check">
                             <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
                             <label class="form-check-label" for="privacyPolicy">
@@ -283,4 +353,34 @@
         dropdownParent: $('#contactUsModal')
     });
 </script>
+<script>
+$(document).ready(function () {
+    $(".counter-btn").on("click", function () {
+        let counter = $(this).closest("div").find(".counter-value");
+        let value = parseInt(counter.text());
+
+        if ($(this).data("type") === "plus") {
+            value++;
+        } else if ($(this).data("type") === "minus" && value > 1) {
+            value--;
+        }
+
+        counter.text(value);
+        let enrollBtn = document.querySelector(".enroll-btn"); // ✅ class added to button
+        let baseUrl = enrollBtn.getAttribute("href").split("?")[0]; 
+        enrollBtn.setAttribute("href", baseUrl + "?participants=" + value);
+    });
+});
+$(document).on("change", "input[name='enquiry_for']", function () { debugger;
+    let $form = $(this).closest("form");           // scope to current form
+    let $companyField = $form.find(".company_name"); 
+
+    if ($(this).val() === "company") {
+        $companyField.removeClass("d-none");
+    } else {
+        $companyField.addClass("d-none");
+    }
+});
+</script>
+
 @endpush

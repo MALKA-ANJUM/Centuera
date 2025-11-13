@@ -2,64 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OrderExport;
 use Illuminate\Http\Request;
 use App\Models\CustomPayment;
 use App\Models\Course;
 use App\Models\Country;
 use App\Models\Order;
 use Carbon\Carbon;
-
+use Maatwebsite\Excel\Facades\Excel;
 class CustomPaymentController extends Controller
 {
     //show form
     public function customPayment(){
         $countries = Country::get();
-        return view('user.custom-payment', compact('countries'));
+      
+
+    return view('user.custom-payment', compact('countries'));
     }
 
-    //create
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => 'required|email|max:255',
-            'country_code'=> 'required|string|max:10',
-            'phone'       => 'required|string|max:20',
-            'courses'      => 'required|exists:courses,id',
-            'amount'      => 'required',
-        ]);
-
-        $dates = explode(',', $request->date);
-
-        $startDate = null;
-        $endDate = null;
-        // Split input into start and end
-       if (!empty($request->date)) {
-            // split by "to"
-            $dates = explode('to', $request->date);
-
-            if (count($dates) >= 1 && !empty(trim($dates[0]))) {
-                $startDate = Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
-            }
-            if (count($dates) >= 2 && !empty(trim($dates[1]))) {
-                $endDate = Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d');
-            }
-        }
-
-        $payment = Order::create([
-            'fullname'        => $request->name,
-            'email'       => $request->email,
-            'country_code'=> $request->country_code,
-            'phone'       => $request->phone,
-            'courses'   => $request->courses,
-            'total_amount'      => $request->amount,
-            'custom_payment' => 1,
-            'workshop_start_date' => $startDate,
-            'workshop_end_date' => $endDate,
-            'status' => 0,
-        ]);
-        return redirect()->back()->with('success', 'Payment inserted successfully!');
-    }
+    //INSERT function IS IN PAYMENT CONTROLLER
 
     //show course using ajax
     public function getCourses()
@@ -70,10 +31,42 @@ class CustomPaymentController extends Controller
     }
 
     //listing in admin
-    public function customList()
+    public function orderList(Request $request)
     {
-        $payments = Order::with('course')->orderBy('id', 'desc')->paginate(10);
-        return view('admin.custom-payment.list', compact('payments'));
+        //search filter
+        $orders = Order::query();
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $orders->where('orderId', 'LIKE', "%$search%")->orWhere('email', 'LIKE', "%$search%");
+        }
+        // Date filter
+        if ($request->has('from_date') && $request->has('to_date') && $request->from_date && $request->to_date) {
+            $fromDate = \Carbon\Carbon::createFromFormat('d-m-Y', $request->from_date)->startOfDay();
+            $toDate   = \Carbon\Carbon::createFromFormat('d-m-Y', $request->to_date)->endOfDay();
+
+            $orders->whereBetween('workshop_start_date', [$fromDate, $toDate]);
+        }
+
+        // Status filter
+        if ($request->has('status') && !empty($request->status)) {
+            $orders->where('status', $request->status);
+        }
+        $orders = $orders->orderBy('id', 'DESC')->paginate(10);
+        return view('admin.order.list', compact('orders'));
     }
 
+    //order view page
+    public function orderView($id){
+        $orders = Order::findOrFail($id);
+        return view('admin.order.view', compact('orders'));
+    }
+
+    //search and Export to excell
+    public function orderExport(Request $request)
+    {
+       $search = $request->query('search');// get current search
+        return Excel::download(new OrderExport($search), 'orders.xlsx');
+    }
+
+   
 }

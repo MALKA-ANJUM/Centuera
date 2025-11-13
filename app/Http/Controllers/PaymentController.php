@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\User;
@@ -39,27 +40,38 @@ class PaymentController extends Controller
                 'country_code' => $request->country_code ?? null,
             ]);
         }
+        // Generate Order ID ----
+        $lastOrder = Order::orderBy('id', 'desc')->first();
+        if ($lastOrder && !empty($lastOrder->orderId)) {
+            // Extract numeric part (after CT-)
+            $lastNumber = (int) str_replace('CT-', '', $lastOrder->orderId);
+            $orderId = 'CT-' . ($lastNumber + 1);
+        } else {
+            $orderId = 'CT-1001';
+        }
 
         $courseIds = is_array($request->course_id) ? $request->course_id : [$request->course_id];
         // ✅ 2. Save order in DB
         $order = Order::create([
+            'orderId' => $orderId,
             'fullname' => $request->fullname,
             'email' => $request->email,
             'country_code' => $request->country_code,
             'phone' => $request->phone,
             'schedule_id' => $request->schedule_id,
             'courses' => $courseIds, // adjust if relation
-            'quantity' => $request->participants,
             'total_amount' => $request->total_amount,
+            'discount' => $request->discount,
             'currency' => $request->currency,
             'workshop_start_date' => $request->workshop_start_date,
             'workshop_end_date' => $request->workshop_end_date,
             'status' => 'pending',
+            'custom_payment' => $request->custom_payment ?? 0,
             'transaction_id' => Str::uuid(), // temp unique ID
         ]);
 
         // convert amount to cents (Stripe expects smallest currency unit)
-        $amountInCents = intval($request->price * 100);
+        $amountInCents = intval($request->total_amount * 100);
 
         // ✅ 3. Create Stripe session
         $session = Session::create([
@@ -72,7 +84,8 @@ class PaymentController extends Controller
                     ],
                     'unit_amount' => $amountInCents,
                 ],
-                'quantity' => $request->participants ?? 1,
+                // 'quantity' => $request->participants ?? 1,
+                'quantity' => 1,
             ]],
             'mode' => 'payment',
             'customer_email' =>  $request->email, // ✅ required
@@ -86,6 +99,7 @@ class PaymentController extends Controller
                 'order_id' => $order->id,
                 'course_id' => $courseId,
                 'schedule_id' => $request->schedule_id,
+                'quantity' => $request->participants,
             ]);
         }
 
@@ -111,6 +125,50 @@ class PaymentController extends Controller
         }
         return view('user.cancel');
     }
+
+    public function applyCoupon(Request $request)
+    {
+        $code = trim($request->coupon_code);
+        $courseId = $request->course_id; // pass from frontend
+
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid coupon code.']);
+        }
+
+        $today = now()->format('Y-m-d');
+
+        // Date validation
+        if ($today < $coupon->start_date || $today > $coupon->expire_date) {
+            return response()->json(['success' => false, 'message' => 'Coupon expired or not active yet.']);
+        }
+
+        // Course validation
+        $courseIds = json_decode($coupon->course_id, true) ?? [];
+        if (!in_array($courseId, $courseIds)) {
+            return response()->json(['success' => false, 'message' => 'Coupon not valid for this course.']);
+        }
+
+        // Apply discount
+        $discount = 0;
+        if ($coupon->type === 'fixed') {
+            $discount = $coupon->value;
+        } elseif ($coupon->type === 'percentage') {
+            $discount = ($request->subtotal * $coupon->value) / 100;
+        }
+
+        $newTotal = max($request->subtotal - $discount, 0);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon applied successfully!',
+            'discount' => $discount,
+            'total' => $newTotal,
+            'type' => $coupon->type,
+        ]);
+    }
+
 
 
 }

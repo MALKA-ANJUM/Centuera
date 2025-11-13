@@ -130,6 +130,17 @@
                                     <span class="text-danger" id="meta_title-error"></span>
                                 </div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label for="logo" class="form-label">@lang('Display Offer')</label>
+                                    <input type="file" class="form-control" name="display_offer" id="display_offer">
+                                    @if ($existingSettings && $existingSettings->display_offer != null)
+                                        <a href="{{ asset('admin/display_offer/' . $existingSettings->display_offer) }}" target="_blank">view
+                                            image</a>
+                                    @endif
+                                    <span class="text-danger" id="icon-error"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card w-100">
@@ -172,6 +183,7 @@
                                             <label for="country" class="form-label">Country</label>
                                             <select name="country[]" class="form-control country-select">
                                                 <option value="">Select Country</option>
+                                                <option value="0">All</option>
                                                 @foreach ($countries as $country)
                                                     <option value="{{ $country->id }}">{{ $country->name }}</option>
                                                 @endforeach

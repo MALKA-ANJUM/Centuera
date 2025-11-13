@@ -24,6 +24,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Auth\UserLogincontroller;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\GeneralsettingsController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Models\CustomPayment;
 
@@ -116,8 +117,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('request-callback', [UserController::class, 'requestCallback'])->name('request.callback');
         Route::get('export', [UserController::class, 'requestExport'])->name('request.export');
 
-        //CUSTOM PAYMENT
-        Route::get('custom-payment', [CustomPaymentController::class, 'customList'])->name('custom.list');
+        //Order Listing and EXPORT
+        Route::get('order-list', [CustomPaymentController::class, 'orderList'])->name('order.list');
+        Route::get('order-export', [CustomPaymentController::class, 'orderExport'])->name('order.export');
+        Route::get('order-view/{id}', [CustomPaymentController::class, 'orderView'])->name('order.view');
+
+        //RATINGS
+        Route::get('rating-list', [RatingController::class, 'rating'])->name('rating.list');
 
         //add photo
          Route::get('photo/{id}', [PhotoController::class, 'photo'])->name('photo');
@@ -251,7 +257,6 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/search-courses', [UserCourseController::class, 'searchCourses'])->name('search.course');
 
     Route::get('order-summary/{id}', [UserOrderController::class, 'orderSummary'])->name('order.summary');
-    Route::post('order-submit/{id}', [UserOrderController::class, 'orderSubmit'])->name('order.submit');
 
     Route::middleware(['auth:web'])->group(function () {
         //Protected Route start
@@ -267,5 +272,7 @@ Route::get('payment', [PaymentController::class, 'paymentForm'])->name('payment.
 Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout.session');
 Route::get('/stripe/success', [PaymentController::class, 'success'])->name('stripe.success');
 Route::get('/stripe/cancel', [PaymentController::class, 'cancel'])->name('stripe.cancel');
+Route::post('/apply-coupon', [PaymentController::class, 'applyCoupon'])->name('apply.coupon');
+
 
 // Route::post('payment-submit', [PaymentController::class, 'paymentSubmit'])->name('payment.submit');

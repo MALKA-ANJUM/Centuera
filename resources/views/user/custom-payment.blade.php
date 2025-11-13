@@ -31,6 +31,7 @@
             <div class="card-body p-4">
                 <form action="" method="POST">
                     @csrf
+                    <input type="hidden" value="1" name="custom_payment" id="custom_payment">
                     <div class="row g-3">
                         <!-- Full Name -->
                         <div class="col-md-6">
@@ -235,10 +236,12 @@
 
             // Required fields
             let name = $("input[name='name']").val().trim();
+            let orderId = $("input[name='orderId']").val().trim();
             let email = $("input[name='email']").val().trim();
             let phone = $("input[name='phone']").val().trim();
             let country_code = $("select[name='country_code']").val();
             let amount = $("input[name='amount']").val().trim();
+            let custom_payment = $("input[name='custom_payment']").val().trim();
             let courses = $("select[name='courses[]']").map(function(){ return $(this).val(); }).get();
 
             // Validation checks
@@ -259,6 +262,7 @@
             let formData = {
                 _token: "{{ csrf_token() }}",
                 fullname: name,
+                orderId: orderId,
                 email: email,
                 phone: phone,
                 country_code: country_code,
@@ -268,7 +272,9 @@
                 workshop_start_date: $("input[name='date']").val().split(',')[0] ?? null,
                 workshop_end_date: $("input[name='date']").val().split(',')[1] ?? null,
                 participants: 1,
-                price: amount
+                price: amount,
+                custom_payment:custom_payment
+
             };
 
             $.ajax({

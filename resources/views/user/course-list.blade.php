@@ -268,11 +268,13 @@
                                     </ul>
                                 </div>
                                 <div class="curriculum-certificate">
-                                    <a href="{{ asset('uploads/certifications/'. $course->certification_image ) }}" class="view-certification" target="_blank">
-                                        View Certification
-                                    </a>
-                                    <a href="{{ route('course.details', $course->slug) }}" class="view-curiculum border">
-                                       <i class="ri-download-line"></i><span>Curriculum</span></a>
+                                <a href="{{ route('course.details', $course->slug) }}" class="view-certification">
+                                    View Program
+                                </a>
+                                @if($course->upload_curriculum != null)
+                                <a href="{{ asset('uploads/curriculum/'. $course->upload_curriculum ) }}" target="_blank">
+                                    <button class="view-curiculum"><i class="ri-download-line"></i><span>Curriculum</span></button></a>
+                                @endif
                                 </div>
                             </div>
                         </div>

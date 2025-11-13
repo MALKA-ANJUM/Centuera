@@ -51,7 +51,7 @@
                                         <div class="d-none d-lg-block">
                                             <div class="quantity-selector d-flex justify-content-center align-items-center rounded-5 border border-2">
                                                 <button class="btn decrement me-0 mb-0" type="button" disabled>−</button>
-                                                <input type="text" id="participant-input" class="border border-1 rounded-3 fs-7 fw-semibold" value="1" readonly style="width: 50px; text-align: center">
+                                                <input type="text" id="participant-input" class="border border-1 rounded-3 fs-7 fw-semibold" value="{{ $participants }}" readonly style="width: 50px; text-align: center">
                                                 <button class="btn increment ms-0" type="button">+</button>
                                             </div>
                                         </div>
@@ -182,7 +182,7 @@
                                                 <div class="card-body text-center checkpaycardsiz p-0">
                                                     <img src="{{ asset('frontend-assets/img/all-img/stripe-img.png') }}" width="82" height="48" alt="Stripe">
                                                     <p class="my-1 fs-6 fw-semibold">Credit / Debit Cards accepted</p>
-                                                    <p class="text-muted small mt-3 text-center">You will be charged <span class="text-dark fw-semibold total-pay-amount">INR 20,219.30</span> on your payment card through Stripe.</p>
+                                                    <!-- <p class="text-muted small mt-3 text-center">You will be charged <span class="text-dark fw-semibold total-pay-amount">INR 20,219.30</span> on your payment card through Stripe.</p> -->
                                                     <!-- <form action="{{ route('checkout.session') }}" method="POST">
                                                         @csrf -->
                                                         <button id="payWithStripe" value="stripe" type="submit" class=" w-100 bg-primary text-center rounded-3 p-2 text-white fs-6 fw-semibold border-0 my-2"><a rel="nofollow" data-bs-toggle="" data-bs-target="#checksuccuesspop">Pay with Stripe<i class="ri-checkbox-circle-line ms-2"></i></a></button>
@@ -243,12 +243,11 @@
                     <div class="card-body">
                         <h5 class="coupon-header fs-6 fw-semibold me-1 mb-2">Coupon Code</h5>
                         <form action="">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" placeholder="Apply a Code">
-                                    <button class="btn btn-primary mb-0">Apply</button>
-                                </div>
-                            </div>
+                             <div class="input-group">
+                            <input type="text" id="couponCode" class="form-control" placeholder="Apply a Code">
+                            <button class="btn btn-primary" id="applyCouponBtn">Apply</button>
+                        </div>
+                        <small id="couponMessage" class="text-success fw-semibold"></small>
                         </form>
                     </div>
                 </div>
@@ -399,23 +398,22 @@
         });
     });
 
-    $(document).ready(function() {
+    $(document).ready(function() { 
         let discountPrice = parseFloat($("#discount-price").text());
         let originalPrice = parseFloat($("#original-price").text());
         let currency = "{{ $currencySymbol }}";
-
+        let input = $("#participant-input");
+        let value = parseInt(input.val());
+        
         function updateSummary(count) {
             let subtotal = discountPrice * count;
             let total = subtotal; // If you want GST or fees, add here
-
             $("#item-count").text(count);
             $("#subtotal").text(subtotal.toFixed(2));
             $("#total").text(total.toFixed(2));
         }
-
+       
         $(".increment").click(function() {
-            let input = $("#participant-input");
-            let value = parseInt(input.val());
             value++;
             input.val(value);
             $("#participants-count").text(" • " + value);
@@ -424,8 +422,6 @@
         });
 
         $(".decrement").click(function() {
-            let input = $("#participant-input");
-            let value = parseInt(input.val());
             if (value > 1) {
                 value--;
                 input.val(value);
@@ -434,6 +430,48 @@
             }
             if (value === 1) {
                 $(this).prop("disabled", true);
+            }
+        });
+
+        updateSummary(value);
+    });
+
+    $(document).on("click", "#applyCouponBtn", function (e) {
+        e.preventDefault();
+
+        let code = $("#couponCode").val().trim();
+        if (code === "") {
+            $("#couponMessage").text("Please enter a coupon code.").addClass("text-danger");
+            return;
+        }
+
+        let subtotal = parseFloat($("#subtotal").text());
+        let courseId = "{{ $schedule->course_id }}";
+
+        $.ajax({
+            url: "{{ route('apply.coupon') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                coupon_code: code,
+                subtotal: subtotal,
+                course_id: courseId
+            },
+            success: function (response) {
+                if (response.success) {
+                    $("#couponMessage").removeClass("text-danger").addClass("text-success").text(response.message);
+
+                    // Update UI
+                    $("#total").text(response.total.toFixed(2));
+
+                    // Store discount for Stripe
+                    $("#payWithStripe").data("discount", response.discount);
+                } else {
+                    $("#couponMessage").removeClass("text-success").addClass("text-danger").text(response.message);
+                }
+            },
+            error: function () {
+                $("#couponMessage").removeClass("text-success").addClass("text-danger").text("Something went wrong.");
             }
         });
     });
@@ -452,6 +490,7 @@
         let total_amount = $("#total").text();
         let price = $("#discount-price").text();
         let currency = "{{ $currencySymbol }}";
+        let discount = $("#payWithStripe").data("discount") || 0;
 
         $.ajax({
             url: "{{ route('checkout.session') }}",
@@ -465,13 +504,14 @@
                 participants: participants,
                 total_amount: total_amount,
                 price: price,
+                discount: discount,
                 currency : currency,
                 schedule_id: "{{ $schedule->id }}",
                 course_id: "{{ $schedule->course_id }}", // assuming you pass it
                 workshop_start_date: "{{ $schedule->start_date }}",
                 workshop_end_date: "{{ $schedule->end_date }}"
             },
-            success: function (response) {debugger;
+            success: function (response) {
                 if (response.id) {
                     stripe.redirectToCheckout({ sessionId: response.id });
                 } else {

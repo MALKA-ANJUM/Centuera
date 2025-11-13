@@ -76,7 +76,7 @@
 <section class="course-container-pmp container">
     <div class="row">
         <div class="pmp-course-left-text col-md-8">
-            <h2>{{ $courseDetails->title }} Overview</h2>
+            <h2>{{ $courseDetails->short_title }} Overview</h2>
             <p>{!! $courseDetails->overview !!}</p>
 
             <div class="pmp-course-left-btn">
@@ -188,11 +188,16 @@
 
                 </div>
                 <div class="info-text">
-                    <p>By providing your contact details, you agree to our <span class="info-text-span">Privacy
-                            Policy</span></p>
+                    <p>By providing your contact details, you agree to our 
+                        <a href="{{ route('privacy.policy') }}">
+                            <span class="info-text-span">
+                                Privacy Policy
+                            </span>
+                        </a>
+                    </p>
                 </div>
                 <div class="form-group">
-                    <button type="button" id="viewSchedulesBtn" class="btn-secondary">View Schedules</button>
+                    <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" type="button" id="viewSchedulesBtn" class="btn-secondary">View Schedules</a>
                 </div>
                 </form>
             </div>
@@ -433,7 +438,7 @@
     <div class="row">
         <!-- Left Section -->
         <div class="col-md-8">
-            <h2>{{ $courseDetails->title }} Curriculum</h2>
+            <h2>{{ $courseDetails->short_title }} Curriculum</h2>
             <h4 class="mt-5">Eligibility</h4>
             {!! $courseDetails->eligibility !!}
 
@@ -486,16 +491,18 @@
 
         <!-- Right Section -->
         <div class="col-md-4">
-            <div class="contact-box d-flex">
+            <div class="contact-box d-flex align-items-center justify-content-between bg-white border rounded shadow-sm p-4">
                 <div class="contact-box-left">
-                    <p>Contact Us</p>
-                    <h4>Toll Free: 713-900-9709 </h4>
-                    <p>(Toll Free)</p>
+                    <p class="mb-1 text-muted fw-semibold">Contact Us</p>
+                    <h4 class="mb-0 fw-bold text-primary">Toll Free: 713-900-9709</h4>
                 </div>
-                <div class="contact-box-right mt-5 m-5">
-                    <span><i class="ri-phone-fill"></i></span>
+                <div class="contact-box-right d-flex align-items-center justify-content-center">
+                    <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                        <i class="ri-phone-fill fs-4"></i>
+                    </span>
                 </div>
-            </div>
+            </div>      
+
 
             <div class="info-box">
                 <h5 class="text-center">Request more information</h5>
@@ -532,15 +539,19 @@
                     <div class="mb-3 enquiry-field">
                         <label for="enquiry_for">Enquiry for :</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="enquiry_for" id="myself"
+                            <input class="form-check-input enquiryFor" type="radio" name="enquiry_for" id="myself"
                                 value="myself" checked>
                             <label class="form-check-label" for="myself">Myself</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="enquiry_for" id="company"
+                            <input class="form-check-input enquiryFor" type="radio" name="enquiry_for" id="company"
                                 value="company">
-                            <label class="form-check-label" for="company">My Company</label>
+                            <label class="form-check-label company" for="company">My Company</label>
                         </div>
+                    </div>
+                    <!-- Company name -->
+                    <div class="mb-3 company_name d-none">
+                        <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name" >
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
@@ -564,7 +575,7 @@
     <div class="row">
         <!-- Left Section -->
         <div class="col-md-6">
-            <h3>{{ $courseDetails->title }} Exam and Certification</h3>
+            <h3>{{ $courseDetails->short_title }} Exam and Certification</h3>
             @if($courseDetails->getCourseCertificate->count() > 0)
             <div class="accordion mt-4" id="certificateExample">
                 @foreach($courseDetails->getCourseCertificate as $index => $certificate)
@@ -646,7 +657,7 @@
 @if($courseDetails->faqs->count() > 0)
 <div class="container">
     <div class="parent-container d-block">
-        <h2>{{ $courseDetails->title }} FAQs</h2>
+        <h2>{{ $courseDetails->short_title }} FAQs</h2>
         <div class="accordion" id="faqsExample">
             @foreach($courseDetails->faqs as $index => $faq)
             @php
@@ -698,7 +709,7 @@
                 <div class="program-box p-4 shadow-sm rounded">
                     <h5 class="fw-bold mb-2">{{ $firstCourse->title }}</h5>
                     <small class="fw-bold text-primary bg-light px-2 py-1">
-                        {{ $firstCourse->getCategory->name }}
+                        {{ $firstCourse->getCategory->name ?? '' }}
                     </small>
                     <div class="rating mb-2 text-warning d-flex justify-content-between">
                         @php
@@ -735,7 +746,7 @@
                             <div class="program-box p-3 shadow-sm rounded">
                                 <h6 class="fw-bold mb-2">{{ $course->title }}</h6>
                                 <small class="fw-bold text-primary bg-light px-2 py-1">
-                                    {{ $course->getCategory->name ?? '' }}
+                                    {{ $course->getCategory->name }}
                                 </small>
 
                                 <div class="rating text-warning d-flex justify-content-between">
@@ -772,7 +783,7 @@
 <div class="container">
     <div class="container-for-bootcamp">
         <section class="why-bootcamp">
-            <h2>Why Choose Our Online {{ $courseDetails->title }} Bootcamp?</h2>
+            <h2>Why Choose Our Online {{ $courseDetails->short_title }} Bootcamp?</h2>
             <div class="bootcamp-content">
                 <div class="video-frame">
                     <!-- <iframe src="{{ $courseDetails->video_url }}" frameborder="0"
@@ -806,75 +817,77 @@
 
 @push('modal')
 <div class="modal fade" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title " id="contactUsModalLabel">Connect us</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content overflow-hidden" style="border-radius: 10px;">
+            <!-- <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div> -->
             <form method="post" action="{{ route('lead') }}">
                 @csrf
-                <div class="modal-body row pb-0">
-                    <div class="col-md-6">
-                        <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Contact Us">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
-                        <input type="hidden" name="type" value="enquiry">
-
-                        <div class="mb-3">
-                            <input type="text" class="form-control pb-0" name="name" placeholder="Name *" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <input type="email" class="form-control pb-0" name="email" placeholder="Email *" required>
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0  pb-0" required>
-                                @foreach($countries as $country)
-                                <option
-                                    value="{{ $country->phonecode }}"
-                                    data-flag='{!! $country->flag !!}'
-                                    data-id="{{ $country->id }}">
-                                    + {{ $country->phonecode }} {!! $country->flag !!}
-                                </option>
-                                @endforeach
-                            </select>
-                            <input type="text" class="form-control p-2 pb-0" name="phone" placeholder="Mobile *" required>
-                        </div>
-
-                        <div class="mb-2 enquiry-field">
-                            <label class="form-label fw-semibold">Enquiry for:</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="enquiry_for" value="myself" id="enquiryMyself">
-                                <label class="form-check-label" for="enquiryMyself">Myself</label>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Left Section -->
+                        <div class="col-md-6 d-flex flex-column justify-content-between bg-primary text-white p-4">
+                            <div>
+                                <h3 class="fw-bold text-warning">Corporate Training</h3>
+                                <p class="mb-4 text-warning">Upskill or reskill your teams</p>
+                                <ul class="list-unstyled" style="list-style: none;">
+                                    <li><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
+                                </ul>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="enquiry_for" value="company" id="enquiryCompany">
-                                <label class="form-check-label" for="enquiryCompany">My Company</label>
-                            </div>
+                            <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Meeting" class="img-fluid mt-3">
                         </div>
 
-                        <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
-                            <label class="form-check-label" for="privacyPolicy">
-                                By providing your contact details, you agree to our
-                                <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
-                            </label>
+                        <!-- Right Section -->
+                        <div class="col-md-6 bg-white p-4">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <h4 class="fw-bold text-center" id="contactUsModalLabel">Get a Quote</h4>
+                            <p class="small text-muted mb-3">Fill in the details to get a callback from our team</p>
+                            <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
+                            <input type="hidden" name="type" value="enquiry">
+
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="name" placeholder="First Name *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" name="email" placeholder="Email *" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <select name="country_code" class="form-select select2" required>
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->phonecode }}">+{{ $country->phonecode }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control" name="phone" placeholder="Phone Number *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                                <label class="form-check-label small" for="privacyPolicy">
+                                    By providing your contact details, you agree to our 
+                                    <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                                </label>
+                            </div>
+                            <button class="btn btn-primary w-100 fw-bold" type="submit">
+                                Enquire Now
+                                <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" data-animation="fadeInRight" data-delay=".8s" type="submit"><span>Submit<i class="fa fa-spinner fa-spin" id="submitSpin" style="display:none;"></i></span></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 @endpush
 
 
@@ -908,6 +921,18 @@
             dropdownParent: $('#contactUsModal')
         });
     });
+
+    $(document).on("change", "input[name='enquiry_for']", function () { 
+        let $form = $(this).closest("form");           // scope to current form
+        let $companyField = $form.find(".company_name"); 
+
+        if ($(this).val() === "company") {
+            $companyField.removeClass("d-none");
+        } else {
+            $companyField.addClass("d-none");
+        }
+    });
+
 </script>
 <script>
     var benefitsData = @json($benefitsData);
@@ -922,7 +947,7 @@
     }
 
     // update chart
-    function updateChart(salary) { debugger;
+    function updateChart(salary) { 
         var data = [salary.min, salary.avg_min, salary.average, salary.avg_max, salary.max];
 
         if (salaryChart) salaryChart.destroy();
@@ -1073,7 +1098,7 @@
         border-bottom: 1px solid #ccc !important;
         height: 41px !important;
         padding-top: 7px;
-        margin-top: 5px;
+        margin-top: 4.2px;
         border-radius: 0 !important;
     }
 
@@ -1081,11 +1106,15 @@
         top: 10px !important;
     }
 
-    .modal span.select2-selection.select2-selection--single {
+    /* .modal span.select2-selection.select2-selection--single {
         width: 75px;
-    }
+    } */
     .modal-dialog {
         max-width: 800px !important;
+    }
+
+    span.select2.select2-container.select2-container--default{
+        width: 60px !important;
     }
 </style>
 @endpush

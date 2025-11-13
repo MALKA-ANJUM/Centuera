@@ -109,7 +109,7 @@
                                                     <select name="language" class="form-control ctrm_select2" required>
                                                         <option value="">Select Language</option>
                                                         @foreach($languages as $lang)
-                                                            <option value="{{ $lang->value }}">{{ $lang->value }}</option>
+                                                            <option value="{{ $lang->value }}" {{ strtolower($lang->value) == 'english' ? 'selected' : '' }}>{{ $lang->value }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>

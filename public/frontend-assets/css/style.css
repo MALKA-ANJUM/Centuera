@@ -8884,9 +8884,9 @@ Back to Top CSS
     padding: 30px;
   }
 
-  .cohort-form {
+  /* .cohort-form {
     width: 300px;
-  }
+  } */
 
   .Course-Key-Features p {
     flex: 1 1 100%;
@@ -9874,7 +9874,7 @@ th {
   animation: sparkle 1s infinite;
   border-radius: 5px;
   font-size: 20px;
-  max-width: 300px;
+  width: max-content;
 }
 
 .sparkling-box span i {
@@ -10072,7 +10072,7 @@ p.evening i {
 
 .offer-box {
   text-align: center;
-  background: #06b7fd;
+  /* background: #06b7fd; */
   border-radius: 5px;
   color: white;
 }

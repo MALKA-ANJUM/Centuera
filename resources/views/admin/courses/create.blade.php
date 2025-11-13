@@ -144,6 +144,15 @@
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
+
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Upload Curriculum')</label>
+                                        <input type="file" name="upload_curriculum" class="form-control">
+                                        @error('upload_curriculum')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Video URL')</label>
                                         <input type="text" name="video_url" class="form-control">
@@ -881,7 +890,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) { debugger;
+                success: function(response) { 
                     Toastify({
                         text: "Auto-saved sucessfully!!",
                         duration: 2000,
@@ -940,32 +949,7 @@
                 }
             });
         }
- 
-    // $(document).on("change", ".partner-logo", function () { debugger;
-    //     let input = $(this);
-    //     let file = this.files[0];
-    //     let errorBox = input.siblings(".logo-error");
 
-    //     if (file) {
-    //         let img = new Image();
-    //         let objectUrl = URL.createObjectURL(file);
-
-    //         img.onload = function () {
-    //             if (this.width > 100 || this.height > 100) {
-    //                 errorBox.text("Partner logo must be up to 200×200 pixels.");
-    //                 input.val(""); // clear invalid file
-    //                 $('.partner-logo-error').addClass('d-none')
-    //             } else {
-    //                 errorBox.text("");
-    //             }
-    //             URL.revokeObjectURL(objectUrl);
-    //         };
-
-    //         img.src = objectUrl;
-    //     } else {
-    //         errorBox.text("Logo is required.");
-    //     }
-    // });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

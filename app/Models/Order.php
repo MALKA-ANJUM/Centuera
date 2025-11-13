@@ -18,7 +18,7 @@ class Order extends Model
     // In Order.php
     public function course()
     {
-        return $this->belongsTo(Course::class, 'course_id');
+        return $this->belongsTo(Course::class, 'orders', 'id', 'courses');
     }
 
 }

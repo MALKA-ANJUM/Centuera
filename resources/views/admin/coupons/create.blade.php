@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="code" class="form-label">@lang('Coupon Code')</label>
-                                    <input type="text" class="form-control" placeholder="@lang('Enter Coupon Code')" name="code" id="code" required value="{{ old('code', $autoCode ?? '') }}" readonly>
+                                    <input type="text" class="form-control" placeholder="@lang('Enter Coupon Code')" name="code" id="code" required value="{{ old('code') }}">
                                     @error('code')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror

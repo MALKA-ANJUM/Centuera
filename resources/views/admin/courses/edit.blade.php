@@ -37,16 +37,41 @@
                                 <div class="card-body">
                                     {{-- Title --}}
                                     <div class="mb-2">
-                                        <label class="form-label">@lang('Title')</label>
+                                        <label class="form-label">@lang('Title') <span class="text-danger">*</span></label>
                                         <input type="text" name="title" value="{{ old('title', $course->title) }}" class="form-control">
                                         @error('title')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="mb-2">
-                                        <label class="form-label">@lang('Slug')</label>
-                                        <input type="text" name="slug" value="" class="form-control" value="{{ old('slug', $course->slug) }}">
+                                        <label class="form-label">@lang('Slug') <span class="text-danger">*</span></label>
+                                        <input type="text" name="slug" value="{{ old('slug', $course->slug) }}" class="form-control">
                                         @error('slug')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Short Title --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Short Title') <span class="text-danger">*</span></label>
+                                        <input type="text" name="short_title" value="{{ $course->short_title }}" class="form-control">
+                                        @error('short_title')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- Category --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>
+                                        <select name="category" class="form-select">
+                                            <option value="">@lang('Select Category')</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" {{ $course->category == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('category')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -145,6 +170,21 @@
                                             </div>
                                         @endif
                                         @error('certification_image')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Upload Curriculum')</label>
+                                        <input type="file" name="upload_curriculum" class="form-control">
+                                        @if (!empty($course->upload_curriculum))
+                                            <div class="mb-1">
+                                                <a href="{{ asset('uploads/curriculum/' . $course->upload_curriculum) }}" target="_blank">
+                                                    <span style="font-size: 13px;">View Image</span>
+                                                </a>
+                                            </div>
+                                        @endif
+                                        @error('upload_curriculum')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -819,7 +859,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2">@lang('Add Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2">@lang('Update Course')</button>
                 </form>
             </div>
         </div>

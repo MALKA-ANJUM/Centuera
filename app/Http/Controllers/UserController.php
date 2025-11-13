@@ -138,6 +138,7 @@ class UserController extends Controller
 		$lead->country_code = $request->country_code;
 		$lead->phone = $request->phone;
 		$lead->enquiry_for = $request->enquiry_for;
+		$lead->company_name = $request->company_name;
 		$lead->save();
 		return back()->with('success', 'Your request has been submitted successfully!');
 	}
