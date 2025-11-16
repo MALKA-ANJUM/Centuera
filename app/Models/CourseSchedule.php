@@ -27,6 +27,11 @@ class CourseSchedule extends Model
         'trainner_description',
         'total_days_of_training'
     ];
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
+
     // public function prices()
     // {
 	// 	$countryID = Session::get('selected_country_id');
@@ -35,16 +40,8 @@ class CourseSchedule extends Model
 
     public function prices()
     {
-        $countryID = Session::get('selected_country_id', 0);
-
-        return $this->hasOne(CourseSchedulePrice::class, 'schedule_id')
-            ->where(function ($q) use ($countryID) {
-                $q->where('country_id', $countryID)
-                ->orWhere('country_id', 0); // fallback
-            })
-            ->orderByRaw("CASE WHEN country_id = ? THEN 0 ELSE 1 END", [$countryID]);
+        return $this->hasOne(CourseSchedulePrice::class, 'schedule_id');
     }
-
     public function course()
     {
         return $this->belongsTo(Course::class);

@@ -7,102 +7,42 @@
     <div class="container">
         <div class="main-max-width">
             <div class="hero-slider owl-carousel owl-theme">
+                @foreach ($banners as $banner)
                 <div class="silde-item">
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <div class="content">
-                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
-                                <h1 class="fs-50 mb-25">Grow Your <span class="gradient-style">Skills</span> Advance
-                                    Your Career Path.</h1>
-                                <p>In the dynamic landscape of today's professional world, the key to success lies
-                                    in continuous learning and skill Development. As industries evolve and
-                                    technology advances,</p>
+                                <h4 class="sub-title mb-4">{{ strip_tags($banner->short_title) }}</h4>
+                                <h1 class="fs-50 mb-25">{{ strip_tags($banner->title) }}</h1>
+                                <p>{{ strip_tags($banner->description) }}</p>
 
                                 <div class="her-btns mt-40">
-                                    <a href="#course-sec" class="btn style-one mr-20">Browse Course <img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                    <a href="#about-sec" class="btn style-two">Explore More<img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
+                                    <a href="{{ route('course.list') }}" class="btn style-one mr-20">
+                                        Browse Course
+                                        <img src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image">
+                                    </a>
+                                    <a href="{{ route('about') }}" class="btn style-two">
+                                        Explore More
+                                        <img src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image">
+                                    </a>
                                 </div>
-
-                                <!-- <div class="book-icon bounce"><img src="{{ asset('frontend-assets/img/icon/book.svg') }}" alt="image"></div> -->
-
                             </div>
                         </div>
                         <div class="col-lg-5">
                             <div class="hero-image position-relative">
-                                <img class="position-relative index-2" src="{{ asset('frontend-assets/img/banner/hero-img-3.png') }}"
-                                    alt="image">
+                                <img class="position-relative index-2"
+                                    src="{{ asset('admin/banner_img/' . $banner->image) }}"
+                                    alt="banner">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="silde-item">
-                    <div class="row align-items-center">
-                        <div class="col-lg-7">
-                            <div class="content">
-                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
-                                <h1 class="fs-50 mb-25">Welcome To <span class="gradient-style">Online</span>
-                                    Education Solutions.</h1>
-                                <p>In the dynamic landscape of today's professional world, the key to success lies
-                                    in continuous learning and skill Development. As industries evolve and
-                                    technology advances,</p>
-
-                                <div class="her-btns mt-40">
-                                    <a href="{{ route('course.list') }}" class="btn style-one mr-20">Browse Course <img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                    <a href="{{ route('about') }}" class="btn style-two">Explore More<img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                </div>
-
-                                <!-- <div class="book-icon bounce"><img src="{{ asset('frontend-assets/img/icon/book.svg') }}" alt="image"></div> -->
-
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="hero-image position-relative">
-                                <img class="position-relative index-2" src="{{ asset('frontend-assets/img/all-img/hero-img2.png') }}"
-                                    alt="image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="silde-item">
-                    <div class="row align-items-center">
-                        <div class="col-lg-7">
-                            <div class="content">
-                                <h4 class="sub-title mb-4">The Leader In Online Learning</h4>
-                                <h1 class="fs-50 mb-25">Grow Your <span class="gradient-style">Skills</span> Advance
-                                    Your Career Path.</h1>
-                                <p>In the dynamic landscape of today's professional world, the key to success lies
-                                    in continuous learning and skill Development. As industries evolve and
-                                    technology advances,</p>
-
-                                <div class="her-btns mt-40">
-                                    <a href="{{ route('course.list') }}" class="btn style-one mr-20">Browser Course <img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                    <a href="{{ route('about') }}" class="btn style-two">Explore More<img
-                                            src="{{ asset('frontend-assets/img/icon/long-arrow.svg') }}" alt="Image"></a>
-                                </div>
-
-                                <!-- <div class="book-icon bounce"><img src="{{ asset('frontend-assets/img/icon/book.svg') }}" alt="image"></div> -->
-
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="hero-image position-relative">
-                                <img class="position-relative index-2" src="{{ asset('frontend-assets/img/all-img/hero-img.png') }}"
-                                    alt="image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
+                @endforeach
             </div>
         </div>
     </div>
 </div>
+
 <!-- Hero Section End -->
 <!-- Scrolling Banner Section start -->
 <div class="logo-banner">
@@ -161,16 +101,18 @@
             <div class="row">
                 @foreach($categories as $category)
                 <div class="col-lg-4 col-sm-6">
+                    <a href="{{ route('course.list', ['category' => $category->id]) }}">
                     <div class="cetg-card d-flex align-items-center position-relative mb-25 box-shadow-2">
                         <div class="icon">
                             <img src="{{ asset('frontend-assets/img/icon/catg-icon-1.svg') }}" alt="icon">
                         </div>
                         <div class="text">
-                            <h4 class="fs-16"><a href="{{ route('course.list') }}">{{ $category->name }}</a></h4>
+                            <h4 class="fs-16">{{ $category->name }}</h4>
                             <p class="m-0 fs-15">{{ $category->getCourses->count() }} Courses <img src="{{ asset('frontend-assets/img/icon/long-arrow-2.svg') }}" alt="Image">
                             </p>
                         </div>
                     </div>
+                    </a>
                 </div>
                 @endforeach
             </div>
@@ -280,42 +222,47 @@
                                 </div>
                             </div>
                             <div class="content">
+                                <h5 class="mb-0">{{ $course->title }}</h5>
+                                @if($course->getCourseSchedule && $course->getCourseSchedule->prices)
                                 <div class="meta-info d-flex align-items-center justify-content-between">
                                     <h3 class="mb-1 fs-20"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></h3>
-
                                     <div class="cr-price px-2">
-                                        <h5 class="fs-16 text-nowrap"><span class="price"> {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 ? 'USD ' : $currency }} {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span>
-                                        <br>
-                                        @if($course->getCourseSchedule && $course->getCourseSchedule)
+                                        <h5 class="fs-16 text-nowrap"><span class="price"> {{ $course->getCourseSchedule->country->currency }} {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span>
+                                            <br>
+                                            @if($course->getCourseSchedule && $course->getCourseSchedule)
                                             <span class="old-price">
-                                               {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 ? 'USD ' : $currency }} {{ $course->getCourseSchedule->prices->original_price ?? 0 }}
+                                                {{ $course->getCourseSchedule->country->currency }} {{ $course->getCourseSchedule->prices->original_price ?? 0 }}
                                             </span>
-                                        @endif
+                                            @endif
 
                                     </div>
                                 </div>
-
+                                @endif
                             </div>
                             <div class="d-flex justify-content-center align-items-center rating-section">
                                 @php
-                                    $rating = round($course->rating);
-                                    $maxStars = 5;
+                                $rating = round($course->average_rating); // uses accessor
+                                $maxStars = 5;
                                 @endphp
 
                                 <ul class="d-flex list-unstyle customer-ratings">
                                     @for ($i = 1; $i <= $maxStars; $i++)
-                                        @if ($i <= $rating)
-                                            <li><i class="ri-star-fill"></i></li>
+                                        @if ($i <=$rating)
+                                        <li><i class="ri-star-fill"></i></li>
                                         @else
-                                            <li><i class="ri-star-line"></i></li>
+                                        <li><i class="ri-star-line"></i></li>
                                         @endif
-                                    @endfor
-                                    <li><span>({{ $course->rating }})</span></li>
+                                        @endfor
+                                        <li><span>({{ number_format($course->average_rating, 1) }})</span></li>
                                 </ul>
 
                                 <ul
                                     class="cr-items d-flex align-items-center justify-content-center gap-2 list-unstyle">
-                                    <li class="mr-15"><i class="ri-team-fill"></i> <span>{{ number_format(($course->learner_field ?? 0) + 10000) }} Learners</span> </li>
+                                    <li class="mr-15"><i class="ri-team-fill"></i>
+                                        <span>
+                                            {{ ($course->learner_field + $course->getRating->count()) }} Learners
+                                        </span>
+                                    </li>
                                     <li><i class="ri-time-line"></i> <span>{{ round($course->duration / 60 , 2)  }} Hrs</span></li>
                                 </ul>
                             </div>
@@ -324,8 +271,7 @@
                                     View Program
                                 </a>
                                 @if($course->upload_curriculum != null)
-                                <a href="{{ asset('uploads/curriculum/'. $course->upload_curriculum ) }}" target="_blank">
-                                    <button class="view-curiculum"><i class="ri-download-line"></i><span>Curriculum</span></button></a>
+                                    <button class="view-curiculum" data-bs-toggle="modal" data-course-id="{{ $course->id }}" data-bs-target="#curriculumModal"><i class="ri-download-line"></i><span>Curriculum</span></button>
                                 @endif
                             </div>
                         </div>
@@ -617,7 +563,7 @@
 
 <!-- Blog Section Start -->
 @if(count($blogs) > 0)
-<div class="blog-section pb-75">
+<div class="blog-section pb-5">
     <div class="container">
         <div class="main-max-width">
             <div class="section-title mb-3">
@@ -673,57 +619,6 @@
         <div class="button mt-5">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactUsModal">Request a Free
                 Demo</button>
-
-            <div class="modal fade" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="contactUsModalLabel">Contact Us</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="firstName" placeholder="First Name">
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="lastName" placeholder="Last Name">
-                                </div>
-                                <div class="mb-3">
-                                    <input type="email" class="form-control" id="email" placeholder="Email">
-                                </div>
-                                <div class="mb-3">
-                                    <div class="input-group">
-                                        <select class="form-select" id="countryCode">
-                                            <option value="IN">IN +91</option>
-                                            <option value="US">US +1</option>
-                                            <option value="UK">UK +44</option>
-                                        </select>
-                                        <input type="text" class="form-control" id="phoneNumber"
-                                            placeholder="Phone Number">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="company" placeholder="Company">
-                                </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="privacyPolicy">
-                                    <label class="form-check-label" for="privacyPolicy">By providing your
-                                        contact
-                                        details, you
-                                        agree to our privacy policy</label>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -762,7 +657,300 @@
     </div>
 </div>
 @endsection
-@push('script')
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
+@push('modal')
+<div class="modal fade" id="curriculumModal" tabindex="-1" aria-labelledby="curriculumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body p-4">
+
+                <!-- Close Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Title -->
+                <h5 class="text-center fw-bold mb-4" id="curriculumModalLabel">Course Syllabus</h5>
+
+                <form id="curriculumForm">
+                    @csrf
+                    <input type="hidden" name="type" value="curriculum">
+                    <input type="hidden" id="course_id" name="course_id" value="">
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                @foreach($countries as $country)
+                                <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                    +{{ $country->phonecode }} {!! $country->flag !!}
+                                </option>
+                                @endforeach
+                            </select>
+                            <input type="tel" maxlength="10"  oninput="restrictToNumbers(this)"  class="form-control ps-3" id="phone" name="phone" placeholder="Enter your Phone No." required>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy -->
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                        <label class="form-check-label small" for="privacyPolicy">
+                            By providing your contact details, you agree to our
+                            <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold" type="submit" style="border-radius: 8px;">
+                        Download Syllabus
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade callbackmodal" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="min-width: 800px; width: 90%">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div class="modal-image d-none d-md-block">
+                        <div class="desc p-4 pb-0">
+                            <h3 class="text-center" style="color: #012833">Being Friends & Colleagues</h3>
+                            <p class="fw-bold text-center" style="color: #012833">Avail Group Discount</p>
+                            <ul class="text-white ps-0" style="list-style: none;" >
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Enroll with your groups or friends</li>
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Get details on our social group enrollment pricing</li>
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Group learning boosts completion rates by 30% and improves outcomes</li>
+                            </ul>
+                        </div>
+                    <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
+                </div>
+                <!-- Right: Form -->
+                <div class="modal-form py-3 pe-4 mt-3">
+                    <span class="close" id="closeModal">&times;</span>
+                    <h4 class="border-bottom">Request a Callback</h4>
+                    <form action="{{route('request.callback')}}" method="POST" class="mt-5">
+                        @csrf
+                        <div class="mb-3">
+                            <input type="text" name="name" class="form-control" placeholder="Name *" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <select name="country_code" id="phone-flag" class="form-select select2" required>
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                            +{{ $country->phonecode }} {!! $country->flag !!}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="text" 
+                                    id="phone" 
+                                    name="phone" 
+                                    class="form-control ps-2" 
+                                    placeholder="9090909090" 
+                                    required
+                                    maxlength="10"
+                                    oninput="restrictToNumbers(this)" 
+                                    autocomplete="tel">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Email *">
+                        </div>
+
+                        <div class="mb-3">
+                            <select name="course_id" id="course_id" class="form-control select2" required>
+                                <option value="">Select Program</option>
+                                @foreach($courses as $course)
+                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                @endforeach
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="policy" name="policy" required>
+                            <label class="form-check-label" for="policy">
+                                By providing your contact details, you agree to our 
+                                <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
+
+@push('script')
+<script>
+    $(document).ready(function () {
+        let storedCountryId = localStorage.getItem('selected_country_id');
+        if (storedCountryId) {
+            $(".modal-phone-flag option").each(function () {
+                if ($(this).data("id") == storedCountryId) {
+                    $(this).prop("selected", true);
+                }
+            });
+        }
+
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#curriculumModal')
+        });
+
+        $('#curriculumModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget);
+            let courseId = button.data('course-id');
+            $(this).find('#course_id').val(courseId);
+        });
+
+        $('#curriculumForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let $submitBtn = $(this).find('button[type="submit"]');
+            $submitBtn.prop('disabled', true).text('Processing...');
+
+            $.ajax({
+                url: "{{ route('lead') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#curriculumModal').modal('hide');
+
+                    if (response.file) {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        
+                        // 🔽 Trigger file download
+                        let link = document.createElement('a');
+                        link.href = response.file;
+                        link.setAttribute('download', response.file.split('/').pop());
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        setTimeout(() => {
+                            location.reload(); // 🔥 Reload page
+                        }, 2000);
+                    } else {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr) {
+                    $('#curriculumModal').modal('hide');
+                    if (xhr.status === 404) {
+                        toastr.error('Curriculum file not found for this course.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        toastr.error('Something went wrong! Please try again.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                complete: function () {
+                    $submitBtn.prop('disabled', false).text('Download Syllabus');
+                }
+            });
+        });
+    });
+</script>
+@endpush
+
+@push('style')
+<style>
+    #curriculumModal span.select2-selection.select2-selection--single {
+        border: none !important;
+        border-bottom: 1px solid #ccc !important;
+        height: 41px !important;
+        padding-top: 7px;
+        margin-top: 4.2px;
+        border-radius: 0 !important;
+    }
+
+    #curriculumModal .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 10px !important;
+    }
+
+    #curriculumModal span.select2.select2-container.select2-container--default.select2-container--below.select2-container--focus{
+        width: 70px !important;
+    }
+
+        .callbackmodal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .callbackmodal .modal-content {
+            width: 90%;
+            max-width: 800px; 
+            background: #fff;
+            /* padding: 25px 20px; */
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .callbackmodal .close {
+            position: absolute;
+            right: 12px;
+            top: 6px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .callbackmodal .modal-body {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .callbackmodal .modal-image {
+            flex: 1;
+           
+            background-color: #79CAF6;
+        }
+
+        .callbackmodal .modal-image img {
+            /* border-radius: 8px; */
+            max-width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+        }
+
+        .callbackmodal .modal-form {
+            flex: 1;
+        }
+        .callbackmodal .select2-container .select2-selection--single{
+            height: 37px;
+        }
+        .callbackmodal .select2-container--default .select2-selection--single{
+            border: 0;
+            border-bottom: 1px solid #aaa;
+            border-radius: 0;
+        }
+
+        /* Mobile responsive */
+</style>
 @endpush

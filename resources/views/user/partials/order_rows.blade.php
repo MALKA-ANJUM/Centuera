@@ -16,9 +16,9 @@
         <td class="d-flex">
             <a href="{{route('user.view.order', $order->id)}}" class="btn style-two mx-2 p-2"><i class="fa fa-eye"></i></a>
             <a href="{{ route('user.order.invoice', $order->id) }}" class="btn style-two mx-2 p-2"><i class="fa fa-download"></i></a>
-            <a href="javascript(void);" class="btn style-two mx-2 p-2" data-id="{{ $order->id }}" data-bs-toggle="modal" data-bs-target="#reviewModal">
+            <button type="button" class="btn style-two mx-2 p-2" data-id="{{ $order->id }}" data-order-id="{{ $order->orderId }}" data-bs-toggle="modal" data-bs-target="#reviewModal" {{ $order->getRating ? 'disabled' : '' }}>
                 <i class="fa fa-star"></i> Review & Rating
-            </a>
+            </button>
             <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -31,6 +31,7 @@
                         @endphp
                         <form action="{{ route('user.add.review.ratings') }}" method="post">
                             @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->orderId }}">
                                 <div class="modal-body p-4">
                                 <!-- Select Course -->
                                 <div class="mb-3">
@@ -58,14 +59,11 @@
                                         <label for="star1" title="1 star">&#9733;</label>
                                     </div>
                                 </div>
-
-
                                 <!-- Review -->
                                 <div class="mb-3">
                                     <label for="review" class="form-label mb-0">Your Review:</label>
                                     <textarea id="review" class="form-control" name="review"></textarea>
                                 </div>
-                            
                                 <button type="submit" class="btn style-one">Submit</button>
                             </div>
                         </form>

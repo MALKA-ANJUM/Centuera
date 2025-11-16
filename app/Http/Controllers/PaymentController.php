@@ -2,20 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Coupon;
-use App\Models\Order;
-use App\Models\OrderDetail;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Stripe\Stripe;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Coupon;
+use App\Models\OrderDetail;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Stripe\Checkout\Session;
+use App\Mail\UserForgotPasswordOTP;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
     public function paymentForm()
     {
         return view('user.payment');
+    }
+
+    public function createOrder(Request $request)
+    {
+        // Check if we already created an order for this email/phone (optional)
+        // $order = Order::where('email', $request->email)
+        //     ->orWhere('phone', $request->phone)
+        //     ->where('status', 'pending')
+        //     ->first();
+
+        if ($request->order_id == '') {
+            $lastOrder = Order::orderBy('id', 'desc')->first();
+            if ($lastOrder && !empty($lastOrder->orderId)) {
+                $lastNumber = (int) str_replace('CT-', '', $lastOrder->orderId);
+                $orderId = 'CT-' . ($lastNumber + 1);
+            } else {
+                $orderId = 'CT-1000';
+            }
+            // Create minimal order
+            $order = Order::create([
+                'orderId' => $orderId,
+                'fullname' => $request->fullname ?? null,
+                'email' => $request->email ?? null,
+                'phone' => $request->phone ?? null,
+                'country_code' => $request->country_code ?? null,
+                'status' => 'pending',
+                'custom_payment' => $request->custom_payment ?? 0,
+                'transaction_id' => \Illuminate\Support\Str::uuid(),
+            ]);
+            return response()->json([
+                'success' => true,
+                'order_id' => $order->orderId,
+                'message' => 'Order Created Successfully!',
+            ]);
+        } else {
+            $order =  Order::where('orderId', $request->order_id)->update([
+                'orderId' => $request->order_id,
+                'email' => $request->email ?? null,
+                'phone' => $request->phone ?? null,
+                'country_code' => $request->country_code ?? null,
+            ]);
+            return response()->json([
+                'success' => true,
+                'order_id' => $request->order_id,
+                'message' => 'Order Updated Successfully!',
+            ]);
+        }
     }
 
     public function createCheckoutSession(Request $request)
@@ -31,16 +82,23 @@ class PaymentController extends Controller
 
             $firstName = $nameParts[0] ?? '';
             $lastName  = $nameParts[1] ?? '';
+            $randomPassword = Str::random(10);
             $user = User::create([
                 'first_name'   => $firstName,
                 'last_name'    => $lastName,
                 'email' => $request->email,
-                'password' => bcrypt(Str::random(10)), // random temp password
+                'password' => bcrypt($randomPassword), // random temp password
                 'mobile' => $request->phone ?? null,
                 'country_code' => $request->country_code ?? null,
             ]);
+
+            // Send mail with user id and password
+            $mailData = [
+                'title' => 'Your Account Details',
+                'body'  => 'Your account has been created.<br>User ID: ' . $user->email . '<br>Password: ' . $randomPassword
+            ];
+            Mail::to($user->email)->send(new UserForgotPasswordOTP($mailData));
         }
-        // Generate Order ID ----
         $lastOrder = Order::orderBy('id', 'desc')->first();
         if ($lastOrder && !empty($lastOrder->orderId)) {
             // Extract numeric part (after CT-)
@@ -51,24 +109,55 @@ class PaymentController extends Controller
         }
 
         $courseIds = is_array($request->course_id) ? $request->course_id : [$request->course_id];
-        // ✅ 2. Save order in DB
-        $order = Order::create([
-            'orderId' => $orderId,
-            'fullname' => $request->fullname,
-            'email' => $request->email,
-            'country_code' => $request->country_code,
-            'phone' => $request->phone,
-            'schedule_id' => $request->schedule_id,
-            'courses' => $courseIds, // adjust if relation
-            'total_amount' => $request->total_amount,
-            'discount' => $request->discount,
-            'currency' => $request->currency,
-            'workshop_start_date' => $request->workshop_start_date,
-            'workshop_end_date' => $request->workshop_end_date,
-            'status' => 'pending',
-            'custom_payment' => $request->custom_payment ?? 0,
-            'transaction_id' => Str::uuid(), // temp unique ID
-        ]);
+        $order = Order::where('orderId', $request->order_id)->first();
+
+        if ($order) {
+            // Update existing order with rest of data
+            $order->update([
+                'fullname' => $request->fullname,
+                'email' => $request->email,
+                'country_code' => $request->country_code,
+                'phone' => $request->phone,
+                'courses' => $courseIds,
+                'discount' => $request->discount,
+                'total_amount' => $request->total_amount,
+                'currency' => $request->currency,
+                'coupon_id' => $request->coupon_id,
+                'schedule_id' => $request->schedule_id,
+                'workshop_start_date' => $request->workshop_start_date,
+                'workshop_end_date' => $request->workshop_end_date,
+            ]);
+        } else {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        // Generate PDF invoice and send order details mail
+        try {
+            // Generate PDF from Blade view
+            $pdf = PDF::loadView('order-invoice', ['order' => $order]);
+            $pdfPath = storage_path('app/invoices/invoice_' . $order->orderId . '.pdf');
+            if (!file_exists(dirname($pdfPath))) {
+                mkdir(dirname($pdfPath), 0777, true);
+            }
+            $pdf->save($pdfPath);
+
+            // Prepare mail data
+            $mailData = [
+                'title' => 'Order Confirmation',
+                'body' => 'Thank you for your order.<br>Order ID: ' . $order->orderId . '<br>Total: ' . $order->total_amount,
+                'order' => $order
+            ];
+
+            // Send mail with PDF attachment
+            Mail::send('emails.order-details', $mailData, function ($message) use ($order, $pdfPath) {
+                $message->to($order->email)
+                    ->subject('Order Confirmation - ' . $order->orderId)
+                    ->attach($pdfPath);
+            });
+        } catch (\Exception $e) {
+            // Log error if PDF or mail fails
+            Log::error('Order mail/PDF error: ' . $e->getMessage());
+        }
 
         // convert amount to cents (Stripe expects smallest currency unit)
         $amountInCents = intval($request->total_amount * 100);
@@ -90,8 +179,8 @@ class PaymentController extends Controller
             'mode' => 'payment',
             'customer_email' =>  $request->email, // ✅ required
             'billing_address_collection' => 'required', // ✅ ensures address is collected
-            'success_url' => route('stripe.success')."?order_id=".$order->id,
-            'cancel_url' => route('stripe.cancel')."?order_id=".$order->id,
+            'success_url' => route('stripe.success') . "?order_id=" . $order->orderId,
+            'cancel_url' => route('stripe.cancel') . "?order_id=" . $order->orderId,
         ]);
 
         foreach ($courseIds as $courseId) {
@@ -108,22 +197,22 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        $order = Order::find($request->order_id);
+        $order = Order::where('orderId', $request->order_id)->first();
         if ($order) {
             $order->status = 'paid';
             $order->save();
         }
-        return view('user.success');
+        return view('user.success', compact('order'));
     }
 
     public function cancel(Request $request)
     {
-        $order = Order::find($request->order_id);
+        $order = Order::where('orderId', $request->order_id)->first();
         if ($order) {
             $order->status = 'cancelled';
             $order->save();
         }
-        return view('user.cancel');
+        return view('user.cancel', compact('order'));
     }
 
     public function applyCoupon(Request $request)
@@ -166,9 +255,7 @@ class PaymentController extends Controller
             'discount' => $discount,
             'total' => $newTotal,
             'type' => $coupon->type,
+            'coupon_id' => $coupon->id,
         ]);
     }
-
-
-
 }

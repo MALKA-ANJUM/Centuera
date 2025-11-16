@@ -45,17 +45,250 @@
         .footer-widget-info .footer-widget .contact-item {
             margin-bottom: 10px !important;
         }
+
+        .popup-bg {
+            background-image: url(../frontend-assets/img/all-img/coupon-1.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #welcomeModal .select2-container .select2-selection--single {
+            height: 38px;
+            border: none;
+            border-bottom: 1px solid #aaa;
+            border-radius: 0px;
+        }
+
+        #welcomeModal .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 34px !important;
+        }
+
+        .mega-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 1000px;
+            /* Increased width for third column */
+            background: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        /* Left Panel - Categories */
+        .categories-list {
+            width: 30%;
+            /* Adjusted for 3-column layout */
+            background: #f9f9f9;
+            max-height: 400px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+
+        .category-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .category-item:hover,
+        .category-item.active {
+            background: #007bff;
+            color: #fff;
+        }
+
+        /* Middle Panel - Courses */
+        .courses-list {
+            width: 40%;
+            /* Adjusted for 3-column layout */
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+
+        .courses-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .courses-content ul li {
+            margin-bottom: 8px;
+        }
+
+        .courses-content ul li a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .courses-content ul li a:hover {
+            color: #007bff;
+        }
+
+        /* Right Panel - Accreditation */
+        .accreditation-list {
+            width: 30%;
+            /* New column */
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .accreditation-content img {
+            display: block;
+            margin-bottom: 5px;
+            margin-right: 10px;
+            width: 15%;
+            object-fit: contain;
+            height: auto;
+        }
+
+        /* Dropdown Show/Hide */
+        .mega-dropdown .mega-menu {
+            display: none;
+        }
+
+        .mega-dropdown:hover .mega-menu {
+            display: flex;
+        }
+
+        .mega-dropdown .list-unstyle li {
+            display: block !important;
+        }
+        .deal-header {
+            background: #F9F7FA; /* Light orange/beige */
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            border-bottom: 1px solid #ddd;
+        }
+        .deal-text i {
+            font-size: 14px;
+        }
+        
+        .payment-gateway img {
+            padding: 4px;
+            width: 27%;
+            padding-left: 0px;
+        }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="{{asset('flag-icons-main/css/flag-icons.min.css')}}" rel="stylesheet">
     @stack('style')
     @stack('modal')
 </head>
 
 <body>
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered mx-auto" style="width: 660px; max-width: 80%">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col-md-6 d-none d-md-block popup-bg">
+                        <div class=" ">
+                            <p class="text-black fs-5 fw-semibold position-relative lh-base mb-0 pt-4 text-center">
+                                Your Growth Journey Starts with <br>
+                                <span style="color:#FF4500; font-weight: bold;">
+                                    30% Savings &amp;
+                                    <span class="position-relative d-inline-block">
+                                        Free Courses!
+                                        <img src="https://www.simpliaxis.com/frontend_assets/image/re-1.png" data-src="https://www.simpliaxis.com/frontend_assets/image/re-1.png" alt="underline" class="position-absolute start-0 bottom-0 w-100 d-lg-block d-none" style="height:5px;">
+                                    </span>
+                                </span>
+                            </p>
+
+                            <p class="text-dark fs-6 mb-0 text-center m-5">
+                                Unlock free self-learning courses and <br>
+                                accelerate your success.
+                            </p>
+                            <img class=" " src="{{ asset('frontend-assets/img/all-img/savings-image.png')}}" width="347" height="316" alt="coupon">
+                        </div>
+                    </div>
+                    @php
+                    $countryID = Session::get('selected_country_id');
+                    $countries = App\Models\Country::get();
+                    $courses = App\Models\Course::get();
+                    @endphp
+                    <div class="col-md-6 bg-white p-4">
+                        <form action="{{ route('request.callback') }}" method="post">
+                            @csrf
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <h4 class="fw-bold text-center" id="contactUsModalLabel">Get a Quote</h4>
+                            <p class="small text-muted mb-3">Fill in the details to get a callback from our team</p>
+
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="name" placeholder="First Name *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" name="email" placeholder="Email *" required>
+                            </div>
+                            <div class="mb-3">
+                                <select name="course_id" class="form-control select2" required>
+                                    <option value="">Select Course</option>
+                                    @foreach($courses as $course)
+                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <select name="country_code" class="form-select select2" required>
+                                    @foreach($countries as $country)
+                                    <option value="{{ $country->phonecode }}"
+                                        {{ $country->id == $countryID ? 'selected' : '' }}>
+                                        +{{ $country->phonecode }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control" name="phone" placeholder="Phone Number *" required>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" name="message" placeholder="Message" required></textarea>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                                <label class="form-check-label small" for="privacyPolicy">
+                                    By providing your contact details, you agree to our
+                                    <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                                </label>
+                            </div>
+                            <button class="btn btn-primary w-100 fw-bold" type="submit">
+                                Enquire Now
+                                <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @php
+        $generalSetting = App\Models\Generalsettings::first();
+        $stealDeal = $generalSetting->steal_the_deal;
+    @endphp
+
+    @if(!empty($stealDeal))
+        <div class="deal-header text-center py-2">
+            <div class="container">
+                <div class="deal-text d-flex justify-content-center align-items-center flex-wrap gap-4">
+                    <p class="mb-0"><img src="{{ asset('frontend-assets/img/all-img/upskill-logo.png') }}" alt="" width="27px"> 30% Savings on Standard Course Fees</p>
+                    <p class="mb-0"><i class="fas fa-calendar-alt" style="color: #f0a601"></i> Enroll by 25th September</p>
+                    <p class="mb-0"><i class="fas fa-lock" style="color: #f0a601"></i> Unlock FREE Self-Learning Courses</p>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="navbar-area" id="navbar">
         <div class="navbar-top">
             <div class="container" style="width: 100%;">
-                <div class="main-max-width">
+                <div class="">
                     <div class="row align-items-center justify-content-between">
                         <div class="col-xl-7 col-sm-6 col-lg-7 col-md-6 p-0">
                             <ul class="navbar-contact d-lg-flex align-items-lg-center list-unstyle">
@@ -66,10 +299,10 @@
                                     </a>
                                 </li>
                                 @php
-                                $categories = App\Models\Category::with('getCourses')->where('features', 1)->latest()->take(6)->get();
+                                $categories = App\Models\Category::with(['getCourses'])->where('features', 1)->get();
                                 @endphp
                                 @if($categories->count() > 0)
-                                <li class="nav-item dropdown">
+                                <li class="nav-item dropdown mega-dropdown">
                                     <div class="dropdown">
                                         <button class="dropbtn btn btn-primary d-flex align-items-center gap-2">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -85,26 +318,68 @@
                                             </svg>
                                             All Courses
                                         </button>
-                                        <div class="dropdown-content">
-                                            @foreach($categories as $category)
-                                            <div class="dropdown-item">
-                                                <a class="dropdown-link" href="#">{{ $category->name }}</a>
-                                                @if($category->getCourses->count() > 0)
-                                                <div class="dropdown-submenu">
-                                                    @foreach($category->getCourses as $course)
-                                                    <a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a>
-                                                    @endforeach
+
+                                        <div class="mega-menu">
+                                            <!-- Left Side (Categories) -->
+                                            <div class="categories-list">
+                                                @foreach($categories as $index => $category)
+                                                <div class="category-item {{ $index === 0 ? 'active' : '' }}" data-category="cat-{{ $category->id }}">
+                                                    {{ $category->name }}
                                                 </div>
-                                                @endif
+                                                @endforeach
                                             </div>
-                                            @endforeach
+
+                                            <!-- Middle Side (Courses) -->
+                                            <div class="courses-list">
+                                                @foreach($categories as $index => $category)
+                                                <div class="courses-content" id="cat-{{ $category->id }}" style="{{ $index !== 0 ? 'display:none;' : '' }}">
+                                                    <div class="d-flex justify-content-between mb-3 border-bottom">
+                                                        <h6>{{ $category->name }} ({{ $category->getCourses->count() }} Courses)</h6>
+                                                        <a href="{{ route('course.list', ['category' => $category->id]) }}">View All</a>
+                                                    </div>
+
+                                                    @if($category->getCourses->count() > 0)
+                                                    <ul>
+                                                        @foreach($category->getCourses as $course)
+                                                        <li class="d-flex justify-content-start align-items-start">
+                                                            <img src="{{ asset('uploads/logo/'.$course->logo) }}" class="me-2" alt="" width="40px">
+                                                            <a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a>
+                                                        </li>
+                                                        @endforeach
+                                                    </ul>
+                                                    @else
+                                                    <p>No courses available</p>
+                                                    @endif
+                                                </div>
+                                                @endforeach
+                                            </div>
+
+                                            <!-- Right Side (Accreditation Bodies) -->
+                                            <div class="accreditation-list">
+                                                @foreach($categories as $index => $category)
+                                                @php
+                                                $accreditations = json_decode($category->accreditation_bodies, true) ?? [];
+                                                @endphp
+                                                <div class="accreditation-content" id="acc-{{ $category->id }}" style="{{ $index !== 0 ? 'display:none;' : '' }}">
+                                                    <h6 class="mb-2">Accreditation Bodies</h6>
+                                                    @forelse($accreditations as $acc)
+                                                    <div class="mb-4 d-flex align-items-center">
+                                                        <img src="{{ asset('admin/accreditation_images/' . $acc['image']) }}" alt="{{ $acc['name'] }}" width="40px">
+                                                        <p class="mb-0 lh-1">{{ $acc['name'] }}</p>
+                                                    </div>
+                                                    @empty
+                                                    <p>No accreditation available</p>
+                                                    @endforelse
+                                                </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </li>
                                 @endif
 
                                 <li class="nav-item dropdown">
-                                    <div class="dropdown">
+                                    <div class="dropdown rounded overflow-hidden">
                                         <input type="text" placeholder="What do you want to learn?" class="search-input" id="searchCourse" autocomplete="off">
                                         <i class="ri-search-2-line"></i>
                                         <div class="dropdown-content">
@@ -113,7 +388,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                
+
                             </ul>
                         </div>
                         <div class="col-xl-1 col-sm-1 col-lg-1 col-md-2 mt-2">
@@ -136,7 +411,7 @@
                             @endauth
 
                             @guest
-                            <a href="{{ route('login') }}" class="btn btn-primary w-max-content">Login</a>
+                            <a href="{{ route('login') }}" class="btn btn-primary" style="width: 130px">Login</a>
                             @endguest
                         </div>
                         <div class="col-xl-4 col-sm-5 col-lg-4 col-md-4">
@@ -161,8 +436,8 @@
             </div>
         </div>
         <div class="container">
-            <div class="main-max-width">
-                <nav class="navbar insocour-nav navbar-expand-lg">
+            <div class="">
+                <nav class="navbar insocour-nav navbar-expand-lg p-0">
                     <a class="navbar-brand lg-none" href="{{ route('index') }}">
                         <img class="logo-light" src="{{ asset('frontend-assets/img/logo/logo.png')}}" alt="logo"
                             style="height: 50px; width: 140px;">
@@ -232,11 +507,11 @@
         </div>
         <div class="offcanvas-body">
             <ul class="responsive-menu">
-                <li><a href="index-2.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="courses.html">Courses</a></li>
-                <li><a href="blog.html">Blogs</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><a href="{{ route('index') }}">Home</a></li>
+                <li><a href="{{ route('about') }}">About</a></li>
+                <li><a href="{{ route('course.list') }}">Courses</a></li>
+                <li><a href="{{ route('blog') }}">Blogs</a></li>
+                <li><a href="{{ route('contact') }}">Contact</a></li>
                 @auth
                 <p class="text-center">Hi, {{ auth()->user()->first_name }}</p>
                 @endauth
@@ -247,3 +522,5 @@
         </div>
     </div>
     <!-- Responsive Navbar End -->
+
+ 

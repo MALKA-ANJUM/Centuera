@@ -81,9 +81,8 @@
                                                            href="{{ route('admin.course.edit', $course->id) }}">
                                                             <i class="fa fa-edit"></i>
                                                         </a>
-                                                        <a href=""
-                                                           class="btn btn-outline-danger"
-                                                           onclick="return confirm('Are you sure you want to delete this course?')">
+                                                        <a href="{{ route('admin.course.delete', $course->id) }}"
+                                                           class="btn btn-outline-danger">
                                                             <i class="fa fa-trash"></i>
                                                         </a>
                                                     </td>

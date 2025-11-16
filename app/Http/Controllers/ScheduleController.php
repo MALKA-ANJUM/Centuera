@@ -32,17 +32,17 @@ class ScheduleController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
-            'country_id' => [
-                'required',
-                'array',
-                function ($attribute, $value, $fail) {
-                    if (!in_array("0", $value)) {
-                        $fail("Please select default all country.");
-                    }
-                }
-            ],
-        ]);
+        // $request->validate([
+        //     'country_id' => [
+        //         'required',
+        //         'array',
+        //         function ($attribute, $value, $fail) {
+        //             if (!in_array("0", $value)) {
+        //                 $fail("Please select default all country.");
+        //             }
+        //         }
+        //     ],
+        // ]);
         $trainnerImage = null;
         if ($request->hasFile('trainner_image')) {
             $image = $request->file('trainner_image');
@@ -54,10 +54,10 @@ class ScheduleController extends Controller
             'course_id'            => $request->course_id,
             'type'                 => $request->type,
             'batche'               => $request->batche,
-            'start_date'           => $request->start_date,
-            'end_date'             => $request->end_date,
             'time_zone'            => $request->time_zone,
-            'starttime'            => $request->starttime,
+            'start_date'           => \Carbon\Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d'),
+            'end_date'             => \Carbon\Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d'),
+            'starttime'             => $request->starttime,
             'end_time'             => $request->end_time,
             'trainner_name'        => $request->trainner_name,
             'trainner_image'       => $trainnerImage,
@@ -65,16 +65,14 @@ class ScheduleController extends Controller
             'trainner_description' => $request->trainner_description,
             'total_days_of_training' => $request->total_days_of_training,
         ]);
-
-        foreach ($request->country_id as $index => $countryId) {
+        
             CourseSchedulePrice::create([
                 'course_id'      => $request->course_id,
                 'schedule_id'    => $schedule->id,
-                'country_id'     => $countryId,
-                'discount_price' => $request->discount_price[$index],
-                'original_price' => $request->original_price[$index],
+                'country_id'     => $request->country_id,
+                'discount_price' => $request->discount_price,
+                'original_price' => $request->original_price,
             ]);
-        }
 
         return redirect()->route('admin.schedule.course.schedules', $schedule->course_id)->with('success', 'Schedule created successfully!');
     }
@@ -116,8 +114,8 @@ class ScheduleController extends Controller
             'course_id'            => $request->course_id,
             'type'                 => $request->type,
             'batche'               => $request->batche,
-            'start_date'           => $request->start_date,
-            'end_date'             => $request->end_date,
+            'start_date'           => \Carbon\Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d'),
+            'end_date'             => \Carbon\Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d'),
             'time_zone'            => $request->time_zone,
             'starttime'            => $request->starttime,
             'end_time'             => $request->end_time,
@@ -130,15 +128,14 @@ class ScheduleController extends Controller
 
         $existingPrices = CourseSchedulePrice::where('schedule_id', $schedule->id)->get();
         $keepIds = [];
-        foreach ($request->country_id as $index => $countryId) {
             $data = [
                 'course_id'      => $request->course_id,
                 'schedule_id'    => $schedule->id,
-                'country_id'     => $countryId,
-                'discount_price' => $request->discount_price[$index],
-                'original_price' => $request->original_price[$index],
+                'country_id'     => $request->country_id,
+                'discount_price' => $request->discount_price,
+                'original_price' => $request->original_price,
             ];
-            $price = $existingPrices->where('country_id', $countryId)->first();
+            $price = $existingPrices->where('country_id', $request->country_id)->first();
             if ($price) {
                 $price->update($data);
                 $keepIds[] = $price->id;
@@ -146,7 +143,6 @@ class ScheduleController extends Controller
                 $new = CourseSchedulePrice::create($data);
                 $keepIds[] = $new->id;
             }
-        }
         CourseSchedulePrice::where('schedule_id', $schedule->id)
             ->whereNotIn('id', $keepIds)
             ->delete();

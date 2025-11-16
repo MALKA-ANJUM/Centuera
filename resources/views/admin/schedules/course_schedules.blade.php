@@ -65,7 +65,7 @@
                                                     <td>{{ $schedule->getCourse->title ?? '-' }}</td>
                                                     <td>{{ $schedule->type ?? '-' }}</td>
                                                     <td>{{ $schedule->batche ?? '-' }}</td>
-                                                    <td>{{ $schedule->start_date ?? '-' }}</td>
+                                                    <td>{{ $schedule->start_date->format('d-m-Y') }}</td>
                                                     <td>
                                                         <a class="btn btn-outline-primary btn-sm" title="Edit"
                                                             href="{{ route('admin.schedule.edit', $schedule->id) }}">

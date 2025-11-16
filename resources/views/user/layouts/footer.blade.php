@@ -3,44 +3,19 @@
         $courses =App\Models\Course::select('id', 'title')->orderBy('title', 'asc')->get();
         $countries = App\Models\Country::all();
     @endphp
-
-    <!-- Subscribe Section Start -->
-    <div class="subscribe-area position-relative z-1">
-        <div class="container">
-            <div class="main-max-width">
-                <div class="subscribe-info">
-                    <div class="row align-items-center">
-                        <div class="col-lg-6">
-                            <div class="content">
-                                <h3 class="fs-20 mb-20">Sign up to get The Latest Updates</h3>
-                                <p>Our approach to it is unique around how to work and how to get hands-on with you like
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <form id="subscribeForm" class="subscribe-from d-flex align-items-center">
-                                <input class="from-control" type="email" id="emailInput" placeholder="type your email address" required>
-                                <button class="btn style-one" type="submit">Subscribe</button>
-                            </form>
-                            <div id="subscribeMessage" style="margin-top:10px;"></div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- END: Content-->
     <div id="sticky-footer">
-        <div class="sticky-footer-inner-content d-flex justify-content-evenly">
-            <div class="request-call" id="callbackBtn" style="cursor: pointer;">
-                <span class="call-symbol"><i class="ri-smartphone-line"></i></span>
-                <span class="phone-number">Request a callback</span>
-            </div>
+        <div class="container">
+            <div class="sticky-footer-inner-content d-flex justify-content-between">
+                <div class="request-call" id="callbackBtn" style="cursor: pointer;">
+                    <span class="call-symbol"><i class="ri-smartphone-line"></i></span>
+                    <span class="phone-number">Request a callback</span>
+                </div>
 
-            <div class="call-us-on">
-                <span class="call-symbol"><i class="ri-phone-line"></i></span>
-                <a href="#" class="phone-number" id="dynamic-country-phone">Call us on {{ $generalSetting->mobile }}</a>
+                <div class="call-us-on">
+                    <span class="call-symbol"><i class="ri-phone-line"></i></span>
+                    <a href="#" class="phone-number" id="dynamic-country-phone">Call us on {{ $generalSetting->mobile }}</a>
+                </div>
             </div>
         </div>
     </div>
@@ -48,53 +23,65 @@
     <div class="footer-area ft-bg">
         <div class="footer-widget-info pb-5">
             <div class="container">
-                <div class="main-max-width">
                     <div class="row text-white">
                         <div class="col-md-3 mt-4 col-6">
-                            <div class="d-flex">
-                                <span class="fi fi-us font-large-1"></span>
-                                <p class="mb-1 ms-2">USA</p>
+                            <div style="width: 50%;" class="text-center">
+                                <div class="d-flex justify-content-center">
+                                    <span class="fi fi-us font-large-1"></span>
+                                    <p class="mb-1 ms-2">USA</p>
+                                </div>
+                                <p class="mb-0">+1 713 900 9707 </p>
                             </div>
-                            <p class="mb-0">+1 713 900 9707 </p>
                         </div>
                          <div class="col-md-3 mt-4 col-6">
-                            <div class="d-flex">
+                             <div style="width: 50%;" class="text-center">
+                                <div class="d-flex justify-content-center">
                                 <span class="fi fi-ca font-large-1"></span>
                                 <p class="mb-1 ms-2">Canada</p>
                             </div>
                             <p class="mb-0">+1 713 925 5626 </p>
+                             </div>
                         </div>
                          <div class="col-md-3 mt-4 col-6">
-                            <div class="d-flex">
+                             <div style="width: 50%;" class="text-center">
+                                <div class="d-flex justify-content-center">
                                 <span class="fi fi-gb font-large-1"></span>
                                 <p class="mb-1 ms-2">UK</p>
                             </div>
                             <p class="mb-0">+44 747 697 5480</p>
+                             </div>
                         </div>
                          <div class="col-md-3 mt-4 col-6">
-                            <div class="d-flex">
+                             <div style="width: 50%;" class="text-center">
+                                <div class="d-flex justify-content-center">
                                 <span class="fi fi-au font-large-1"></span>
                                 <p class="mb-1 ms-2">Australia</p>
                             </div>
                             <p class="mb-0">+61 261 528 662</p>
+                             </div>
                         </div>
                     </div>
-                    <hr>
                     <div class="row">
                         <div class="col-lg-4 col-sm-6 col-md-6">
                             <div class="footer-widget info-web">
                                 <div class="image">
-                                    <a class="text-decoration-none" href="index-2.html">
+                                    <a class="text-decoration-none" href="{{ route('index') }}">
                                         <img src="{{ asset('admin/generalSetting/' . $generalSetting->logo )}}" alt="image"
-                                            style="height:60px; width: 200px;">
+                                            style="width: 200px;">
                                     </a>
                                 </div>
                                 <p class="pra-light mb-30">Consulting is a dynamic and multifaceted field
                                     that involves providing expert advice and
                                     guidance to individuals,</p>
 
-                                <a href="{{ route('register') }}" class="btn style-one">Sign Up <img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}"
-                                        alt="Image"></a>
+                                <div class="">
+                                    <h2 class="text-white">Get Our Weeekly Newsletter:</h2>
+                                    <form id="subscribeForm" class="subscribe-from d-flex align-items-center rounded" style="background-color: #0076b1;">
+                                        <input class="from-control p-2" type="email" id="emailInput" style="width: 70%;" placeholder="type your email address" required>
+                                        <button class="btn text-white p-2" type="submit">Subscribe</button>
+                                    </form>
+                                    <div id="subscribeMessage" style="margin-top:10px;"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-2 col-sm-6 col-md-6">
@@ -105,26 +92,21 @@
                                     <li><a href="/terms-conditions">Terms & Conditions</a></li>
                                     <li><a href="/privacy-policy">Privacy Policy</a></li>
                                     <li><a href="/refund-policy">Refund Policy</a></li>
-                                    <!-- <li><a href="#">Become an Instructor</a></li> -->
                                 </ul>
-                            </div>
-                            <div class="mt-2">
-                                <a href="{{ route('custom.payment') }}" class="btn style-one" style="padding: 10px 15px">Custom CheckOut</a>
                             </div>
                         </div>
                         <div class="col-lg-3 col-sm-6 col-md-6">
                             <div class="footer-widget ml-70">
+                                @php 
+                                    $categories = App\Models\Category::where('features', 1)->get();
+                                @endphp
                                 <h4 class="text-white">Categories</h4>
                                 <ul>
-                                    <li><a href="pmp_certification.html">PMP® Certification</a></li>
-                                    <li><a href="capm_certification.html">CAPM® Certification</a></li>
-                                    <li><a href="prince_practice.html">PRINCE2® Foundation</a></li>
-                                    <li><a href="lean_green_belt.html">Lean Six Sigma Green Belt</a></li>
-                                    <li><a href="lean_black_belt.html">Lean Six Sigma Black Belt</a></li>
-                                    <li><a href="pmi_acp_certification.html">PMI-ACP® Certification</a></li>
-                                    <li><a href="csm_certification.html">CSM Certification</a></li>
-                                    <li><a href="cspo_certification.html">CSPO Certification</a></li>
-                                    <li><a href="itil_certification.html">ITIL® Certification</a></li>
+                                    @if(count($categories) > 0)
+                                        @foreach($categories as $index => $category)
+                                            <li><a href="{{ route('course.list', ['category' => $category->id]) }}">{{ $category->name	}}</a></li>
+                                        @endforeach
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -137,12 +119,12 @@
                                     </div>
                                     <div class="select_country d-flex" style="position:relative;">
                                         <span class="select__flag" id="flag-display" style="cursor:pointer;"></span>
-                                        <select id="country-select"
+                                        <!-- <select id="country-select"
                                             class="select__input"
                                             name="country"
                                             style="opacity:0; position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer;">
                                             <option value="">Select Country</option>
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
 
@@ -162,26 +144,25 @@
                                         <a href="mailto:{{ $generalSetting->email }}">{{ $generalSetting->email }}</a>
                                     </div>
                                 </div>
-                                <div class="contact-item payment-section">
+                                <div class="contact-item">
                                     <div class="payment-info">
                                         <h6>We Accept</h6>
                                     </div>
-                                    <div class="payment-logo">
-                                        <img src="{{ asset('frontend-assets/img/all-img/paypal3.png')}}" alt="paypal">
-                                        <img src="{{ asset('frontend-assets/img/all-img/american-express.png')}}" alt="american-express">
-                                        <img src="{{ asset('frontend-assets/img/all-img/mastercard.png')}}" alt="mastercard">
-                                        <img src="{{ asset('frontend-assets/img/all-img/visa.png')}}" alt="visa">
+                                    <div class="payment-gateway d-block mt-2 rounded-0">
+                                        <img src="{{ asset('frontend-assets/payment-logo/paypal.png')}}" alt="paypal" width="100%">
+                                        <img src="{{ asset('frontend-assets/payment-logo/VISA.png')}}" alt="visa" width="100%">
+                                        <img src="{{ asset('frontend-assets/payment-logo/American-Express.png')}}" alt="american-express" width="100%">
+                                        <img src="{{ asset('frontend-assets/payment-logo/Stripe.png')}}" alt="stripe" width="100%">
+                                        <img src="{{ asset('frontend-assets/payment-logo/mastercard.png')}}" alt="mastercard" width="100%">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
         <div class="copy-right-area">
             <div class="container">
-                <div class="main-max-width">
                     <div class="row mb-3">
                         <div class="col-lg-6 col-xm-6 col-md-6">
                             <div class="cpr-left">
@@ -204,7 +185,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -219,26 +199,25 @@
 
     <!-- Modal -->
     <div id="callbackModal" class="modal callbackmodal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
+        <div class="modal-content overflow-hidden">
             <div class="modal-body p-0">
                 <!-- Left: Image -->
-                <div class="modal-image">
+                <div class="modal-image d-none d-md-block">
                         <div class="desc p-4 pb-0">
-                            <h3 class="text-center" style="color: #EFA601">Being Friends & Colleagues</h3>
-                            <p class="fw-bold text-center" style="color: #EFA601">Avail Group Discount</p>
-                            <ul class="text-white ps-0" style="list-style: none;">
-                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Enroll with your groups or friends</li>
-                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Get details on our social group enrollment pricing</li>
-                                <li> <i class="ri-arrow-right-s-fill ms-0"></i> Group learning boosts completion rates by 30% and improves outcomes</li>
+                            <h3 class="text-center" style="color: #012833">Being Friends & Colleagues</h3>
+                            <p class="fw-bold text-center" style="color: #012833">Avail Group Discount</p>
+                            <ul class="text-white ps-0" style="list-style: none;" >
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Enroll with your groups or friends</li>
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Get details on our social group enrollment pricing</li>
+                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Group learning boosts completion rates by 30% and improves outcomes</li>
                             </ul>
                         </div>
                     <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
                 </div>
                 <!-- Right: Form -->
-                <div class="modal-form py-2">
+                <div class="modal-form py-3 pe-4 mt-3">
+                    <span class="close" id="closeModal">&times;</span>
                     <h4 class="border-bottom">Request a Callback</h4>
-                    <p>Leave your details and Our training consultant will get back to you</p>
                     <form action="{{route('request.callback')}}" method="POST" class="mt-5">
                         @csrf
                         <div class="mb-3">
@@ -259,6 +238,8 @@
                                     class="form-control ps-2" 
                                     placeholder="9090909090" 
                                     required 
+                                    maxlength="10"
+                                    oninput="restrictToNumbers(this)" 
                                     autocomplete="tel">
                             </div>
                         </div>
@@ -310,7 +291,7 @@
             width: 90%;
             max-width: 800px; 
             background: #fff;
-            padding: 25px 20px;
+            /* padding: 25px 20px; */
             border-radius: 8px;
             position: relative;
         }
@@ -445,6 +426,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
     <script src="{{asset('app-assets/js/scripts/forms/form-select2.js')}}"></script>
     <script src="{{asset('app-assets/vendors/js/extensions/toastr.min.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     @stack('script')
     <script>
@@ -494,94 +476,58 @@
     </script>
 
     <script>
-        $(document).ready(function() {
-            let storedCountryId = localStorage.getItem('selected_country_id');
-            let countriesData = [];
-            // Hide select initially
-            $('#country-select').hide();
-            // Load countries via AJAX
+        $(document).ready(function () { debugger;
+            //  let storedCountryIso = localStorage.getItem('detected_country_iso');
+            // var countryId = localStorage.getItem('selected_country_id') || 0;s
+
             $.ajax({
                 url: '{{ route("get.countries") }}',
                 type: 'GET',
-                success: function(countries) {
-                    countriesData = countries;
-                    $('#country-select').append(
-                        countries.map(function(country) {
-                            let flagClass = `fi fi-${country.iso2.toLowerCase()} font-large-1`;
-                            return `<option value="${country.id}" data-flag-class="${flagClass}" data-name="${country.name}">${country.name}</option>`;
-                        })
-                    );
-
-                    if (storedCountryId) {
-                        $('#country-select').val(storedCountryId);
-                        updateFlag();
-                    } else {
-                        detectCountryByIP(countries);
-                    }
+                success: function (countries) {
+                    detectCountryByIP(countries);
+                    
                 },
-                error: function() {
-                    alert('Failed to load countries.');
+                error: function () {
+                    console.error('Failed to load countries list');
                 }
             });
 
-            function updateFlag() {
-                const selected = $('#country-select option:selected');
-                const flagClass = selected.data('flag-class');
+            function showFlag(country) { debugger;
+                let flagClass = `fi fi-${country.iso2.toLowerCase()} font-large-1`;
                 $('#flag-display').attr('class', 'select__flag ' + flagClass);
-            }
+                localStorage.setItem('detected_country_iso', country.iso2);
+                localStorage.setItem('selected_country_id', country.id);
 
-            $('#country-select').on('change', function() {
-                updateFlag();
-                localStorage.setItem('selected_country_id', $(this).val());
-                localStorage.setItem('scrollToTop', 'true');
-                window.location.reload();
-            });
+                $.ajax({
+                    url: '{{ route("user.set.country") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        country_id: country.id
+                    },
+                    success: function(response) {
+                        console.log("Country stored in session:", response);
+                    }
+                });
+            }
 
             function detectCountryByIP(countries) {
-                $.get('https://ipapi.co/json/', function(data) {
-                    const matched = countries.find(c => c.name.toLowerCase() === data.country_name.toLowerCase());
+                $.get('https://ipapi.co/json/', function (data) {
+                    // Match by ISO code instead of name
+                    let matched = countries.find(
+                        c => c.iso2.toLowerCase() === data.country_code.toLowerCase()
+                    );
+
                     if (matched) {
-                        $('#country-select').val(matched.id);
-                        updateFlag();
-                        localStorage.setItem('selected_country_id', matched.id);
+                        showFlag(matched);
+                    } else {
+                        console.warn('Country not found in database list');
                     }
+                }).fail(function () {
+                    console.error('IP lookup failed');
                 });
             }
 
-            // Click on flag → Toggle Select2 open/close
-            $('#flag-display').on('click', function() {
-                if (!$('#country-select').hasClass('select2-hidden-accessible')) {
-                    $('#country-select').select2({
-                        dropdownParent: $('.select_country'),
-                        minimumInputLength: 2,
-                        width: '100%',
-                        placeholder: 'Select Country',
-                        allowClear: false
-                    });
-                }
-
-                // Toggle logic
-                if ($('.select2-container--open').length > 0) {
-                    $('#country-select').select2('close');
-                } else {
-                    $('#country-select').select2('open');
-                }
-                
-                $('#flag-display').on('click', function() {
-                    if (countriesData.length > 0) {
-                        initSelect2();
-                        
-                        // Toggle the Select2 dropdown visibility
-                        if ($('#country-select').next('.select2-container').is(':visible')) {
-                            $('#country-select').select2('close');
-                            $('#country-select').next('.select2-container').hide();
-                        } else {
-                            $('#country-select').next('.select2-container').show();
-                            $('#country-select').select2('open');
-                        }
-                    }
-                });
-            });
         });
     </script>
 
@@ -641,20 +587,6 @@
     
     <script>
         $(document).ready(function() {  
-            var countryId = localStorage.getItem('selected_country_id') || 0;
-
-            $.ajax({
-                url: '{{ route("user.set.country") }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    country_id: countryId
-                },
-                success: function(response) {
-                    // console.log("Country stored in session:", response);
-                }
-            });
-        
             $('#subscribeForm').on('submit', function(e) {
                 e.preventDefault();
 
@@ -684,6 +616,29 @@
             dropdownParent: $('#contactUsModal')
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            // Check if 'visited' key is NOT in localStorage
+            if (!localStorage.getItem("visited")) {
+                // Show the modal
+                var welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                welcomeModal.show();
+
+                // Set 'visited' in localStorage so it won't show next time
+                localStorage.setItem("visited", "true");
+            }
+        });
+    </script>   
+    <script>
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                document.querySelectorAll('.courses-content').forEach(c => c.style.display = 'none');
+                document.getElementById(this.dataset.category).style.display = 'block';
+            });
+        });
+
+    </script>
     </body>
     <script>
         'undefined' === typeof _trfq || (window._trfq = []);
@@ -701,8 +656,28 @@
             'cp_cl': '8'
         }) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const target = this.getAttribute('data-category');
+                    const accTarget = 'acc-' + target.split('-')[1];
+
+                    // Remove active class from all
+                    document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.courses-content').forEach(el => el.style.display = 'none');
+                    document.querySelectorAll('.accreditation-content').forEach(el => el.style.display = 'none');
+
+                    // Show selected
+                    this.classList.add('active');
+                    document.getElementById(target).style.display = 'block';
+                    document.getElementById(accTarget).style.display = 'block';
+                });
+            });
+        });
+    </script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     <!-- Mirrored from centuera.com/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 25 Jul 2025 10:40:45 GMT -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 </html>

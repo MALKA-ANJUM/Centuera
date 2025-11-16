@@ -107,8 +107,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        flatpickr('#start_date', {dateFormat: 'Y-m-d'});
-        flatpickr('#expire_date', {dateFormat: 'Y-m-d'});
+        flatpickr('#start_date', {dateFormat: 'd-m-Y'});
+        flatpickr('#expire_date', {dateFormat: 'd-m-Y'});
     </script>
 @endpush
 @endsection

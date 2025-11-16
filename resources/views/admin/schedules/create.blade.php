@@ -79,11 +79,13 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <label class="form-label">Time Zone <span class="text-danger">*</span></label>
-                                                    <select name="time_zone" class="form-control ctrm_select2" required>
+                                                    <select name="time_zone" class="form-control ctrm_select2" id="time_zone" required>
                                                         <option value="">Select Time Zone</option>
                                                         @foreach($countries as $country)
                                                             @foreach(json_decode($country->timezones) as $time)
-                                                            <option value="{{ $time->zoneName }}">{{ $time->zoneName }} ({{ $time->abbreviation }})</option>
+                                                                <option value="{{ $time->zoneName }}" data-country="{{ $country->name }}" data-country-id="{{ $country->id }}">
+                                                                    {{ $time->zoneName }} ({{ $time->abbreviation }})
+                                                                </option>
                                                             @endforeach
                                                         @endforeach
                                                     </select>
@@ -127,11 +129,11 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header d-block">
-                                    <p class="text-danger mb-0">Note: Please add default Country(ALL) & Price</p>
+                                    <!-- <p class="text-danger mb-0">Note: Please add default Country(ALL) & Price</p> -->
                                     <div class=" d-flex justify-content-between align-items-center">
                                          <h5 class="mb-0">Pricing</h5>
-                                        <button type="button" id="add-more-pricing" class="btn btn-sm btn-primary">+ Add
-                                            More</button>
+                                        <!-- <button type="button" id="add-more-pricing" class="btn btn-sm btn-primary">+ Add
+                                            More</button> -->
                                     </div>
                                 </div>
                                 <div class="card-body" id="pricing-container">
@@ -140,37 +142,40 @@
                                         <div class="row g-2 align-items-end">
                                             <div class="col-md-4 country-col">
                                                 <label class="form-label">Country  <span class="text-danger">*</span></label>
-                                               <select name="country_id[]" class="form-select ctrm_select2" required>
+                                                 <input type="text" class="form-control" name="country" id="country" readonly>
+                                                 <input type="hidden" class="form-control" name="country_id" id="country_id">
+
+                                                <!-- <select name="country_id" class="form-select ctrm_select2" required>
                                                     <option value="">Select country</option>
                                                     <option value="0">All</option>
                                                     @foreach($countries as $country)
                                                         <option value="{{ $country->id }}">{{ $country->name }}</option>
                                                     @endforeach
-                                                </select>
+                                                </select> -->
                                                 @error('country_id')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                 @enderror
-                                                <div class="country-error" style="display:none;">You have already selected this country in another row.</div>
+                                                <!-- <div class="country-error" style="display:none;">You have already selected this country in another row.</div> -->
                                             </div>
 
                                             <div class="col-md-3">
                                                 <label class="form-label">Discount Price <span class="text-danger">*</span></label>
-                                                <input type="text" step="0.01" name="discount_price[]" oninput="restrictToNumbers(this)" class="form-control discount-price" placeholder="e.g. 799" required>
+                                                <input type="text" step="0.01" name="discount_price" oninput="restrictToNumbers(this)" class="form-control discount-price" placeholder="e.g. 799" required>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <label class="form-label">Original Price <span class="text-danger">*</span></label>
-                                                <input type="text" step="0.01" name="original_price[]"
+                                                <input type="text" step="0.01" name="original_price"
                                                     class="form-control original-price" oninput="restrictToNumbers(this)" placeholder="e.g. 1499" required>
                                                     <div class="price-error text-danger" style="display:none; font-size: 12px;">
                                                         Original Price must be greater than Discount.
                                                     </div>
                                             </div>
 
-                                            <div class="col-md-2 d-flex align-items-end">
+                                            <!-- <div class="col-md-2 d-flex align-items-end">
                                                 <button type="button"
                                                     class="btn btn-sm btn-danger remove-pricing delete-btn"
-                                                    disabled>Delete</button>
+                                                    disabled>Delete</button> -->
                                             </div>
                                         </div>
                                     </div>
@@ -227,10 +232,10 @@
         $(document).ready(function() {
             function initFlatpickr() {
                 $('.start-date').flatpickr({
-                    dateFormat: 'Y-m-d'
+                    dateFormat: 'd-m-Y'
                 });
                 $('.end-date').flatpickr({
-                    dateFormat: 'Y-m-d'
+                    dateFormat: 'd-m-Y'
                 });
             }
             initFlatpickr();
@@ -334,6 +339,19 @@
             });
 
         });
+
+    </script>
+    <script>
+    $(document).ready(function() {
+        $('#time_zone').on('change', function() {
+            let selectedCountry = $(this).find(':selected').data('country') || '';
+            let selectedCountryId = $(this).find(':selected').data('country-id') || '';
+
+            $('#country').val(selectedCountry);
+            $('#country_id').val(selectedCountryId);
+
+        });
+    });
 
     </script>
 @endpush

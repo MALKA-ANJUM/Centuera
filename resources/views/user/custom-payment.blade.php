@@ -1,26 +1,26 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Custom Payment')
 @section('content')
 <!-- BEGIN: Content-->
 
 <!--  Page Title Area Start-->
-    <section class="page-title-area position-relative">
-        <div class="container">
-            <div class="main-max-width">
-                <div class="page-title-content">
-                    <h2>Custom Payment</h2>
-                    <ul class="page-breadcrumb align-items-center list-unstyle">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"></li>
-                        <li class="primery-link">Custom Payment</li>
-                    </ul>
+<section class="page-title-area position-relative">
+    <div class="container">
+        <div class="main-max-width">
+            <div class="page-title-content">
+                <h2>Custom Payment</h2>
+                <ul class="page-breadcrumb align-items-center list-unstyle">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"></li>
+                    <li class="primery-link">Custom Payment</li>
+                </ul>
 
-                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    {{--  --}}
+{{-- --}}
 <div class="container my-5">
     <div class="col-md-10 mx-auto">
         <div class="card shadow-lg rounded-4 border-0 mw-100">
@@ -36,21 +36,21 @@
                         <!-- Full Name -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="Name">
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Name">
                             @error('name')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        
-                        <!-- Email -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email ID <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" placeholder="Email ID">
-                            @error('email')
-                                <span class="text-danger small">{{ $message }}</span>
+                            <span class="text-danger small message">{{ $message }}</span>
                             @enderror
                         </div>
 
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email ID <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Email ID">
+                            @error('email')
+                            <span class="text-danger small message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <input type="hidden" name="order_id" id="order_id" value="">
                         <!-- Phone -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
@@ -66,10 +66,10 @@
                                     </option>
                                     @endforeach
                                 </select>
-                                <input type="text" name="phone" class="form-control" placeholder="Contact Number">
+                                <input type="text" name="phone" id="phone" class="form-control" maxlength="10" oninput="restrictToNumbers(this)" placeholder="Contact Number">
                             </div>
-                             @error('phone')
-                                <span class="text-danger small">{{ $message }}</span>
+                            @error('phone')
+                            <span class="text-danger small message">{{ $message }}</span>
                             @enderror
                         </div>
 
@@ -86,13 +86,16 @@
                                 <button type="button" class="btn btn-danger removeCourse">X</button>
                             </div> --}}
                         </div>
+
                         <div class="col-6"></div>
                         <div class="col-6 d-flex align-items-end">
                             <button type="button" id="addCourse" class="btn btn-primary w-100 fw-semibold" style="background:#0d2c6c;">
                                 Add +
                             </button>
                         </div>
-
+                        @error('courses')
+                        <span class="text-danger small message">{{ $message }}</span>
+                        @enderror
                         <div class="row">
                             <!-- Currency -->
                             <div class="col-md-6">
@@ -103,9 +106,9 @@
                             <!-- Total Amount -->
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Total Amount <span class="text-danger">*</span></label>
-                                <input type="text" name="amount" class="form-control" placeholder="Total Amount">
+                                <input type="text" name="amount" oninput="restrictToNumbers(this)" class="form-control" placeholder="Total Amount">
                                 @error('amount')
-                                    <span class="text-danger small">{{ $message }}</span>
+                                <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -113,7 +116,7 @@
                         <!-- Workshop Date -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Workshop Date</label>
-                            <input type="text" name="date" class="form-control datepicker" placeholder="dd-mm-yyyy,dd-mm-yyyy">
+                            <input type="text" name="date" class="form-control datepicker" placeholder="01-02-2025 to 25-08-2025">
                         </div>
                     </div>
 
@@ -121,9 +124,8 @@
                     <div class="row text-center mt-4 g-3">
                         <div class="col-md-3">
                             <div class="p-3 border rounded-3 shadow-sm">
-                                <img src="/images/stripe.png" class="mb-2" style="height:30px;">
-                                <button type="button" class="btn btn-danger w-100" id="payWithStripe">Pay with Stripe</button>
-                                <small class="text-muted d-block mt-1">Major Credit / Debit Cards accepted.</small>
+                                <img src="{{ asset('frontend-assets/img/all-img/stripe-img.png') }}" class="mb-2" style="height:30px;">
+                                <button type="button" class="btn style-one w-100" id="payWithStripe">Pay with Stripe</button>
                             </div>
                         </div>
                     </div>
@@ -133,8 +135,8 @@
     </div>
 </div>
 
-    {{--  --}}
-    
+{{-- --}}
+
 <!-- END: Content-->
 @endsection
 
@@ -156,20 +158,20 @@
         $('.phone-flag').select2();
     });
 
-// for auto-select currency
+    // for auto-select currency
     $(document).ready(function() {
-    // On change of country code
-    // $('.phone-flag').on('change', function() {
-    //     let currency = $(this).find(':selected').data('currency');
-    //     $('#currency').val(currency);
-    // });
+        // On change of country code
+        // $('.phone-flag').on('change', function() {
+        //     let currency = $(this).find(':selected').data('currency');
+        //     $('#currency').val(currency);
+        // });
 
-    // Trigger change once on page load (so default selection also works)
-    $('.phone-flag').trigger('change');
+        // Trigger change once on page load (so default selection also works)
+        $('.phone-flag').trigger('change');
     });
 
     //SHOW COURSE USING AJAX
-    $(document).ready(function () {
+    $(document).ready(function() {
         let courseOptions = '<option value="">Select course</option>';
 
         // Load courses via AJAX once
@@ -178,7 +180,7 @@
             type: "GET",
             success: function(courses) {
                 $.each(courses, function(index, course) {
-                    courseOptions += '<option value="'+course.id+'">'+course.title+'</option>';
+                    courseOptions += '<option value="' + course.id + '">' + course.title + '</option>';
                 });
 
                 // Fill the first dropdown
@@ -190,7 +192,7 @@
         });
 
         // Add new repeater row
-        $("#addCourse").click(function () {
+        $("#addCourse").click(function() {
             let newRow = `
             <div class="course-item row mb-2">
                 <div class="col-md-11">
@@ -208,13 +210,13 @@
         });
 
         // Remove row
-        $(document).on("click", ".removeCourse", function () {
+        $(document).on("click", ".removeCourse", function() {
             $(this).closest(".course-item").remove();
         });
     });
 
     //flatpickr
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         flatpickr(".datepicker", {
             mode: "range",
             dateFormat: "d-m-Y",
@@ -225,80 +227,321 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+        let createdOrderId = null;
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function createOrderIfNeeded() {
+
+            let email = $("#email").val();
+            let phone = $("#phone").val();
+            let orderId = $("#order_id").val();
+            let valid = true; // ✅ reset validation each time
+            let errors = [];
+
+            // Validate email
+            if (email && !isValidEmail(email)) {
+                valid = false;
+                errors.push("Invalid email format");
+            }
+
+            // Validate phone
+            if (phone && !/^[0-9]{7,15}$/.test(phone)) {
+                valid = false;
+                errors.push("Invalid phone number");
+            }
+
+            // Show errors if any
+            if (!valid) {
+                errors.forEach(error => toastr.error(error, "Validation Error"));
+                return false;
+            }
+
+            if (!email && !phone) return;
+
+            $.ajax({
+                url: "{{ route('order.create') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    email: email,
+                    phone: phone,
+                    fullname: $("input[name='name']").val(),
+                    country_code: $("select[name='country_code']").val(),
+                    custom_payment: $("#custom_payment").val(),
+                    order_id: orderId,
+                },
+                success: function(res) {
+                    if (res.success) {
+                        createdOrderId = res.order_id;
+                        $("#order_id").val(res.order_id);
+                        console.log("Order created:", createdOrderId);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        $("#email, #phone").on("blur", createOrderIfNeeded);
+
         let stripe = Stripe("{{ config('services.stripe.key') }}"); // ✅ your publishable key
 
-        $("#payWithStripe").click(function (e) {
+        $("#payWithStripe").click(function(e) {
             e.preventDefault();
 
             let valid = true;
             let errors = [];
 
             // Required fields
-            let name = $("input[name='name']").val().trim();
-            let orderId = $("input[name='orderId']").val().trim();
-            let email = $("input[name='email']").val().trim();
-            let phone = $("input[name='phone']").val().trim();
-            let country_code = $("select[name='country_code']").val();
-            let amount = $("input[name='amount']").val().trim();
-            let custom_payment = $("input[name='custom_payment']").val().trim();
-            let courses = $("select[name='courses[]']").map(function(){ return $(this).val(); }).get();
+            let form = $(this).closest("form"); // ✅ scope form
 
-            // Validation checks
-            if (!name) { valid = false; errors.push("Name is required"); }
-            if (!email) { valid = false; errors.push("Email is required"); }
-            if (!phone) { valid = false; errors.push("Phone number is required"); }
-            if (!country_code) { valid = false; errors.push("Country code is required"); }
-            if (!amount || isNaN(amount) || amount <= 0) { valid = false; errors.push("Valid amount is required"); }
-            if (courses.length === 0 || !courses[0]) { valid = false; errors.push("At least one course must be selected"); }
+            let name = form.find("input[name='name']").val();
+            let email = form.find("input[name='email']").val();
+            let phone = form.find("input[name='phone']").val();
+            let country_code = form.find("select[name='country_code']").val();
+            let amount = form.find("input[name='amount']").val();
+            let custom_payment = form.find("input[name='custom_payment']").val();
+            let courses = form.find("select[name='courses[]']").map(function() {
+                return $(this).val();
+            }).get();
+            let dateValue = form.find("input[name='date']").val();
+            let dates = dateValue.split(' to ');
 
-            // Show error messages
+            if (!name) {
+                valid = false;
+                errors.push("Name is required");
+            }
+            if (!email) {
+                valid = false;
+                errors.push("Email is required");
+            }
+            if (!phone) {
+                valid = false;
+                errors.push("Phone number is required");
+            }
+            if (!country_code) {
+                valid = false;
+                errors.push("Country code is required");
+            }
+            if (!amount || isNaN(amount) || amount <= 0) {
+                valid = false;
+                errors.push("Valid amount is required");
+            }
+            if (courses.length === 0 || !courses[0]) {
+                valid = false;
+                errors.push("At least one course must be selected");
+            }
+
+            // Show error messages using toastr
             if (!valid) {
-                alert("Please fix the following errors:\n\n" + errors.join("\n"));
+                errors.forEach(error => {
+                    toastr.error(error, "Validation Error");
+                });
                 return false; // ⛔ Stop before Stripe request
             }
+
 
             // ✅ Proceed only if valid
             let formData = {
                 _token: "{{ csrf_token() }}",
+                order_id: createdOrderId,
                 fullname: name,
-                orderId: orderId,
                 email: email,
                 phone: phone,
                 country_code: country_code,
                 course_id: courses,
                 currency: $("#currency").val(),
                 total_amount: amount,
-                workshop_start_date: $("input[name='date']").val().split(',')[0] ?? null,
-                workshop_end_date: $("input[name='date']").val().split(',')[1] ?? null,
+                workshop_start_date: dates[0] ?? null,
+                workshop_end_date: dates[1] ?? null,
                 participants: 1,
                 price: amount,
-                custom_payment:custom_payment
-
+                custom_payment: custom_payment
             };
 
             $.ajax({
                 url: "{{ route('checkout.session') }}",
                 method: "POST",
                 data: formData,
-                success: function (response) {
+                success: function(response) {
                     if (response.id) {
-                        stripe.redirectToCheckout({ sessionId: response.id });
-                    } else {
-                        alert("Payment initialization failed.");
+                        stripe.redirectToCheckout({
+                            sessionId: response.id
+                        });
                     }
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     console.error(xhr.responseText);
-                    alert("Error: Unable to initialize payment.");
                 }
             });
         });
 
     });
+    //   $(document).ready(function() {
+    //     let createdOrderId = null;
+
+    //     function isValidEmail(email) {
+    //         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //         return emailRegex.test(email);
+    //     }
+
+    //     function createOrderIfNeeded() {
+
+    //         let email = $("#email").val();
+    //         let phone = $("#phone").val();
+    //         let orderId = $("#order_id").val();
+    //         let valid = true; // ✅ reset validation each time
+    //         let errors = [];
+
+    //         // Validate email
+    //         if (email && !isValidEmail(email)) {
+    //             valid = false;
+    //             errors.push("Invalid email format");
+    //         }
+
+    //         // Validate phone
+    //         if (phone && !/^[0-9]{7,15}$/.test(phone)) {
+    //             valid = false;
+    //             errors.push("Invalid phone number");
+    //         }
+
+    //         // Show errors if any
+    //         if (!valid) {
+    //             errors.forEach(error => toastr.error(error, "Validation Error"));
+    //             return false;
+    //         }
+
+    //         if (!email && !phone) return;
+
+    //         $.ajax({
+    //             url: "{{ route('order.create') }}",
+    //             type: "POST",
+    //             data: {
+    //                 _token: "{{ csrf_token() }}",
+    //                 email: email,
+    //                 phone: phone,
+    //                 fullname: $("input[name='name']").val(),
+    //                 country_code: $("select[name='country_code']").val(),
+    //                 custom_payment: $("#custom_payment").val(),
+    //                 order_id: orderId,
+    //             },
+    //             success: function(res) {
+    //                 if (res.success) {
+    //                     createdOrderId = res.order_id;
+    //                     $("#order_id").val(res.order_id);
+    //                     console.log("Order created:", createdOrderId);
+    //                 }
+    //             },
+    //             error: function(xhr) {
+    //                 console.error(xhr.responseText);
+    //             }
+    //         });
+    //     }
+
+    //     $("#email, #phone").on("blur", createOrderIfNeeded);
+
+    //     let stripe = Stripe("{{ config('services.stripe.key') }}"); // ✅ your publishable key
+
+    //     $("#payWithStripe").click(function(e) {
+    //         e.preventDefault();
+
+    //         let valid = true;
+    //         let errors = [];
+
+    //         // Required fields
+    //         let form = $(this).closest("form"); // ✅ scope form
+
+    //         let name = form.find("input[name='name']").val();
+    //         let email = form.find("input[name='email']").val();
+    //         let phone = form.find("input[name='phone']").val();
+    //         let country_code = form.find("select[name='country_code']").val();
+    //         let amount = form.find("input[name='amount']").val();
+    //         let custom_payment = form.find("input[name='custom_payment']").val();
+    //         let courses = form.find("select[name='courses[]']").map(function() {
+    //             return $(this).val();
+    //         }).get();
+    //         let dateValue = form.find("input[name='date']").val();
+    //         let dates = dateValue.split(' to ');
+
+    //         if (!name) {
+    //             valid = false;
+    //             errors.push("Name is required");
+    //         }
+    //         if (!email) {
+    //             valid = false;
+    //             errors.push("Email is required");
+    //         }
+    //         if (!phone) {
+    //             valid = false;
+    //             errors.push("Phone number is required");
+    //         }
+    //         if (!country_code) {
+    //             valid = false;
+    //             errors.push("Country code is required");
+    //         }
+    //         if (!amount || isNaN(amount) || amount <= 0) {
+    //             valid = false;
+    //             errors.push("Valid amount is required");
+    //         }
+    //         if (courses.length === 0 || !courses[0]) {
+    //             valid = false;
+    //             errors.push("At least one course must be selected");
+    //         }
+
+    //         // Show error messages using toastr
+    //         if (!valid) {
+    //             errors.forEach(error => {
+    //                 toastr.error(error, "Validation Error");
+    //             });
+    //             return false; // ⛔ Stop before Stripe request
+    //         }
+
+
+    //         // ✅ Proceed only if valid
+    //         let formData = {
+    //             _token: "{{ csrf_token() }}",
+    //             order_id: createdOrderId,
+    //             fullname: name,
+    //             email: email,
+    //             phone: phone,
+    //             country_code: country_code,
+    //             course_id: courses,
+    //             currency: $("#currency").val(),
+    //             total_amount: amount,
+    //             workshop_start_date: dates[0] ?? null,
+    //             workshop_end_date: dates[1] ?? null,
+    //             participants: 1,
+    //             price: amount,
+    //             custom_payment: custom_payment
+    //         };
+
+    //         $.ajax({
+    //             url: "{{ route('checkout.session') }}",
+    //             method: "POST",
+    //             data: formData,
+    //             success: function(response) {
+    //                 if (response.id) {
+    //                     stripe.redirectToCheckout({
+    //                         sessionId: response.id
+    //                     });
+    //                 }
+    //             },
+    //             error: function(xhr) {
+    //                 console.error(xhr.responseText);
+    //             }
+    //         });
+    //     });
+
+    // });
 </script>
 
-@endpush 
+@endpush
 
 @push('style')
 <style>
@@ -310,6 +553,7 @@
         margin-top: 5px;
         border-radius: 0 !important;
     }
+
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         top: 10px !important;
     }

@@ -24,6 +24,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Auth\UserLogincontroller;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\GeneralsettingsController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Models\CustomPayment;
@@ -118,24 +119,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('export', [UserController::class, 'requestExport'])->name('request.export');
 
         //Order Listing and EXPORT
-        Route::get('order-list', [CustomPaymentController::class, 'orderList'])->name('order.list');
-        Route::get('order-export', [CustomPaymentController::class, 'orderExport'])->name('order.export');
-        Route::get('order-view/{id}', [CustomPaymentController::class, 'orderView'])->name('order.view');
+        Route::get('order-list', [OrderController::class, 'orderList'])->name('order.list');
+        Route::get('order-export', [OrderController::class, 'orderExport'])->name('order.export');
+        Route::get('order-view/{id}', [OrderController::class, 'orderView'])->name('order.view');
 
         //RATINGS
-        Route::get('rating-list', [RatingController::class, 'rating'])->name('rating.list');
+        Route::get('rating-list', [RatingController::class, 'rating'])->name('rating.list');// routes/web.php
+        Route::post('approve-status', [RatingController::class, 'approveStatus'])->name('approve.status');
 
         //add photo
          Route::get('photo/{id}', [PhotoController::class, 'photo'])->name('photo');
          Route::post('photo/add/{id}', [PhotoController::class, 'photoAdd'])->name('photo.add');
         Route::get('delete/{id}', [PhotoController::class, 'PhotoDelete'])->name('photo.delete');
          
-        // banner image
-        Route::get('banner', [WebsiteController::class, 'banner'])->name('banner');
-        Route::post('update-banner/{id}', [WebsiteController::class, 'updateBanner'])->name('update.banner');
-        Route::post('update/user-banner', [WebsiteController::class, 'updateUserBanner'])->name('update.user.banner');
-        Route::get('delete-banner/{image}', [WebsiteController::class, 'deleteBanner'])->name('delete.banner');
-        Route::get('delete-user-banner/{image}', [WebsiteController::class, 'deleteUserBanner'])->name('delete.user.banner');
+        Route::prefix('banner')->name('banner.')->group(function () {
+            Route::get('/', [WebsiteController::class, 'index'])->name('index');
+            Route::post('update', [WebsiteController::class, 'update'])->name('update');
+            Route::delete('delete/{id}', [WebsiteController::class, 'destroy'])->name('delete');
+        });
+
 
         //subscriptions
         Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
@@ -164,6 +166,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('store', [CourseController::class, 'store'])->name('store');
             Route::get('edit/{id}', [CourseController::class, 'edit'])->name('edit');
             Route::post('update/{id}', [CourseController::class, 'update'])->name('update');
+            Route::get('delete/{id}', [CourseController::class, 'destroy'])->name('delete');
         });
 
         //Schedule
@@ -219,9 +222,8 @@ Route::get('contact', [UserController::class, 'contact'])->name('contact');
 Route::post('contact', [UserController::class, 'storeContact'])->name('store.contact');
 
 //CUSTOM PAYMENT PAGE
-Route ::get('custom-payment-page',[CustomPaymentController::class, 'customPayment'])->name('custom.payment');
-Route::post('/custom-payment/store', [CustomPaymentController::class, 'store'])->name('custom-payment.store');
-Route::get('/get-courses', [CustomPaymentController::class, 'getCourses'])->name('get.courses');
+Route ::get('custom-payment-page',[UserOrderController::class, 'customPayment'])->name('custom.payment');
+Route::get('get-courses', [UserOrderController::class, 'getCourses'])->name('get.courses');
 
 Route::get('courses', [UserCourseController::class, 'courseList'])->name('course.list');
 Route::get('course-details/{slug}', [UserCourseController::class, 'courseDetails'])->name('course.details');
@@ -237,6 +239,12 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::post('register-details-submit', [UserLogincontroller::class, 'registerDetailsSubmit'])->name('register.details.submit');
     Route::get('get-countries', [UserLogincontroller::class, 'getCountries'])->name('get.countries');
     Route::get('get-states', [UserLogincontroller::class, 'getStates'])->name('get.states');
+    // User Forgot Password Routes
+    Route::get('forgot-password', [UserLogincontroller::class, 'forgotPasswordForm'])->name('forgot.password');
+    Route::post('send-otp', [UserLogincontroller::class, 'sendOtp'])->name('send.otp');
+    Route::post('otp-verification', [UserLogincontroller::class, 'otpVerification'])->name('otp.verification');
+    Route::get('reset-password', [UserLogincontroller::class, 'resetPasswordForm'])->name('reset.password.form');
+    Route::post('reset-password', [UserLogincontroller::class, 'resetPassword'])->name('reset.password');
 
 
     Route::post('subscribe', [UserController::class, 'subscribe'])->name('subscribe');
@@ -261,14 +269,20 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::middleware(['auth:web'])->group(function () {
         //Protected Route start
         Route::get('dashboard', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+        Route::get('view-order/{id}', [UserDashboardController::class, 'viewOrder'])->name('view.order');
+        Route::get('order-invoice/{id}', [UserDashboardController::class, 'orderInvoice'])->name('order.invoice');
         Route::post('update-basic', [UserDashboardController::class, 'updateBasic'])->name('update.basic');
         Route::post('update-contact', [UserDashboardController::class, 'updateContact'])->name('update.contact');
         Route::post('update-password', [UserDashboardController::class, 'updatePassword'])->name('update.password');
+        Route::post('add-review-ratings', [UserDashboardController::class, 'addReviewRatings'])->name('add.review.ratings');
         Route::get('logout', [UserController::class, 'logout'])->name('logout');
+        //live search filter using ajax
+        Route::get('/search-order', [UserDashboardController::class, 'searchOrder'])->name('search.order');
     });
 });
 
 Route::get('payment', [PaymentController::class, 'paymentForm'])->name('payment.form');
+Route::post('/create-order', [PaymentController::class, 'createOrder'])->name('order.create');
 Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout.session');
 Route::get('/stripe/success', [PaymentController::class, 'success'])->name('stripe.success');
 Route::get('/stripe/cancel', [PaymentController::class, 'cancel'])->name('stripe.cancel');

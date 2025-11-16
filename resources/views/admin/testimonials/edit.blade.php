@@ -36,14 +36,14 @@
                             @method('PUT')
                             <div class="row mb-2">
                                 <div class="col-md-12">
-                                    <label for="title" class="form-label">@lang('Title')</label>
-                                    <input type="text" class="form-control" placeholder="@lang('Enter Title')"
+                                    <label for="title" class="form-label">@lang('Name')</label>
+                                    <input type="text" class="form-control" placeholder="@lang('Enter Feedback')"
                                         name="title" id="title" value="{{ $Testimonial->title }}">
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-12">
-                                    <label for="description" class="form-label">@lang('Description')</label>
+                                    <label for="description" class="form-label">@lang('Feedback')</label>
                                     <textarea class="form-control" name="description" id="description">{{ $Testimonial->description }}</textarea>
                                 </div>
                             </div>
@@ -80,6 +80,7 @@
 @endsection
 
 @push('script')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
 <script>
     ClassicEditor
     .create(document.querySelector('#description'))

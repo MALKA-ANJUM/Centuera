@@ -1,6 +1,22 @@
 <div class="p-2">
     <div class="form_info mb-3">
         <h3>My Orders</h3>
+        <div class="d-flex  justify-content-between">
+            {{-- Date filters --}}
+           <div class="d-flex" style="width: 350px">
+                <input type="text" name="from_date" class="form-control datepicker me-2"
+                    placeholder="From Date">
+                <input type="text" name="to_date" class="form-control datepicker me-2"
+                    placeholder="To Date">
+           </div>
+
+            {{-- Search --}}
+            <div class="d-flex">
+                <input type="text" name="search" id="search" class="form-control ms-3 p-0"
+                placeholder="Search Order Id or Email">
+            <a href="{{ route('user.dashboard', ['tab' => 'orders']) }}" class="btn style-one p-2"><i class="fa-solid fa-rotate-right"></i></a>
+            </div>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -12,31 +28,81 @@
                     <th>Date</th>
                     <th>Status</th>
                     <th>Total</th>
+                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse($orders as $index => $order)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>#{{ $order->id }}</td>
-                        <td>{{ $order->created_at->format('d M Y') }}</td>
-                        <td>
-                            @if($order->status == 'pending')
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($order->status == 'paid')
-                                <span class="badge bg-success">Paid</span>
-                            @elseif($order->status == 'cancelled')
-                                <span class="badge bg-danger">Cancelled</span>
-                            @endif
-                        </td>
-                        <td>{{$order->currency}} {{ number_format($order->total_amount, 2) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">No orders found.</td>
-                    </tr>
-                @endforelse
+            
+               
+            <tbody id="results">
+                @include('user.partials.order_rows', ['orders' => $orders])
             </tbody>
         </table>
     </div>
 </div>
+@push('script')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+        flatpickr(".datepicker", {
+            dateFormat: "d-m-Y",
+        });
+    // });
+
+//filters add
+    function fetchOrders(){
+        let search = $('#search').val();
+        let from_date = $('input[name="from_date"]').val();
+        let to_date = $('input[name="to_date"]').val();
+
+        $.ajax({
+            url: "{{route('user.search.order')}}",
+            type: 'GET',
+            data: {search,from_date,to_date},
+            success: function(data){
+                $('#results').html(data);
+            }
+        });
+    }
+    //live search
+    let searching;
+    $('#search').on('keyup', function () {
+        clearTimeout(searching);
+        searching = setTimeout(fetchOrders, 400);
+    });
+    // filter on date change
+    $(document).on('change', '.datepicker', fetchOrders);
+});
+
+</script>
+@endpush
+
+@push('style')
+    <style>
+    .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-start;
+    }
+
+    .rating input {
+        display: none;
+    }
+
+    .rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s ease;
+        padding: 0 5px;
+    }
+
+    .rating input:checked ~ label {
+        color: #f5b301; /* Gold color for selected stars */
+    }
+
+    .rating label:hover,
+    .rating label:hover ~ label {
+        color: #f5b301;
+    }
+
+    </style>
+@endpush

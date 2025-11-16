@@ -17,11 +17,11 @@ public function DynamicList(Request $request)
 }
     $query->orderBy('id', 'DESC');
     $dynamics = $query->paginate(10);
-    return view('admin.Dynamic.list', compact('dynamics', 'search'));
+    return view('admin.dynamic.list', compact('dynamics', 'search'));
 }
 public function DynamicForm()
 {
-    return view('admin.Dynamic.Form');
+    return view('admin.dynamic.form');
 }
 public function DynamicAdd(Request $request)
 {
@@ -47,7 +47,7 @@ public function DynamicAdd(Request $request)
     public function DynamicEdit($id)
     {
         $dynamics = Dynamic::find($id);
-        return view('admin.Dynamic.edit', compact('dynamics'));
+        return view('admin.dynamic.edit', compact('dynamics'));
     }
     public function DynamicUpdate(Request $request, $id)
     {

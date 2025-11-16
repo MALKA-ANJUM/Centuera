@@ -1991,6 +1991,7 @@ select {
 
 .single-courses-box .image img {
   width: 100%;
+  border-radius: 10px 10px 0 0;
 }
 
 .single-courses-box .cr-option {
@@ -5200,7 +5201,7 @@ Edu widgets Area CSS
 }
 
 .widget-catgory ul li a {
-  padding: 12px 20px;
+  padding: 7px 20px;
   background-color: var(--offWhiteColor);
   border-radius: 50px;
   transition: var(--transition);
@@ -5208,7 +5209,7 @@ Edu widgets Area CSS
   justify-content: space-between;
   align-items: center;
   color: var(--paraColor);
-  margin-bottom: 18px;
+  margin-bottom: 6px;
 }
 
 .widget-catgory ul li p {
@@ -8749,7 +8750,7 @@ Back to Top CSS
 .Course-Key-Features p {
   flex: 1 1 100%;
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   margin: 5px 0;
 }
 
@@ -9335,7 +9336,7 @@ Back to Top CSS
 .text-section {
   flex: 1;
   min-width: 300px;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .logo-section {
@@ -9410,7 +9411,7 @@ Back to Top CSS
 .parent-container {
   display: flex;
   flex-wrap: wrap;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .left-section {
@@ -9551,7 +9552,7 @@ h2 {
 /*--------------------whybootcamp----------------------*/
 
 .why-bootcamp {
-  padding: 20px;
+  padding: 20px 0;
 }
 
 /* .why-bootcamp h2 {
@@ -9713,9 +9714,14 @@ h2 {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  min-width: 260px;
+  /* min-width: 260px; */
+  min-width: 550px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+.dropdown-item {
+    width: 250px !important;
 }
 
 .dropdown:hover .dropdown-content {

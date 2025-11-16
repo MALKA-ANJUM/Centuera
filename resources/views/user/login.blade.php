@@ -27,8 +27,8 @@
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
                             </div>
-                               <div class="d-flex justify-content-end">
-                                <a href="auth-forgot-password-basic.html">
+                            <div class="d-flex justify-content-end">
+                                <a href="{{ route('user.forgot.password') }}">
                                     <small>Forgot Password?</small>
                                 </a>
                             </div>

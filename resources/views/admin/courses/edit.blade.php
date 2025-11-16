@@ -60,6 +60,21 @@
                                         @enderror
                                     </div>
 
+                                    {{-- Logo --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Logo')</label>
+                                        <input type="file" name="logo" class="form-control">
+                                        @if (!empty($course->logo))
+                                            <div class="mb-1">
+                                                <a href="{{ asset('uploads/logo/' . $course->logo) }}" target="_blank">
+                                                    <span style="font-size: 13px;">View Image</span>
+                                                </a>
+                                            </div>
+                                        @endif
+                                        @error('logo')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     {{-- Category --}}
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>
@@ -358,6 +373,52 @@
                                     </div>
                                 </div>
                             </div>
+
+                             <div class="card mt-2">
+                                <div class="card-body">
+                                    <h3 class="mb-2">@lang('Frequently Asked Questions')</h3>
+                                    <div id="faq-container">
+                                        @php
+                                            $oldFaqs = old('faqs');
+                                            $dbFaqs = isset($course) && $course->id ? $course->faqs ?? [] : [];
+                                            if (isset($dbFaqs) && method_exists($dbFaqs, 'toArray')) {
+                                                $dbFaqs = $dbFaqs->toArray();
+                                            }
+                                            $faqs = $oldFaqs ?? $dbFaqs;
+                                        @endphp
+                                        @if($faqs && count($faqs))
+                                            @foreach($faqs as $i => $faq)
+                                                <div class="faq-item mb-3 border p-2 rounded">
+                                                    <div class="mb-2">
+                                                        <label class="form-label">@lang('Question')</label>
+                                                        <input type="text" name="faqs[{{ $i }}][title]" class="form-control" value="{{ is_array($faq) ? $faq['title'] ?? '' : $faq->title ?? '' }}" placeholder="Enter question">
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label">@lang('Answer')</label>
+                                                        <textarea name="faqs[{{ $i }}][description]" class="form-control faq-answer-editor" id="faq-answer-editor-{{ $i }}" rows="2" placeholder="Enter answer">{{ is_array($faq) ? $faq['description'] ?? '' : $faq->description ?? '' }}</textarea>
+                                                    </div>
+                                                    <button type="button" class="btn btn-danger btn-sm remove-faq" @if($i == 0) disabled @endif><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="faq-item mb-3 border p-2 rounded">
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Question')</label>
+                                                    <input type="text" name="faqs[0][title]" class="form-control" value="" placeholder="Enter question">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Answer')</label>
+                                                    <textarea name="faqs[0][description]" class="form-control faq-answer-editor" id="faq-answer-editor-0" rows="2" placeholder="Enter answer"></textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm remove-faq" disabled><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button type="button" id="add-faq" class="btn btn-sm btn-primary mt-1">
+                                        + @lang('Add More FAQ')
+                                    </button>
+                                </div>
+                            </div>  
                         </div>
 
                         {{-- Right Column (Features) --}}
@@ -524,10 +585,16 @@
                                             @endforeach
                                         @elseif(isset($dbPartners) && count($dbPartners))
                                             @foreach($dbPartners as $i => $partner)
+                                                @php 
+                                                    $logo = is_array($partner) ? ($partner['logo'] ?? null) : ($partner->logo ?? null);
+                                                    $id = is_array($partner) ? ($partner['id'] ?? null) : ($partner->id ?? null);
+                                                @endphp
                                                 <div class="border rounded p-2 mb-2 partner-group">
+                                                    <input type="hidden" name="partners[{{ $i }}][id]" value="{{ $id }}">
                                                     <input type="text" name="partners[{{ $i }}][name]" value="{{ is_array($partner) ? $partner['name'] : $partner->name ?? '' }}" class="form-control mb-2" placeholder="Partner Name">
                                                     <input type="file" name="partners[{{ $i }}][logo]" class="form-control partner-logo" placeholder="Logo">
-                                                    @php $logo = is_array($partner) ? ($partner['logo'] ?? null) : ($partner->logo ?? null); @endphp
+                                                    <input type="hidden" name="partners[{{ $i }}][existing_logo]" value="{{ $logo }}">
+                                                    
                                                     @if(!empty($logo))
                                                         <div class="mb-1">
                                                             <a href="{{ asset('uploads/partners/' . $logo) }}" target="_blank">
@@ -539,6 +606,7 @@
                                                     <button type="button" class="btn btn-danger btn-sm remove-partner mt-2" @if($i == 0) disabled @endif><i class="fas fa-trash"></i></button>
                                                 </div>
                                             @endforeach
+
                                         @else
                                             <div class="border rounded p-2 mb-2 partner-group">
                                                 <input type="text" name="partners[0][name]" value="" class="form-control mb-2" placeholder="Partner Name">
@@ -604,51 +672,6 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="card mt-2">
-                                <div class="card-body">
-                                    <h3 class="mb-2">@lang('Frequently Asked Questions')</h3>
-                                    <div id="faq-container">
-                                        @php
-                                            $oldFaqs = old('faqs');
-                                            $dbFaqs = isset($course) && $course->id ? $course->faqs ?? [] : [];
-                                            if (isset($dbFaqs) && method_exists($dbFaqs, 'toArray')) {
-                                                $dbFaqs = $dbFaqs->toArray();
-                                            }
-                                            $faqs = $oldFaqs ?? $dbFaqs;
-                                        @endphp
-                                        @if($faqs && count($faqs))
-                                            @foreach($faqs as $i => $faq)
-                                                <div class="faq-item mb-3 border p-2 rounded">
-                                                    <div class="mb-2">
-                                                        <label class="form-label">@lang('Question')</label>
-                                                        <input type="text" name="faqs[{{ $i }}][title]" class="form-control" value="{{ is_array($faq) ? $faq['title'] ?? '' : $faq->title ?? '' }}" placeholder="Enter question">
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <label class="form-label">@lang('Answer')</label>
-                                                        <textarea name="faqs[{{ $i }}][description]" class="form-control faq-answer-editor" id="faq-answer-editor-{{ $i }}" rows="2" placeholder="Enter answer">{{ is_array($faq) ? $faq['description'] ?? '' : $faq->description ?? '' }}</textarea>
-                                                    </div>
-                                                    <button type="button" class="btn btn-danger btn-sm remove-faq" @if($i == 0) disabled @endif><i class="fas fa-trash"></i></button>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <div class="faq-item mb-3 border p-2 rounded">
-                                                <div class="mb-2">
-                                                    <label class="form-label">@lang('Question')</label>
-                                                    <input type="text" name="faqs[0][title]" class="form-control" value="" placeholder="Enter question">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label">@lang('Answer')</label>
-                                                    <textarea name="faqs[0][description]" class="form-control faq-answer-editor" id="faq-answer-editor-0" rows="2" placeholder="Enter answer"></textarea>
-                                                </div>
-                                                <button type="button" class="btn btn-danger btn-sm remove-faq" disabled><i class="fas fa-trash"></i></button>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <button type="button" id="add-faq" class="btn btn-sm btn-primary mt-1">
-                                        + @lang('Add More FAQ')
-                                    </button>
-                                </div>
-                            </div>
                             {{-- Card: Benefits --}}
                             <div class="card mt-2">
                                 <div class="card-body">
@@ -683,37 +706,80 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label">@lang('Company Images')</label>
+                                                        <input type="file" name="benefits[{{ $i }}][company_images][]" class="form-control" multiple>
+                                                        <small class="text-danger mb-2 partner-logo-error">Company Images must be up to 200×200 pixels.</small><br>
+                                                        @php
+                                                            $companyImages = [];
+                                                            if (isset($benefit->company_images)) {
+                                                                if (is_array($benefit->company_images)) {
+                                                                    $companyImages = $benefit->company_images;
+                                                                } else {
+                                                                    $companyImages = json_decode($benefit->company_images, true) ?? [];
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        @if(!empty($companyImages) && is_array($companyImages))
+                                                            <div class="mt-2">
+                                                                @foreach($companyImages as $img)
+                                                                    <a href="{{ asset('uploads/premier_partner/' . $img) }}" target="_blank" style="margin-right:8px;">
+                                                                        <img src="{{ asset('uploads/premier_partner/' . $img) }}" alt="Company Image" style="height:40px; width:40px; object-fit:cover; border-radius:4px; border:1px solid #ccc;" />
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                     <button type="button" class="btn btn-danger btn-sm remove-benefit" @if($i == 0) disabled @endif>
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
                                             @endforeach
                                         @elseif(isset($benefits) && count($benefits))
-                                            @foreach($benefits as $i => $benefit)
-                                                @php
-                                                    $salary = is_array($benefit->salary) ? $benefit->salary : (json_decode($benefit->salary, true) ?? []);
-                                                @endphp
-                                                <div class="benefit-item border rounded p-2 mb-2">
-                                                    <div class="mb-2">
-                                                        <label class="form-label">@lang('Designation')</label>
-                                                        <input type="text" name="benefits[{{ $i }}][designation]" value="{{ $benefit->designation ?? '' }}" class="form-control" placeholder="Enter designation">
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <label class="form-label">@lang('Salary Range')</label>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <input type="number" step="0.01" name="benefits[{{ $i }}][salary_min]" value="{{ $salary['min'] ?? '' }}" class="form-control" placeholder="Min Salary">
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <input type="number" step="0.01" name="benefits[{{ $i }}][salary_max]" value="{{ $salary['max'] ?? '' }}" class="form-control" placeholder="Max Salary">
-                                                            </div>
+                                         @foreach($benefits as $i => $benefit)
+                                            @php
+                                                $salary = is_array($benefit->salary) ? $benefit->salary : (json_decode($benefit->salary, true) ?? []);
+                                            @endphp
+                                            <div class="benefit-item border rounded p-2 mb-2">
+                                                <input type="hidden" name="benefits[{{ $i }}][id]" value="{{ $benefit->id ?? '' }}">
+
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Designation')</label>
+                                                    <input type="text" name="benefits[{{ $i }}][designation]" value="{{ $benefit->designation ?? '' }}" class="form-control" placeholder="Enter designation">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Salary Range')</label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <input type="number" step="0.01" name="benefits[{{ $i }}][salary_min]" value="{{ $salary['min'] ?? '' }}" class="form-control" placeholder="Min Salary">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <input type="number" step="0.01" name="benefits[{{ $i }}][salary_max]" value="{{ $salary['max'] ?? '' }}" class="form-control" placeholder="Max Salary">
                                                         </div>
                                                     </div>
-                                                    <button type="button" class="btn btn-danger btn-sm remove-benefit" @if($i == 0) disabled @endif>
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
                                                 </div>
-                                            @endforeach
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Company Images')</label>
+                                                    <input type="file" name="benefits[{{ $i }}][company_images][]" class="form-control" multiple>
+                                                    @php
+                                                        $companyImages = is_array($benefit->company) ? $benefit->company : json_decode($benefit->company, true);
+                                                    @endphp
+                                                    @if(!empty($companyImages))
+                                                        <div class="mt-2">
+                                                            @foreach($companyImages as $img)
+                                                                <a href="{{ asset('uploads/company_images/' . $img) }}" target="_blank" style="margin-right:8px;">
+                                                                    <img src="{{ asset('uploads/company_images/' . $img) }}" style="height:40px;width:40px;object-fit:cover;border-radius:4px;border:1px solid #ccc;">
+                                                                </a>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <button type="button" class="btn btn-danger btn-sm remove-benefit" @if($i == 0) disabled @endif>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        @endforeach
+
                                         @else
                                             <div class="benefit-item border rounded p-2 mb-2">
                                                 <div class="mb-2">
@@ -730,6 +796,11 @@
                                                             <input type="number" step="0.01" name="benefits[0][salary_max]" class="form-control" placeholder="Max Salary">
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">@lang('Company Images')</label>
+                                                    <input type="file" name="benefits[0][company_images][]" class="form-control" multiple>
+                                                    <small class="text-danger mb-2 partner-logo-error">Company Images must be up to 200×200 pixels.</small><br>
                                                 </div>
                                                 <button type="button" class="btn btn-danger btn-sm remove-benefit" disabled>
                                                     <i class="fas fa-trash"></i>
@@ -859,7 +930,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2">@lang('Update Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" style="position: fixed; bottom: 15px;">@lang('Update Course')</button>
                 </form>
             </div>
         </div>
@@ -927,7 +998,7 @@
                     <input type="text" name="feature[]" class="form-control" placeholder="Enter feature">
                     <button type="button" class="btn btn-danger remove-feature"><i class="fas fa-trash"></i></button>
                 </div>`;
-                $('#feature-container').find('#add-feature').before(inputGroup);
+                $('#feature-container').append(inputGroup);
             });
             $(document).on('click', '.remove-feature', function() {
                 $(this).closest('.input-group').remove();
@@ -944,7 +1015,8 @@
                     <input type="text" name="skill_name[]" class="form-control" placeholder="Enter skill">
                     <button type="button" class="btn btn-danger remove-skill"><i class="fas fa-trash"></i></button>
                 </div>`;
-                $('#skills-container').find('#add-skill').before(inputGroup);
+                // Insert new input just before the add button so button stays at the bottom
+                $('#add-skill').before(inputGroup);
             });
             $(document).on('click', '.remove-skill', function() {
                 $(this).closest('.input-group').remove();
@@ -1134,14 +1206,51 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-danger btn-sm remove-benefit"><i class="fas fa-trash"></i></button>
+                    <div class="mb-2">
+                        <label class="form-label">@lang('Company Images')</label>
+                        <input type="file" name="benefits[${benefitIndex}][company_images][]" class="form-control" multiple>
+                        <small class="text-danger mb-2 partner-logo-error">Company Images must be up to 200×200 pixels.</small><br>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-benefit">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>`;
+
                 $('#benefit-container').append(html);
                 benefitIndex++;
             });
+
             $(document).on('click', '.remove-benefit', function() {
                 if($('#benefit-container .benefit-item').length > 1) {
                     $(this).closest('.benefit-item').remove();
+                }
+            });
+            $('#add-premier-partner').on('click', function() {
+                var container = $('#premier-partner-container');
+                var items = container.find('.premier-partner-item');
+                var lastItem = items.last();
+                var newIndex = items.length;
+                var newItem = lastItem.clone();
+
+                // Clear file input and text
+                newItem.find('input[type="file"]').val("");
+                newItem.find('input[type="text"]').val("");
+                newItem.find('a').remove(); // Remove view image link
+
+                // Update input names
+                newItem.find('input[type="file"]').attr('name', 'premier_partner[' + newIndex + '][image]');
+                newItem.find('input[type="text"]').attr('name', 'premier_partner[' + newIndex + '][text]');
+
+                // Enable remove button except for first
+                newItem.find('.remove-premier-partner').prop('disabled', false);
+
+                container.append(newItem);
+            });
+
+            // Remove item
+            $(document).on('click', '.remove-premier-partner', function() {
+                if (!$(this).is(':disabled')) {
+                    $(this).closest('.premier-partner-item').remove();
                 }
             });
         });

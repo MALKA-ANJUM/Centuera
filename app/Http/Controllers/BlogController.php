@@ -11,18 +11,18 @@ class BlogController extends Controller
 {
     public function index(Request $request)
     {
-    $query = Blog::query();
-    if ($request->has('search')) {
-    $search = $request->input('search');
-    $query->where('title', 'LIKE', "%$search%");
-    }
-    $query->orderBy('id', 'DESC');
-    $blogs = $query->paginate(10);
-    return view('admin.blog.list', compact('blogs'));
+        $query = Blog::query();
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'LIKE', "%$search%");
+        }
+        $query->orderBy('id', 'DESC');
+        $blogs = $query->paginate(10);
+        return view('admin.blog.list', compact('blogs'));
     }
     public function create()
     {
-    return view('admin.blog.add');
+        return view('admin.blog.add');
     }
     public function store(Request $request)
     {

@@ -56,6 +56,15 @@
                                         @enderror
                                     </div>
 
+                                    {{-- Logo --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Logo')</label>
+                                       <input type="file" name="logo" class="form-control">
+                                        @error('short_title')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                     {{-- Category --}}
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>
@@ -284,6 +293,29 @@
                                 </div>
                             </div>
 
+                            <!-- Frequently Asked Questions -->
+                             <div class="card mt-2">
+                                <div class="card-body">
+                                    <h3 class="mb-2">@lang('Frequently Asked Questions')</h3>
+                                    <div id="faq-container">
+                                        <div class="faq-item mb-3 border p-2 rounded">
+                                            <div class="mb-2">
+                                                <label class="form-label">@lang('Question')</label>
+                                                <input type="text" name="faqs[0][title]" class="form-control" value="{{ old('faqs.0.title') }}" placeholder="Enter question">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">@lang('Answer')</label>
+                                                <textarea name="faqs[0][description]" class="form-control faq-answer-editor" id="faq-answer-editor-0" rows="2" placeholder="Enter answer">{{ old('faqs.0.description') }}</textarea>
+                                            </div>
+                                            <button type="button" class="btn btn-danger btn-sm remove-faq" disabled><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="add-faq" class="btn btn-sm btn-primary mt-1">
+                                        + @lang('Add More FAQ')
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Course Videos Card -->
                         </div>
 
@@ -406,27 +438,6 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="card mt-2">
-                                <div class="card-body">
-                                    <h3 class="mb-2">@lang('Frequently Asked Questions')</h3>
-                                    <div id="faq-container">
-                                        <div class="faq-item mb-3 border p-2 rounded">
-                                            <div class="mb-2">
-                                                <label class="form-label">@lang('Question')</label>
-                                                <input type="text" name="faqs[0][title]" class="form-control" value="{{ old('faqs.0.title') }}" placeholder="Enter question">
-                                            </div>
-                                            <div class="mb-2">
-                                                <label class="form-label">@lang('Answer')</label>
-                                                <textarea name="faqs[0][description]" class="form-control faq-answer-editor" id="faq-answer-editor-0" rows="2" placeholder="Enter answer">{{ old('faqs.0.description') }}</textarea>
-                                            </div>
-                                            <button type="button" class="btn btn-danger btn-sm remove-faq" disabled><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                    <button type="button" id="add-faq" class="btn btn-sm btn-primary mt-1">
-                                        + @lang('Add More FAQ')
-                                    </button>
-                                </div>
-                            </div>
                             {{-- Card: Benefits --}}
                            <div class="card mt-2">
                             <div class="card-body">
@@ -546,7 +557,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn">@lang('Add Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn" style="position: fixed; bottom: 15px;">@lang('Add Course')</button>
                 </form>
             </div>
         </div>
@@ -821,7 +832,6 @@
         });
         
     </script>
-
     <script>
         // Auto-save functionality
         let autoSaveInterval;
@@ -888,7 +898,7 @@
                 processData: false,
                 contentType: false,
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 },
                 success: function(response) { 
                     Toastify({

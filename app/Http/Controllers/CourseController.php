@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Faq;
 use App\Models\Seo;
-use Illuminate\Support\Facades\Log;
 use App\Models\Course;
 use App\Models\Benefit;
 use App\Models\Category;
@@ -13,12 +12,11 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CourseCurriculum;
 use App\Models\CourseKeyFeature;
-use Illuminate\Support\Facades\DB;
 use App\Models\CourseCertification;
 use App\Models\CourseSkillsCovered;
 use App\Http\Controllers\Controller;
-use App\Models\CoursePremierPartner;
 use App\Models\CourseTrustedPartner;
+use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
@@ -29,7 +27,7 @@ class CourseController extends Controller
             $search = request()->get('search');
             $query->where('title', 'like', '%' . $search . '%');
         }
-        $courses = $query->paginate(10);
+        $courses = $query->orderBy('id', 'desc')->paginate(10);
         return view('admin.courses.index', compact('courses'));
     }
 
@@ -110,7 +108,11 @@ class CourseController extends Controller
                 $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
                 $course->upload_curriculum = $currImageName;
             }
-
+            if ($request->hasFile('logo')) {
+                $logoImageName = time() . '_logo.' . $request->logo->getClientOriginalExtension();
+                $request->logo->move(public_path('uploads/logo'), $logoImageName);
+                $course->logo = $logoImageName;
+            }
 
             // ✅ Slug (only if new course OR title changed)
             if (!$course->id || $course->isDirty('title')) {
@@ -336,12 +338,16 @@ class CourseController extends Controller
             'title'         => 'required',
             'short_title'   => 'required',
             'category'      => 'required',
-            'slug'          => 'required|unique:courses,slug'
+            'slug'        => [
+                'required',
+                Rule::unique('courses', 'slug')->ignore($id)
+            ],
         ]);
         try {
             $course = Course::findOrFail($id);
 
             $course->title                   = $request->title;
+            $course->short_title             = $request->short_title;
             $course->short_description       = $request->short_description;
             $course->description             = $request->description;
             $course->duration                = $request->duration;
@@ -368,22 +374,34 @@ class CourseController extends Controller
 
             // ✅ Premier Partners (images + text)
             $premierPartners = [];
+            $existingPartners = json_decode($course->authorized_training_partner, true) ?? [];
+
             if ($request->premier_partner) {
-                foreach ($request->premier_partner as $partner) {
-                    $imagePath = null;
-                    if (isset($partner['image']) && $partner['image'] instanceof \Illuminate\Http\UploadedFile && $partner['image']->isValid()) {
+                foreach ($request->premier_partner as $index => $partner) {
+                    $imagePath = $existingPartners[$index]['image'] ?? null; // Keep old image if not replaced
+
+                    // If new image uploaded, replace it
+                    if (
+                        isset($partner['image']) &&
+                        $partner['image'] instanceof \Illuminate\Http\UploadedFile &&
+                        $partner['image']->isValid()
+                    ) {
                         $img = $partner['image'];
-                        $imgName = time() . '_' . $img->getClientOriginalName();
+                        $imgName = time()
+                         . '_' . $img->getClientOriginalName();
                         $img->move(public_path('uploads/premier_partner'), $imgName);
                         $imagePath = $imgName;
                     }
+
                     $premierPartners[] = [
                         'image' => $imagePath,
                         'text'  => $partner['text'] ?? null
                     ];
                 }
             }
+
             $course->authorized_training_partner = json_encode($premierPartners);
+
 
             // ✅ Images
             if ($request->hasFile('image')) {
@@ -405,6 +423,11 @@ class CourseController extends Controller
                 $currImageName = time() . '_curr.' . $request->upload_curriculum->getClientOriginalExtension();
                 $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
                 $course->upload_curriculum = $currImageName;
+            }
+            if ($request->hasFile('logo')) {
+                $logoImageName = time() . '_curr.' . $request->logo->getClientOriginalExtension();
+                $request->logo->move(public_path('uploads/logo'), $logoImageName);
+                $course->logo = $logoImageName;
             }
 
             // ✅ Slug (only if title changed)
@@ -431,17 +454,14 @@ class CourseController extends Controller
                 $course->training_course = json_encode($trainingData);
             }
 
-            $saved = $course->save();
-
-            // ✅ Related Data (clear old if updating)
             CourseKeyFeature::where('course_id', $course->id)->delete();
             CourseSkillsCovered::where('course_id', $course->id)->delete();
             CourseCurriculum::where('course_id', $course->id)->delete();
             CourseCertification::where('course_id', $course->id)->delete();
-            CourseTrustedPartner::where('course_id', $course->id)->delete();
+            // CourseTrustedPartner::where('course_id', $course->id)->delete();
             CourseVideo::where('course_id', $course->id)->delete();
             Faq::where('course_id', $course->id)->delete();
-            Benefit::where('course_id', $course->id)->delete();
+            // Benefit::where('course_id', $course->id)->delete();
             Seo::where('course_id', $course->id)->delete();
 
             // ...existing code for saving features, skills, SEO, curriculum, certifications, partners, videos, faqs, benefits...
@@ -504,24 +524,40 @@ class CourseController extends Controller
                 }
             }
 
-            if ($request->partners) {
-                foreach ($request->partners as $partner) {
-                    $logoPath = null;
-                    if (isset($partner['logo']) && $partner['logo']->isValid()) {
-                        $logoName = time() . '_' . $partner['logo']->getClientOriginalName();
-                        $partner['logo']->move(public_path('uploads/partners'), $logoName);
+            if ($request->has('partners')) {
+                $existingPartnerIds = [];
+
+                foreach ($request->partners as $partnerData) {
+                    $partner = isset($partnerData['id']) 
+                        ? CourseTrustedPartner::find($partnerData['id']) 
+                        : new CourseTrustedPartner();
+
+                    // Handle logo
+                    $logoPath = $partner->logo ?? null;
+                    if (!empty($partnerData['logo']) && $partnerData['logo'] instanceof \Illuminate\Http\UploadedFile && $partnerData['logo']->isValid()) {
+                        $logoName = time() . '_' . $partnerData['logo']->getClientOriginalName();
+                        $partnerData['logo']->move(public_path('uploads/partners'), $logoName);
                         $logoPath = $logoName;
                     }
-                    // Skip if both name and logo are null/empty
-                    if (empty($partner['name']) && empty($logoPath)) {
+
+                    // Skip if no name and no logo
+                    if (empty($partnerData['name']) && empty($logoPath)) {
                         continue;
                     }
-                    CourseTrustedPartner::create([
-                        'course_id' => $course->id,
-                        'name'      => $partner['name'] ?? null,
-                        'logo'      => $logoPath
-                    ]);
+
+                    // Save/update
+                    $partner->course_id = $course->id;
+                    $partner->name = $partnerData['name'] ?? null;
+                    $partner->logo = $logoPath;
+                    $partner->save();
+
+                    $existingPartnerIds[] = $partner->id;
                 }
+
+                // Delete records not in submitted list
+                CourseTrustedPartner::where('course_id', $course->id)
+                    ->whereNotIn('id', $existingPartnerIds)
+                    ->delete();
             }
 
             if ($request->videos) {
@@ -551,18 +587,35 @@ class CourseController extends Controller
             }
 
             if ($request->benefits) {
+                $existingIds = []; // Track which benefits to keep
+
                 foreach ($request->benefits as $benefitData) {
+                    // 🔹 Skip empty benefits
                     if (
                         empty($benefitData['designation']) &&
                         empty($benefitData['salary_min']) &&
                         empty($benefitData['salary_max'])
                     ) {
-                        continue; // don't insert this benefit
+                        continue;
                     }
-                    $companyImages = [];
-                    if (isset($benefitData['company_images']) && is_array($benefitData['company_images'])) {
+
+                    // 🔹 Find existing or create new
+                    $benefit = isset($benefitData['id']) 
+                        ? Benefit::find($benefitData['id']) 
+                        : new Benefit();
+
+                    if ($benefit && $benefit->id) {
+                        $existingIds[] = $benefit->id;
+                    }
+
+                    // 🔹 Handle company images
+                    $companyImages = is_array(json_decode($benefit->company, true))
+                        ? json_decode($benefit->company, true)
+                        : [];
+
+                    if (!empty($benefitData['company_images']) && is_array($benefitData['company_images'])) {
                         foreach ($benefitData['company_images'] as $image) {
-                            if ($image->isValid()) {
+                            if ($image instanceof \Illuminate\Http\UploadedFile && $image->isValid()) {
                                 $imgName = time() . '_' . $image->getClientOriginalName();
                                 $image->move(public_path('uploads/company_images'), $imgName);
                                 $companyImages[] = $imgName;
@@ -570,6 +623,7 @@ class CourseController extends Controller
                         }
                     }
 
+                    // 🔹 Salary Calculation
                     $min = isset($benefitData['salary_min']) ? (float) $benefitData['salary_min'] : null;
                     $max = isset($benefitData['salary_max']) ? (float) $benefitData['salary_max'] : null;
 
@@ -577,20 +631,30 @@ class CourseController extends Controller
                     $avgMin = ($min !== null && $average !== null) ? ($min + $average) / 2 : null;
                     $avgMax = ($max !== null && $average !== null) ? ($max + $average) / 2 : null;
 
-                    Benefit::create([
-                        'course_id'   => $course->id,
-                        'designation' => $benefitData['designation'] ?? null,
-                        'salary'      => json_encode([
-                            'min'      => $min,
-                            'max'      => $max,
-                            'average'  => $average,
-                            'avg_min'  => $avgMin,
-                            'avg_max'  => $avgMax
-                        ]),
-                        'company'     => json_encode($companyImages)
+                    // 🔹 Save/update
+                    $benefit->course_id   = $course->id;
+                    $benefit->designation = $benefitData['designation'] ?? null;
+                    $benefit->salary      = json_encode([
+                        'min'     => $min,
+                        'max'     => $max,
+                        'average' => $average,
+                        'avg_min' => $avgMin,
+                        'avg_max' => $avgMax
                     ]);
+                    $benefit->company = json_encode($companyImages);
+                    $benefit->save();
+
+                    $existingIds[] = $benefit->id;
                 }
+
+                // 🔹 Delete benefits that were removed
+                Benefit::where('course_id', $course->id)
+                    ->whereNotIn('id', $existingIds)
+                    ->delete();
             }
+            $course->save();
+
+
             if($request->auto_save == true){
                 return response()->json([
                     'id' => $course->id,
@@ -605,6 +669,8 @@ class CourseController extends Controller
     }
     public function destroy($id)
     {
-        // Code to delete a course
+        $course = Course::findOrFail($id);
+        $course->delete(); // Soft deletes instead of hard delete
+        return redirect()->back()->with('success', 'Course deleted successfully.');
     }
 }

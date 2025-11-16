@@ -40,18 +40,11 @@
                                     <dt class="col-sm-3">Order Id</dt>
                                     <dd class="col-sm-3 fw-bold">{{ $orders->orderId }}</dd>
 
-                                    <dt class="col-sm-3">Start Date</dt>
-                                    <dd class="col-sm-3 fw-bold">
-                                        {{ $orders->workshop_start_date ? \Carbon\Carbon::parse($orders->workshop_start_date)->format('d M Y') : '-' }}
-                                    </dd>
-
+                                   
                                     <dt class="col-sm-3">Email</dt>
                                     <dd class="col-sm-3 fw-bold"><i class="fa fa-envelope text-primary me-1"></i>{{ $orders->email }}</dd>
 
-                                    <dt class="col-sm-3">End Date</dt>
-                                    <dd class="col-sm-3 fw-bold">
-                                        {{ $orders->workshop_end_date ? \Carbon\Carbon::parse($orders->workshop_end_date)->format('d M Y') : '-' }}
-                                    </dd>
+                                   
 
                                     <dt class="col-sm-3">Phone</dt>
                                     <dd class="col-sm-3 fw-bold"><i class="fa fa-phone text-success me-1"></i> +{{ $orders->country_code }}  {{ $orders->phone }}</dd>
@@ -82,6 +75,39 @@
 
                                     <dt class="col-sm-3">Transaction Id</dt>
                                     <dd class="col-sm-3 fw-bold">{{ $orders->transaction_id}}</dd>
+
+                                    <dt class="col-sm-3">Schedule</dt>
+                                    <dd class="col-sm-3">
+                                        @if($orders->getSchedule)
+                                            <div class="d-flex flex-column">
+                                                <!-- Type and Batch -->
+                                                <span class="">
+                                                    {{ $orders->getSchedule->type }} || {{ $orders->getSchedule->batche }}
+                                                </span>
+
+                                                <!-- Date Range -->
+                                                <span class=" small mb-1">
+                                                    {{ \Carbon\Carbon::parse($orders->getSchedule->start_date)->format('d M Y') }}
+                                                    -
+                                                    {{ \Carbon\Carbon::parse($orders->getSchedule->end_date)->format('d M Y') }}
+                                                </span>
+
+                                                <!-- Trainer Info -->
+                                                <span class="small">
+                                                    <i class="fa fa-user text-info me-1"></i>
+                                                    {{ $orders->getSchedule->trainner_name ?? 'N/A' }}
+                                                </span>
+
+                                                <!-- Language -->
+                                                <span class="small text-secondary">
+                                                    <i class="fa fa-language me-1"></i>
+                                                    {{ $orders->getSchedule->language ?? 'N/A' }}
+                                                </span>
+                                            </div>
+                                        @else
+                                            <span class="text-danger">No schedule available</span>
+                                        @endif
+                                    </dd>
                                 </dl>
                             </div>
 

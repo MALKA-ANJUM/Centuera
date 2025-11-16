@@ -261,6 +261,7 @@
 .payment-logo img {
   width: fit-content;
   height: 28px;
+  padding: 8px;
 }
 /*---------------------------------
      Responsive CSS 

@@ -51,18 +51,17 @@
                 <div class="col-lg-4">
                     <aside class="course-sidebar-widgets">
                         <div class="widget widget-catgory widget-search">
-                            <form class="search-form">
+                            <form class="search-form" onsubmit="return false;"> 
                                 <label>
                                     <input type="search" class="search-field" placeholder="Search...">
                                 </label>
-                                <button class="widget-search-btn" type="submit"><i
-                                        class="ri-search-line"></i></button>
+                                <button class="widget-search-btn" type="button"><i class="ri-search-line"></i></button>
                             </form>
 
                             <div class="accordion" id="widget-collps">
-                                <div class="accordion-item">
+                                <div class="accordion-item bg-transparent">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button widget-title" type="button"
+                                        <button class="accordion-button widget-title" type="button" style="padding-bottom: 10px !important;"
                                             data-bs-toggle="collapse" data-bs-target="#collapseOne">
                                             Categories
                                         </button>
@@ -71,143 +70,17 @@
                                         data-bs-parent="#widget-collps">
                                         <div class="widget-collps-body">
                                             <ul>
-                                                <li><a href="#">
-                                                        <p>Project Management</p> <span>(15)</span>
-                                                    </a></li>
-                                                <li><a href="#">
-                                                        <p>Quality management</p> <span>(20)</span>
-                                                    </a></li>
-                                                <li><a href="#">
-                                                        <p>Agile & Scrum</p> <span>(10)</span>
-                                                    </a></li>
-                                                <li><a href="#">
-                                                        <p>Digital Marketing</p> <span>(20)</span>
-                                                    </a></li>
+                                                @if(count($categories) > 0)
+                                                    @foreach($categories as $category)
+                                                        <li>
+                                                            <a href="#" class="filter-category" data-id="{{ $category->id }}">
+                                                                <p>{{ $category->name }}</p> 
+                                                                <span>{{ $category->getCourses->count() }}</span>
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                @endif
                                             </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget widget-checkbox">
-                            <div class="accordion" id="widget-collps-two">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button widget-title" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                                            Level
-                                        </button>
-                                    </h2>
-                                    <div id="collapseTwo" class="widget-collapse collapse show"
-                                        data-bs-parent="#widget-collps-two">
-                                        <div class="widget-collps-body">
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck2">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck2">
-                                                    Beginner
-                                                </label>
-                                            </div>
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck3">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck3">
-                                                    Advanced
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget widget-rating">
-                            <div class="accordion" id="widget-collps-three">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button widget-title" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                                            Rating
-                                        </button>
-                                    </h2>
-                                    <div id="collapseThree" class="widget-collapse collapse show"
-                                        data-bs-parent="#widget-collps-three">
-                                        <div class="widget-collps-body">
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck4">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck4">
-                                                    <span><i class="ri-star-fill"></i></span> 5 Star
-                                                </label>
-                                            </div>
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck5">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck5">
-                                                    <span><i class="ri-star-fill"></i></span> 4 Star or adobe
-                                                </label>
-                                            </div>
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck6">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck6">
-                                                    <span><i class="ri-star-fill"></i></span> 3 Star or adobe
-                                                </label>
-                                            </div>
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck7">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck7">
-                                                    <span><i class="ri-star-fill"></i></span> 2 Star or adobe
-                                                </label>
-                                            </div>
-                                            <div class="form-check edu-check">
-                                                <input class="form-check-input edu-check-input" type="checkbox"
-                                                    value="" id="defaultCheck8">
-                                                <label class="form-check-label edu-check-label" for="defaultCheck8">
-                                                    <span><i class="ri-star-fill"></i></span> 1 Star or adobe
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget filter-widget">
-                            <h3 class="widget-title">Price Filter</h3>
-                            <div class="filter-info">
-                                <div class="filter-bar">
-                                    <div class="price-range-slider">
-                                        <div id="slider-range" class="range-bar"></div>
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <p class="range-value mb-0 d-flex align-items-center">
-                                                <input type="text" id="amount" readonly>
-                                            </p>
-                                            <a class="btn-filter" href="courses">Filter</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget widget-tag-cloud">
-                            <div class="accordion" id="widget-collps-four">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button widget-title" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapseFour">
-                                            Popular Tags
-                                        </button>
-                                    </h2>
-                                    <div id="collapseFour" class="widget-collapse collapse show"
-                                        data-bs-parent="#widget-collps-four">
-                                        <div class="widget-collps-body">
-                                            <div class="tagcloud">
-                                                <a href="#">Business</a>
-                                                <a href="#">Course</a>
-                                                <a href="#">Consulting</a>
-                                                <a href="#">Online</a>
-                                                <a href="#">Remote</a>
-                                                <a href="#">Solution</a>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -216,100 +89,210 @@
                     </aside>
                 </div>
                 <div class="col-lg-8">
-                    <div class="row">
-                        @foreach($courses as $course)
-                        <div class="col-lg-6 col-sm-6">
-                            <div class="single-courses-box mb-25 box-shadow-2">
-                                <div class="image mb-20 position-relative">
-                                    <a href="{{ route('course.details', $course->slug) }}">
-                                        <img src="{{ asset('uploads/courses/'. $course->image) }}" alt="image">
-                                    </a>
-
-                                    <div class="cr-tag">
-                                        <a href="{{ $course->getCategory->name ?? '' }}">{{ $course->getCategory->name ?? '' }}</a>
-                                    </div>
-                                </div>
-                                <div class="content">
-                                    <div class="meta-info mb-20 d-flex align-items-center justify-content-between">
-                                        <h3 class="mb-1 fs-20"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></h3>
-
-                                        <div class="cr-price px-2">
-                                            <h5 class="fs-16 text-nowrap"><span class="price">{{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}  {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span> 
-                                            @if($course->getCourseSchedule && $course->getCourseSchedule->prices)
-                                            <br>
-                                                <span class="old-price">
-                                                    {{ $course->getCourseSchedule && $course->getCourseSchedule->prices?->country_id == 0 || $course->getCourseSchedule == null ? 'USD ' : $currency }}  {{ $course->getCourseSchedule->prices->original_price }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center rating-section">
-                                    @php
-                                        $rating = round($course->rating);
-                                        $maxStars = 5;
-                                    @endphp
-
-                                    <ul class="d-flex list-unstyle customer-ratings">
-                                        @for ($i = 1; $i <= $maxStars; $i++)
-                                            @if ($i <= $rating)
-                                                <li><i class="ri-star-fill"></i></li>
-                                            @else
-                                                <li><i class="ri-star-line"></i></li>
-                                            @endif
-                                        @endfor
-                                        <li><span>({{ $course->rating }})</span></li>
-                                    </ul>
-                                    <ul
-                                        class="cr-items d-flex align-items-center justify-content-center gap-2 list-unstyle">
-                                        <li class="mr-15"><i class="ri-team-fill"></i> <span>{{ number_format(($course->learner_field ?? 0) + 10000) }} Learners</span> </li>
-                                        <li><i class="ri-time-line"></i> <span>{{ round($course->duration/60, 2) }} Hrs</span></li>
-                                    </ul>
-                                </div>
-                                <div class="curriculum-certificate">
-                                <a href="{{ route('course.details', $course->slug) }}" class="view-certification">
-                                    View Program
-                                </a>
-                                @if($course->upload_curriculum != null)
-                                <a href="{{ asset('uploads/curriculum/'. $course->upload_curriculum ) }}" target="_blank">
-                                    <button class="view-curiculum"><i class="ri-download-line"></i><span>Curriculum</span></button></a>
-                                @endif
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
+                    <div id="course-list"> <!-- 🔥 Wrap the entire course list -->
+                        @include('user.partials.course-list', ['courses' => $courses, 'currency' => $currency])
                     </div>
                 </div>
             </div>
-            @if ($courses->count() > 0)
-                <ul class="page-nav list-style text-end p-0 mt-40">
-                    @if ($courses->onFirstPage())
-                        <li><span><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></span></li>
-                    @else
-                        <li><a href="{{ $courses->previousPageUrl() }}"><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></a></li>
-                    @endif
-
-                    @for ($i = 1; $i <= $courses->lastPage(); $i++)
-                        <li>
-                            <a class="{{ $courses->currentPage() == $i ? 'active' : '' }}"
-                            href="{{ $courses->url($i) }}">
-                            {{ $i }}
-                            </a>
-                        </li>
-                    @endfor
-
-                    @if ($courses->hasMorePages())
-                        <li><a href="{{ $courses->nextPageUrl() }}"><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></a></li>
-                    @else
-                        <li><span><img src="{{ asset('frontend-assets/img/icon/long-arrow.svg')}}" alt="icon"></span></li>
-                    @endif
-                </ul>
-            @endif
         </div>
     </div>
 </div>
 <!-- Courses Section End -->
+@push('modal')
+<div class="modal fade" id="curriculumModal" tabindex="-1" aria-labelledby="curriculumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body p-4">
 
+                <!-- Close Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Title -->
+                <h5 class="text-center fw-bold mb-4" id="curriculumModalLabel">Course Syllabus</h5>
+
+                <form id="curriculumForm">
+                    @csrf
+                    <input type="hidden" name="type" value="curriculum">
+                    <input type="hidden" id="course_id" name="course_id" value="">
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                @foreach($countries as $country)
+                                <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                    +{{ $country->phonecode }} {!! $country->flag !!}
+                                </option>
+                                @endforeach
+                            </select>
+                            <input type="tel" class="form-control ps-3" id="phone" maxlength="10"  oninput="restrictToNumbers(this)" name="phone" placeholder="Enter your Phone No." required>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy -->
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                        <label class="form-check-label small" for="privacyPolicy">
+                            By providing your contact details, you agree to our
+                            <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold" type="submit" style="border-radius: 8px;">
+                        Download Syllabus
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
 
 @endsection
+@push('script')
+<script>
+    $(document).ready(function () {
+        let timer; // for debounce
+        $('.search-field').on('keyup', function () {
+            clearTimeout(timer); // clear previous timer
+
+            let search = $(this).val();
+            
+            timer = setTimeout(function () {
+                $.ajax({
+                    url: "{{ route('course.list') }}",
+                    type: "GET",
+                    data: { search: search },
+                    success: function (data) {
+                        $('#course-list').html(data);
+                    },
+                    error: function () {
+                        alert('Something went wrong.');
+                    }
+                });
+            }, 300); // waits 300ms after typing stops
+        });
+    });
+
+    $(document).on('click', '.filter-category', function (e) {
+        e.preventDefault();
+        let categoryId = $(this).data('id');
+
+        $.ajax({
+            url: "{{ route('course.list') }}",
+            type: "GET",
+            data: { category: categoryId },
+            success: function (response) {
+                $('#course-list').html(response);
+            }
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        let storedCountryId = localStorage.getItem('selected_country_id');
+        if (storedCountryId) {
+            $(".modal-phone-flag option").each(function () {
+                if ($(this).data("id") == storedCountryId) {
+                    $(this).prop("selected", true);
+                }
+            });
+        }
+
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#curriculumModal')
+        });
+
+        $('#curriculumModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget);
+            let courseId = button.data('course-id');
+            $(this).find('#course_id').val(courseId);
+        });
+
+        $('#curriculumForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let $submitBtn = $(this).find('button[type="submit"]');
+            $submitBtn.prop('disabled', true).text('Processing...');
+
+            $.ajax({
+                url: "{{ route('lead') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#curriculumModal').modal('hide');
+
+                    if (response.file) {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        
+                        // 🔽 Trigger file download
+                        let link = document.createElement('a');
+                        link.href = response.file;
+                        link.setAttribute('download', response.file.split('/').pop());
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        setTimeout(() => {
+                            location.reload(); // 🔥 Reload page
+                        }, 2000);
+                    } else {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr) {
+                    $('#curriculumModal').modal('hide');
+                    if (xhr.status === 404) {
+                        toastr.error('Curriculum file not found for this course.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        toastr.error('Something went wrong! Please try again.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                complete: function () {
+                    $submitBtn.prop('disabled', false).text('Download Syllabus');
+                }
+            });
+        });
+    });
+</script>
+@endpush
+
+@push('style')
+<style>
+    #curriculumModal span.select2-selection.select2-selection--single {
+        border: none !important;
+        border-bottom: 1px solid #ccc !important;
+        height: 41px !important;
+        padding-top: 7px;
+        margin-top: 4.2px;
+        border-radius: 0 !important;
+    }
+
+    #curriculumModal .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 10px !important;
+    }
+
+    #curriculumModal span.select2.select2-container.select2-container--default.select2-container--below.select2-container--focus{
+        width: 70px !important;
+    }
+</style>
+@endpush

@@ -48,7 +48,7 @@
 }
 .navbar-area .navbar-top {
   padding: 20px 0;
-  border-bottom: 1px solid var(--borderColor);
+  /* border-bottom: 1px solid var(--borderColor); */
 }
 .navbar-area .navbar-top .option-item {
   color: var(--whiteColor);

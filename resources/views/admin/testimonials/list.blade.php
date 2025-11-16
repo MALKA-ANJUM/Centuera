@@ -59,7 +59,7 @@
                                         <thead>
                                             <tr>
                                                 <th>@lang('ID')</th>
-                                                <th>@lang('Title')</th>
+                                                <th>@lang('Name')</th>
                                                 <th>@lang('Action')</th>
                                             </tr>
                                         </thead>

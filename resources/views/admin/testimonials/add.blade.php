@@ -34,8 +34,8 @@
                             @csrf
                             <div class="row mb-2">
                                 <div class="col-md-12">
-                                    <label for="title" class="form-label">@lang('Title')</label>
-                                    <input type="text" class="form-control" placeholder="@lang('Enter Title')"
+                                    <label for="title" class="form-label">@lang('Name')</label>
+                                    <input type="text" class="form-control" placeholder="@lang('Enter Name')"
                                         name="title" id="title" required>
                                     @error('title')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-12">
-                                    <label for="description" class="form-label">@lang('Description')</label>
+                                    <label for="description" class="form-label">@lang('Feedback')</label>
                                     <textarea class="form-control" name="description" id="description"></textarea>
                                     @error('description')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -79,6 +79,7 @@
     <!-- END: Content-->
 @endsection
 @push('script')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
 <script>
     ClassicEditor
     .create(document.querySelector('#description'))

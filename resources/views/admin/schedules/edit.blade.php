@@ -56,11 +56,18 @@
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Start Date</label>
-                                        <input type="text" name="start_date" value="{{ $schedule->start_date }}" class="form-control start-date" required>
+                                        <input type="text" name="start_date"
+                                            value="{{ $schedule->start_date ? $schedule->start_date->format('d-m-Y') : '' }}"
+                                            class="form-control start-date"
+                                            required>
                                     </div>
+                                    
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">End Date</label>
-                                        <input type="text" name="end_date" value="{{ $schedule->end_date }}" class="form-control end-date" required>
+                                        <input type="text" name="end_date"
+                                            value="{{ $schedule->end_date ? $schedule->end_date->format('d-m-Y') : '' }}"
+                                            class="form-control end-date"
+                                            required>
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Total days of training</label>
@@ -68,7 +75,7 @@
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Time Zone</label>
-                                        <select name="time_zone" class="form-control ctrm_select2" required>
+                                        <!-- <select name="time_zone" class="form-control ctrm_select2" required>
                                             <option value="">Select Time Zone</option>
                                             @foreach($countries as $country)
                                                 @foreach(json_decode($country->timezones) as $time)
@@ -78,15 +85,34 @@
                                                     </option>
                                                 @endforeach
                                             @endforeach
+                                        </select> -->
+
+                                        <select name="time_zone" class="form-control ctrm_select2" id="time_zone" required>
+                                            <option value="">Select Time Zone</option>
+                                            @foreach($countries as $country)
+                                                @foreach(json_decode($country->timezones) as $time)
+                                                    <option value="{{ $time->zoneName }}" 
+                                                    data-country="{{ $country->name }}" data-country-id="{{ $country->id }}"
+                                                    {{ $schedule->time_zone == $time->zoneName ? 'selected' : '' }}>
+                                                        {{ $time->zoneName }} ({{ $time->abbreviation }})
+                                                    </option>
+                                                @endforeach
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Start Time</label>
-                                        <input type="time" name="starttime" value="{{ $schedule->starttime }}" class="form-control" required step="60">
+                                        <input type="time" class="form-control" name="starttime" step="60"
+                                            value="{{ $schedule->starttime }}" 
+                                            required 
+                                        >
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">End Time</label>
-                                        <input type="time" name="end_time" value="{{ $schedule->end_time }}" class="form-control" required step="60">
+                                        <input type="time" name="end_time" class="form-control" step="60"
+                                            value="{{ $schedule->end_time }}" 
+                                            required 
+                                        >
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Trainer Name</label>
@@ -122,7 +148,7 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Pricing</h5>
-                                <button type="button" id="add-more-pricing" class="btn btn-sm btn-primary">+ Add More</button>
+                                <!-- <button type="button" id="add-more-pricing" class="btn btn-sm btn-primary">+ Add More</button> -->
                             </div>
                             <div class="card-body" id="pricing-container">
                                 @foreach($schedule->getPrices as $index => $price)
@@ -130,34 +156,23 @@
                                         <div class="row g-2 align-items-end">
                                             <div class="col-md-4 country-col">
                                                 <label class="form-label">Country</label>
-                                                <select name="country_id[]" class="form-select ctrm_select2" required>
-                                                    <option value="">Select country</option>
-                                                    <option value="0" {{ $price->country_id == 0 ? 'selected' : '' }}>All</option>
-                                                    @foreach($countries as $country)
-                                                        <option value="{{ $country->id }}" {{ $price->country_id == $country->id ? 'selected' : '' }}>{{ $country->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <div class="country-error text-danger" style="display:none;">You have already selected this country in another row.</div>
+                                                <input type="text" class="form-control" name="country" id="country" readonly>
+                                                <input type="hidden" class="form-control" value="price->country_id" name="country_id" id="country_id">
                                             </div>
 
                                            <div class="col-md-3">
                                                 <label class="form-label">Discount Price</label>
-                                                <input type="text" step="0.01" name="discount_price[]"
+                                                <input type="text" step="0.01" name="discount_price"
                                                     class="form-control discount-price" value="{{ $price->discount_price }}" required>
                                             </div>
 
                                             <div class="col-md-3">
                                                 <label class="form-label">Original Price</label>
-                                                <input type="text" step="0.01" name="original_price[]"
+                                                <input type="text" step="0.01" name="original_price"
                                                     class="form-control original-price" oninput="restrictToNumbers(this)" value="{{ $price->original_price }}" required>
                                                 <div class="price-error text-danger" style="display:none; font-size: 12px;">
                                                     Original Price must be greater than Discount.
                                                 </div>
-                                            </div>
-
-
-                                            <div class="col-md-2 d-flex align-items-end">
-                                                <button type="button" class="btn btn-sm btn-danger remove-pricing">Delete</button>
                                             </div>
                                         </div>
                                     </div>
@@ -207,9 +222,9 @@
             min-height: 200px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endpush
 @push('script')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -218,10 +233,10 @@
         $(document).ready(function() {
             function initFlatpickr() {
                 $('.start-date').flatpickr({
-                    dateFormat: 'Y-m-d'
+                    dateFormat: 'd-m-Y'
                 });
                 $('.end-date').flatpickr({
-                    dateFormat: 'Y-m-d'
+                    dateFormat: 'd-m-Y'
                 });
             }
             initFlatpickr();
@@ -330,4 +345,28 @@
             });
         });
     </script>
+    <script>
+$(document).ready(function () {
+    function updateCountryFields() {
+        let selected = $('#time_zone').find(':selected');
+        let selectedCountry = selected.data('country') || '';
+        let selectedCountryId = selected.data('country-id') || '';
+
+        $('#country').val(selectedCountry);
+        $('#country_id').val(selectedCountryId);
+    }
+
+    // Initialize Select2 if you're using it
+    $('#time_zone').select2();
+
+    // Update on change
+    $('#time_zone').on('change', updateCountryFields);
+
+    // Run after Select2 fully initializes
+    setTimeout(function () {
+        updateCountryFields();
+    }, 200);
+});
+</script>
+
 @endpush

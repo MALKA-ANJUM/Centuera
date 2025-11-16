@@ -35,16 +35,48 @@
                         <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-2">
+                                <!-- Category Name -->
                                 <div class="col-md-12">
                                     <label for="name" class="form-label">@lang('Category Name')</label>
                                     <input type="text" class="form-control" placeholder="@lang('Enter Category Name')"
-                                        name="name" id="name" value="{{ old('name', $category->name) }}" required>
+                                           name="name" id="name" value="{{ old('name', $category->name) }}" required>
                                     @error('name')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                <!-- Accreditation Bodies -->
+                                <h4 class="mt-2">Accreditation Bodies</h4>
+                                <div id="accreditation-wrapper">
+                                    @php
+                                        $accreditations = json_decode($category->accreditation_bodies, true) ?? [];
+                                    @endphp
+
+                                    @foreach ($accreditations as $index => $accr)
+                                        <div class="row mb-2 accreditation-item">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" name="accreditation_bodies[]"
+                                                       value="{{ $accr['name'] ?? '' }}" placeholder="Enter Accreditation Body">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="file" class="form-control" name="image[]">
+                                                @if (!empty($accr['image']))
+                                                    <img src="{{ asset('admin/accreditation_images/' . $accr['image']) }}" alt="Image" class="mt-1" width="60">
+                                                    <input type="hidden" name="old_image[]" value="{{ $accr['image'] }}">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-danger remove-field">X</button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="col-md-12">
+                                    <button type="button" id="add-more" class="btn btn-success">+ Add More</button>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">@lang('Update')</button>
+                            <button type="submit" class="btn btn-primary mt-2">@lang('Update')</button>
                         </form>
                     </div>
                 </div>
@@ -53,3 +85,31 @@
     </div>
     <!-- END: Content-->
 @endsection
+
+@push('script')
+<script>
+    $(document).ready(function () {
+        $('#add-more').click(function () {
+            $('#accreditation-wrapper').append(`
+                <div class="row mb-2 accreditation-item">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control" name="accreditation_bodies[]" 
+                               placeholder="Enter Accreditation Body">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="file" class="form-control" name="image[]">
+                        <input type="hidden" name="old_image[]" value="">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger remove-field">X</button>
+                    </div>
+                </div>
+            `);
+        });
+
+        $(document).on('click', '.remove-field', function () {
+            $(this).closest('.accreditation-item').remove();
+        });
+    });
+</script>
+@endpush

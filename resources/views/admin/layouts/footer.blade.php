@@ -5,8 +5,8 @@
 
 <!-- BEGIN: Footer-->
 <footer class="footer footer-static footer-light text-center">
-  <p class="clearfix mb-0"><span class="d-block d-md-inline-block mt-25">COPYRIGHT &copy; {{ date('Y') }}<a class="ms-25" href="" target="_blank">
-    HealthEquations</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span></p>
+  <p class="clearfix mb-0"><span class="d-block d-md-inline-block mt-25">COPYRIGHT &copy; {{ date('Y') }}<a class="ms-25" href="{{ route('index') }}" target="_blank">
+    Centuera</a><span class="d-none d-sm-inline-block">, All rights Reserved</span></span></p>
 </footer>
 <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
 <!-- END: Footer-->
@@ -52,8 +52,10 @@
  <script src="{{asset('app-assets/js/scripts/pages/app-ecommerce-checkout.js')}}"></script>
  <script src="{{asset('app-assets/vendors/js/forms/repeater/jquery.repeater.min.js')}}"></script>
  <script src="{{asset('app-assets/js/scripts/forms/form-repeater.js')}}"></script>
- {{-- <script src="{{asset('app-assets/js/scripts/charts/chart-chartjs.js')}}"></script> --}}
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+@stack('script')
+@stack('modal')
+
  <script>
     $(window).on('load', function() {
         if (feather) {
@@ -67,10 +69,8 @@
       	input.value = input.value.replace(/[^0-9]/g, '');
     }
   </script>
-@stack('modal')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 @include('sweetalert::alert')
-@stack('script')
 <!-- CKEditor 5 CDN (only one include, latest version recommended) -->
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 </body>

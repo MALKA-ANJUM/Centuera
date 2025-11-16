@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes; 
 
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     
     protected $table = 'courses';
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'title',
         'description',
@@ -101,14 +102,33 @@ class Course extends Model
         return $this->hasMany(CourseVideo::class, 'course_id');
     }
 
+
     public function getCourseSchedule()
     {
-        return $this->hasOne(CourseSchedule::class, 'course_id')->where('start_date', '>=', now())->with('prices');
+        $countryID = session('selected_country_id', 102);
+
+        return $this->hasOne(CourseSchedule::class, 'course_id')
+            ->where('start_date', '>=', now())
+            ->whereHas('prices', function($query) use ($countryID) {
+                $query->where('country_id', $countryID);
+            })
+            ->with(['prices' => function($query) use ($countryID) {
+                $query->where('country_id', $countryID);
+            }]);
     }
+
 
     public function getCourseScheduleMany()
     {
-        return $this->hasMany(CourseSchedule::class, 'course_id')->where('start_date', '>=', now())->with('prices');
+        $countryID = session('selected_country_id', 102);
+
+        return $this->hasMany(CourseSchedule::class, 'course_id')->where('start_date', '>=', now())
+             ->whereHas('prices', function($query) use ($countryID) {
+                $query->where('country_id', $countryID);
+            })
+            ->with(['prices' => function($query) use ($countryID) {
+                $query->where('country_id', $countryID);
+            }]);;
     }
 
     public function getSeoData()
@@ -116,10 +136,26 @@ class Course extends Model
         return $this->belongsTo(Seo::class, 'id', 'course_id');
     }
 
-    // public function getTimeZoneFromCountry()
-    // {
-    //     return $this->belongsTo(Country::class);
-    // }
+    public function getRating()
+    {
+        return $this->hasMany(Rating::class, 'course_id');
+    }
+
+    // Now add a helper to calculate the average rating:
+    public function getAverageRatingAttribute()
+    {
+        $baseRating = $this->rating ?? 0; // Assuming `rating` column is base rating
+
+        $additionalRatings = $this->getRating->avg('rating') ?? 0;
+
+        // If you want true average of both base rating and ratings:
+        if ($baseRating > 0 && $additionalRatings > 0) {
+            return ($baseRating + $additionalRatings) / 2;
+        }
+
+        // If no additional ratings, just return base rating
+        return $baseRating ?: $additionalRatings;
+    }
 
     protected $casts = [
         'training_course' => 'array',

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Coupon;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+
 
 class CouponController extends Controller
 {
@@ -41,6 +43,10 @@ class CouponController extends Controller
             'code' => 'required|string|max:255|unique:coupons,code',
         ]);
 
+        // Convert dates to YYYY-MM-DD
+        $validated['start_date'] = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $validated['expire_date'] = Carbon::createFromFormat('d-m-Y', $request->expire_date)->format('Y-m-d');
+
         // Store course_id as JSON array
         $validated['course_id'] = $request->has('course_id') ? json_encode($request->course_id) : null;
 
@@ -48,6 +54,7 @@ class CouponController extends Controller
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully.');
     }
+
     public function edit(Coupon $coupon)
     {
         $courses = Course::select('id', 'title')->orderBy('title')->get();
@@ -67,12 +74,18 @@ class CouponController extends Controller
             'code' => 'required|string|max:255|unique:coupons,code,' . $coupon->id,
         ]);
 
+        // 🔥 Convert date format to YYYY-MM-DD
+        $validated['start_date'] = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $validated['expire_date'] = Carbon::createFromFormat('d-m-Y', $request->expire_date)->format('Y-m-d');
+
+        // Store course_id as JSON
         $validated['course_id'] = $request->has('course_id') ? json_encode($request->course_id) : null;
 
         $coupon->update($validated);
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated successfully.');
     }
+
     public function destroy(Coupon $coupon)
     {
         $coupon->delete();

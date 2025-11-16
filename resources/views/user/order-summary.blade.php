@@ -35,9 +35,10 @@
                                                 <div class="fs-7 fw-normal"><i class="ri-time-line me-2"></i>
                                                     <span class="text-black fw-normal">
                                                         @php
-                                                        $timezones = json_decode($schedule->country->timezones, true);
+                                                            $timezones = collect(json_decode($schedule->country->timezones, true));
+                                                            $timezone = $timezones->firstWhere('zoneName', $schedule->time_zone);
                                                         @endphp
-                                                        {{ $timezones[0]['abbreviation'] }}
+                                                        {{ $timezone['abbreviation'] }}
                                                     </span>
                                                     <span class="text-black fw-normal"> • {{ date("g:i A", strtotime($schedule->starttime)) }} - {{ date("g:i A", strtotime($schedule->end_time)) }} </span>
                                                 </div>
@@ -51,7 +52,7 @@
                                         <div class="d-none d-lg-block">
                                             <div class="quantity-selector d-flex justify-content-center align-items-center rounded-5 border border-2">
                                                 <button class="btn decrement me-0 mb-0" type="button" disabled>−</button>
-                                                <input type="text" id="participant-input" class="border border-1 rounded-3 fs-7 fw-semibold" value="{{ $participants }}" readonly style="width: 50px; text-align: center">
+                                                <input type="text" id="participant-input" class="border border-1 rounded-3 fs-7 fw-semibold" value="{{ $participants ?? 1 }}" readonly style="width: 50px; text-align: center">
                                                 <button class="btn increment ms-0" type="button">+</button>
                                             </div>
                                         </div>
@@ -77,14 +78,14 @@
                                     <div class="row g-3">
                                         <!-- Full Name -->
                                         <div class="col-md-6">
-                                            <input type="text" name="name" class="form-control border rounded px-3" placeholder="Full Name*" value="{{ trim((auth()->user()->first_name ?? '') . ' ' . (auth()->user()->last_name ?? '')) }}" required>
+                                            <input type="text" name="name" id="name" class="form-control border rounded px-3" placeholder="Full Name*" value="{{ trim((auth()->user()->first_name ?? '') . ' ' . (auth()->user()->last_name ?? '')) }}" required>
                                         </div>
 
                                         <!-- Email -->
                                         <div class="col-md-6">
-                                            <input type="email" class="form-control border rounded px-3" placeholder="Email*" name="email" value="{{ auth()->user()->email ?? '' }}" required>
+                                            <input type="email" id="email" class="form-control border rounded px-3" placeholder="Email*" name="email" value="{{ auth()->user()->email ?? '' }}" required>
                                         </div>
-
+                                        <input type="hidden" name="coupon_id" value="" id="coupon_id">
                                         <!-- Phone -->
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -99,62 +100,16 @@
                                                         </option>
                                                         @endforeach
                                                     </select>
-                                                    <input type="text" class="form-control p-0 ps-2 my-0" id="phone" name="phone" placeholder="Phone Number*" value="{{ auth()->user()->mobile ?? '' }}" required>
+                                                    <input type="text" class="form-control p-0 ps-2 my-0" id="phone" maxlength="10" oninput="restrictToNumbers(this)" name="phone" placeholder="Phone Number*" value="{{ auth()->user()->mobile ?? '' }}" required>
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <input type="hidden" name="order_id" id="order_id" value="">
                                         <!-- City -->
                                         <div class="col-md-6">
                                             <input type="text" class="form-control border rounded px-3" placeholder="Enter City Name" name="city">
                                         </div>
 
-                                        <!-- Referral Code -->
-                                        <!-- <div class="col-md-6">
-                                            <input type="text" class="form-control border rounded px-3" placeholder="Referral Code (optional)">
-                                        </div> -->
-
-                                        <!-- Add Alternative Contact Button -->
-                                        <!-- <div class="col-md-6">
-                                            <button type="button" id="toggleAltBtn" class="btn w-100 p-0">
-                                                <i class="ri-add-circle-line me-1"></i> Add Alternative Contact
-                                            </button>
-                                        </div> -->
-
-                                        <!-- Alternative Contact (Hidden by default) -->
-                                        <!-- <div id="altContact" class="row g-3 d-none mt-2">
-                                            <div class="col-md-6">
-                                                <input type="email" class="form-control border rounded px-3" placeholder="Alternative Email*">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="input-group">
-                                                        <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
-                                                            @foreach($countries as $country)
-                                                            <option
-                                                                value="{{ $country->phonecode }}"
-                                                                data-flag='{!! $country->flag !!}'
-                                                                data-id="{{ $country->id }}">
-                                                                +{{ $country->phonecode }} {!! $country->flag !!}
-                                                            </option>
-                                                            @endforeach
-                                                        </select>
-                                                        <input type="text" class="form-control p-0 ps-2 my-0" id="phone" name="phone" placeholder="Phone Number*" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> -->
-
-                                        <!-- Privacy Checkbox -->
-                                        <!-- <div class="col-12">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="privacyCheck">
-                                                <label class="form-check-label" for="privacyCheck">
-                                                    By providing your contact details you agreed to our
-                                                    <a href="#" class="fw-bold">Privacy and Policy</a>.
-                                                </label>
-                                            </div>
-                                        </div> -->
                                     </div>
 
                                     <!-- Submit Button -->
@@ -210,9 +165,7 @@
                                 ? round((($original - $discount) / $original) * 100)
                                 : 0;
 
-                            $currencySymbol = ($schedule->prices && $schedule->prices?->country_id == 0) || $schedule->prices == null
-                                ? 'USD '
-                                : $currency;
+                            $currencySymbol = $schedule->country->currency ?? '';
                         @endphp
 
                         <p class="mb-1">Price (<span id="item-count">1</span> item)</p>
@@ -255,12 +208,25 @@
         </div>
     </div>
 </section>
+<!-- Full Page Loader -->
+<div id="loaderOverlay" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.8); z-index:9999; 
+            justify-content:center; align-items:center;">
+    <div class="spinner-border text-primary" role="status" style="width:4rem; height:4rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 @endsection
 
 
 @push('style')
 <style>
+    #loaderOverlay {
+        display: none;
+        display: flex; /* This will only apply when you call .fadeIn() */
+    }
     .course-container-pmp {
         background: #f8f9fa;
         min-height: 100vh;
@@ -301,6 +267,14 @@
 @push('script')
 <script src="https://js.stripe.com/v3/"></script>
 <script>
+    function showLoader() {
+        $("#loaderOverlay").fadeIn();
+    }
+
+    function hideLoader() {
+        $("#loaderOverlay").fadeOut();
+    }
+
     $(document).ready(function() {
         $("#toggleAltBtn").on("click", function() {
             $("#altContact").toggleClass("d-none");
@@ -363,11 +337,34 @@
         }
 
         // Validation for Step 2 (User details)
-        function validateStep2() {
-            let name = $("input[name='name']").val().trim();
-            let email = $("input[name='email']").val().trim();
-            let phone = $("input[name='phone']").val().trim();
-            return !(name === "" || email === "" || phone === "");
+        function validateStep2() { 
+            let name = $("#name").val()?.trim();
+            let email = $("#email").val()?.trim();
+            let phone = $("#phone").val()?.trim();
+            let valid = true;
+            let errors = [];
+             if (!name) {
+                valid = false;
+                errors.push("Name is required");
+            }
+            if (!email) {
+                valid = false;
+                errors.push("Email is required");
+            }
+            if (!phone) {
+                valid = false;
+                errors.push("Phone number is required");
+            }
+
+            // Show error messages using toastr
+            if (!valid) {
+                errors.forEach(error => {
+                    toastr.error(error, "Validation Error");
+                });
+                return false; // ⛔ Stop before Stripe request
+            }
+            createOrderIfNeeded();
+            return true;
         }
     });
 
@@ -460,7 +457,7 @@
             success: function (response) {
                 if (response.success) {
                     $("#couponMessage").removeClass("text-danger").addClass("text-success").text(response.message);
-
+                    $("#coupon_id").val(response.coupon_id);
                     // Update UI
                     $("#total").text(response.total.toFixed(2));
 
@@ -477,25 +474,117 @@
     });
 
     // stripe integration
-    const stripe = Stripe("{{ env('STRIPE_KEY') }}"); // Publishable Key
+    //  $(document).ready(function() {
+        let createdOrderId = null;
 
-    $(document).on("click", "#payWithStripe", function (e) { debugger;
-        e.preventDefault();
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
 
-        let name = $("input[name='name']").val();
-        let email = $("input[name='email']").val();
-        let phone = $("input[name='phone']").val();
-        let country_code = $("select[name='country_code']").val();
-        let participants = $("#participant-input").val();
-        let total_amount = $("#total").text();
-        let price = $("#discount-price").text();
-        let currency = "{{ $currencySymbol }}";
-        let discount = $("#payWithStripe").data("discount") || 0;
+        function createOrderIfNeeded() {
 
-        $.ajax({
-            url: "{{ route('checkout.session') }}",
-            method: "POST",
-            data: {
+            let email = $("#email").val();
+            let phone = $("#phone").val();
+            let orderId = $("#order_id").val();
+            let valid = true; // ✅ reset validation each time
+            let errors = [];
+
+            // Validate email
+            if (email && !isValidEmail(email)) {
+                valid = false;
+                errors.push("Invalid email format");
+            }
+
+            // Validate phone
+            if (phone && !/^[0-9]{7,15}$/.test(phone)) {
+                valid = false;
+                errors.push("Invalid phone number");
+            }
+
+            // Show errors if any
+            if (!valid) {
+                errors.forEach(error => toastr.error(error, "Validation Error"));
+                return false;
+            }
+
+            if (!email && !phone) return;
+
+            $.ajax({
+                url: "{{ route('order.create') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    fullname: name,
+                    email: email,
+                    phone: phone,
+                    schedule_id: "{{ $schedule->id }}",
+                    course_id: "{{ $schedule->course_id }}", // assuming you pass it
+                    workshop_start_date: "{{ $schedule->start_date }}",
+                    workshop_end_date: "{{ $schedule->end_date }}",
+                    order_id: orderId,
+                },
+                success: function(res) {
+                    if (res.success) {
+                        createdOrderId = res.order_id;
+                        $("#order_id").val(res.order_id);
+                        console.log("Order created:", createdOrderId);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        $("#email, #phone").on("blur", createOrderIfNeeded); 
+
+        let stripe = Stripe("{{ config('services.stripe.key') }}"); // ✅ your publishable key
+
+        $("#payWithStripe").click(function(e) { 
+            e.preventDefault();
+
+            let valid = true;
+            let errors = [];
+
+            // Required fields
+            let name = $("#name").val();
+            let email = $("#email").val();
+            let phone = $("#phone").val();
+            let country_code = $("select[name='country_code']").val();
+            let participants = $("#participant-input").val();
+            let total_amount = $("#total").text();
+            let price = $("#discount-price").text();
+            let currency = "{{ $currencySymbol }}";
+            let discount = $("#payWithStripe").data("discount") || 0;
+            let coupon_id = $("#coupon_id").val();
+
+            if (!name) {
+                valid = false;
+                errors.push("Name is required");
+            }
+            if (!email) {
+                valid = false;
+                errors.push("Email is required");
+            }
+            if (!phone) {
+                valid = false;
+                errors.push("Phone number is required");
+            }
+
+            // Show error messages using toastr
+            if (!valid) {
+                errors.forEach(error => {
+                    toastr.error(error, "Validation Error");
+                });
+                return false; // ⛔ Stop before Stripe request
+            }
+
+    showLoader();
+
+
+            // ✅ Proceed only if valid
+            let formData = {
                 _token: "{{ csrf_token() }}",
                 fullname: name,
                 email: email,
@@ -506,24 +595,32 @@
                 price: price,
                 discount: discount,
                 currency : currency,
+                coupon_id: coupon_id,
+                order_id: createdOrderId,
                 schedule_id: "{{ $schedule->id }}",
                 course_id: "{{ $schedule->course_id }}", // assuming you pass it
                 workshop_start_date: "{{ $schedule->start_date }}",
                 workshop_end_date: "{{ $schedule->end_date }}"
-            },
-            success: function (response) {
-                if (response.id) {
-                    stripe.redirectToCheckout({ sessionId: response.id });
-                } else {
-                    alert("Something went wrong. Please try again.");
+            };
+
+            $.ajax({
+                url: "{{ route('checkout.session') }}",
+                method: "POST",
+                data: formData,
+                success: function(response) {
+                    if (response.id) {
+                        stripe.redirectToCheckout({
+                            sessionId: response.id
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
                 }
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText);
-                alert("Payment initialization failed.");
-            }
+            });
         });
-    });
+
+    // });
 
 
 </script>
