@@ -49,32 +49,26 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Schedule Info -->
-                    <h5 class="mb-2 mt-4">Schedule</h5>
-                    <div class="row g-4 mb-2">
-                        <div class="col-md-6 col-lg-6">
-                            @if($orders->getSchedule)
-                                <div class="p-3 border rounded-3 d-flex flex-column align-items-start">
-                                    <!-- Type & Batch -->
-                                    <span class="badge bg-primary mb-1">
-                                        {{ $orders->getSchedule->type }} - {{ $orders->getSchedule->batche }}
-                                    </span>
 
-                                    <!-- Date Range -->
-                                    <span class="">
-                                        <i class="fa fa-calendar-alt me-1"></i>
-                                        {{ \Carbon\Carbon::parse($orders->getSchedule->start_date)->format('d M Y') }}
-                                        -
-                                        {{ \Carbon\Carbon::parse($orders->getSchedule->end_date)->format('d M Y') }}
-                                    </span>
-                                </div>
-                            @else
-                                <div class="p-3 border rounded-3 text-danger">
-                                    No schedule available
-                                </div>
-                            @endif
+                    <!-- Dates -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="p-3 border rounded-3">
+                                <p class="text-muted mb-1"><i class="fa fa-calendar text-secondary me-2"></i>Start Date</p>
+                                <h6 class="mb-0 fw-bold">
+                                    {{ $orders->workshop_start_date ? \Carbon\Carbon::parse($orders->workshop_start_date)->format('d M Y') : '-' }}
+                                </h6>
+                            </div>
                         </div>
-                         <div class="col-md-6 col-lg-6">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="p-3 border rounded-3">
+                                <p class="text-muted mb-1"><i class="fa fa-calendar-check text-secondary me-2"></i>End Date</p>
+                                <h6 class="mb-0 fw-bold">
+                                    {{ $orders->workshop_end_date ? \Carbon\Carbon::parse($orders->workshop_end_date)->format('d M Y') : '-' }}
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
                             <div class="p-3 border rounded-3">
                                 <p class="text-muted mb-1"><i class="fa fa-clock text-secondary me-2"></i>Order Date</p>
                                 <h6 class="mb-0 fw-bold">{{ $orders->created_at->format('d M Y') }}</h6>
@@ -83,7 +77,7 @@
                     </div>
 
                     <!-- Courses Table -->
-                    <h5 class="mb-2 mt-4">Courses</h5>
+                    <h5 class="mb-3 mt-4">Courses</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle">
                             <thead class="table-light">
@@ -110,7 +104,7 @@
                     </div>
 
                     <!-- Payment Info -->
-                    <h5 class="mb-2 mt-4">Payment Information</h5>
+                    <h5 class="mb-3 mt-4">Payment Information</h5>
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="p-3 bg-light rounded-3">

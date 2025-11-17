@@ -32,7 +32,7 @@ class OrderController extends Controller
         if ($request->has('status') && !empty($request->status)) {
             $orders->where('status', $request->status);
         }
-        $orders = $orders->with('getSchedule')->orderBy('id', 'DESC')->paginate(10);
+        $orders = $orders->orderBy('id', 'DESC')->paginate(10);
         return view('admin.order.list', compact('orders'));
     }
     public function orderView($id)

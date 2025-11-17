@@ -58,8 +58,10 @@
                 </div>
                 <div class="curriculum-certificate">
                     <a href="{{ route('course.details', $course->slug) }}" class="view-certification">View Program</a>
-                    @if($course->upload_curriculum != null)
-                        <button class="view-curiculum" data-bs-toggle="modal" data-course-id="{{ $course->id }}" data-bs-target="#curriculumModal"><i class="ri-download-line"></i><span>Curriculum</span></button>
+                    @if($course->upload_curriculum)
+                        <a href="{{ asset('uploads/curriculum/'. $course->upload_curriculum ) }}" target="_blank">
+                            <button class="view-curiculum"><i class="ri-download-line"></i><span>Curriculum</span></button>
+                        </a>
                     @endif
                 </div>
             </div>

@@ -63,7 +63,6 @@ class GeneralsettingsController extends Controller
         $settings->printest   = $request->input('printest');
         $settings->meta_title = $request->input('meta_title');
         $settings->country_rule = json_encode($countryRules);
-        $settings->steal_the_deal = $request->steal_the_deal;
 
         if ($request->hasFile('icon')) {
             $iconPath = public_path('admin/icon/');

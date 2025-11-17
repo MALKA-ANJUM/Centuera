@@ -35,70 +35,21 @@
                         <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row mb-2">
-                                <!-- Category Name -->
                                 <div class="col-md-12">
-                                    <label for="name" class="form-label">@lang('Category Name') <span class="text-danger">*</span></label>
+                                    <label for="name" class="form-label">@lang('Category Name')</label>
                                     <input type="text" class="form-control" placeholder="@lang('Enter Category Name')"
-                                           name="name" id="name" required>
+                                        name="name" id="name" required>
                                     @error('name')
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-
-                                <!-- Accreditation Bodies Section -->
-                                <h4 class="mt-2">Accreditation Bodies</h4>
-                                <div id="accreditation-wrapper">
-                                    <div class="row mb-2 accreditation-item">
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="accreditation_bodies[]"
-                                                   placeholder="Enter Accreditation Body" required>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <input type="file" class="form-control" name="image[]" required>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button type="button" class="btn btn-danger remove-field">X</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <button type="button" id="add-more" class="btn btn-success">+ Add More</button>
-                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2">@lang('Add')</button>
+                            <button type="submit" class="btn btn-primary">@lang('Add')</button>
                         </form>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <!-- END: Content-->
 @endsection
-
-@push('script')
-<script>
-    $(document).ready(function () {
-        $('#add-more').click(function () {
-            $('#accreditation-wrapper').append(`
-                <div class="row mb-2 accreditation-item">
-                    <div class="col-md-5">
-                        <input type="text" class="form-control" name="accreditation_bodies[]" 
-                               placeholder="Enter Accreditation Body" required>
-                    </div>
-                    <div class="col-md-5">
-                        <input type="file" class="form-control" name="image[]" required>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove-field">X</button>
-                    </div>
-                </div>
-            `);
-        });
-
-        $(document).on('click', '.remove-field', function () {
-            $(this).closest('.accreditation-item').remove();
-        });
-    });
-</script>
-@endpush

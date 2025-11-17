@@ -140,14 +140,6 @@
                                     @endif
                                     <span class="text-danger" id="icon-error"></span>
                                 </div>
-                            
-                                <div class="col-md-8">
-                                    <label for="logo" class="form-label">@lang('Steal the Deal')</label>
-                                    <textarea name="steal_the_deal" class="form-control" id="editor">
-                                        {{ $existingSettings ? $existingSettings->steal_the_deal : '' }}
-                                    </textarea>
-                                    <span class="text-danger" id="icon-error"></span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -229,7 +221,6 @@
         .select2-container--default .select2-selection--single .select2-selection__arrow b {
             border-style: none !important;
         }
-       
     </style>
 @endpush
 
@@ -316,14 +307,5 @@
                 $(this).closest('.country-phone-row').remove();
             });
         });
-    </script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
     </script>
 @endpush

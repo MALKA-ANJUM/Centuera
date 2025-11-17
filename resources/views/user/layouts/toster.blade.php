@@ -73,9 +73,9 @@
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
-            "timeOut": "7000",
+            "timeOut": "5000",
             "extendedTimeOut": "1000",
-            "positionClass": "toast-top-right",
+            "positionClass": "toast-bottom-left",
         };
         toastr.success("{{ Session::get('success') }}");
     </script>
@@ -86,9 +86,9 @@
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
-            "timeOut": "7000",
+            "timeOut": "5000",
             "extendedTimeOut": "1000",
-            "positionClass": "toast-top-right",
+            "positionClass": "toast-bottom-left",
         };
         toastr.error("{{ Session::get('error') }}");
     </script>

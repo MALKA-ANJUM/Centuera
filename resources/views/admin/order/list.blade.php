@@ -62,8 +62,10 @@
                                                 <th>@lang('Name')</th>
                                                 <th>@lang('Order Id')</th>
                                                 <th>@lang('Email')</th>
-                                                <th>@lang('Schedule')</th>
+                                                <th>@lang('Course')</th>
                                                 <th>@lang('Amount')</th>
+                                                <th>@lang('Start date')</th>
+                                                <th>@lang('End date')</th>
                                                 <th>@lang('Status')</th>
                                                 <th>@lang('Action')</th>
                                             </tr>
@@ -76,27 +78,21 @@
                                                         <td>{{ $order->fullname }}</td>
                                                         <td>{{ $order->orderId }}</td>
                                                         <td>{{ $order->email }}</td>
-                                                        <td>
-                                                            @if($order->getSchedule)
-                                                                <div class="d-flex flex-column">
-                                                                    <!-- Type and Batch -->
-                                                                    <span class="badge bg-primary">
-                                                                        {{ $order->getSchedule->type }} || {{ $order->getSchedule->batche }}
-                                                                    </span>
 
-                                                                    <!-- Dates -->
-                                                                    <span class="text-nowrap small">
-                                                                        {{ \Carbon\Carbon::parse($order->getSchedule->start_date)->format('d M Y') }}
-                                                                        -
-                                                                        {{ \Carbon\Carbon::parse($order->getSchedule->end_date)->format('d M Y') }}
-                                                                    </span>
-                                                                </div>
+                                                        <td>
+                                                            @if($order->courses && is_array($order->courses))
+                                                                @foreach($order->courses as $courseId)
+                                                                    {{ \App\Models\Course::find($courseId)->title ?? 'N/A' }}<br>
+                                                                @endforeach
                                                             @else
-                                                                <span class="text-danger">No schedule</span>
+                                                                N/A
                                                             @endif
                                                         </td>
 
                                                         <td>{{ $order->total_amount }}</td>
+                                                        <td>{{ $order->workshop_start_date ? \Carbon\Carbon::parse($order->workshop_start_date)->format('d-M-Y') : '-' }}</td>
+                                                        <td>{{ $order->workshop_end_date ? \Carbon\Carbon::parse
+                                                        ($order->workshop_end_date)->format('d-M-Y') : '-' }}</td>
                                                         <td>
                                                             @if($order->status == 'pending')
                                                                 <span class="badge bg-warning text-dark">Pending</span>

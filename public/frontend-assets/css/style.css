@@ -1991,7 +1991,6 @@ select {
 
 .single-courses-box .image img {
   width: 100%;
-  border-radius: 10px 10px 0 0;
 }
 
 .single-courses-box .cr-option {
@@ -9336,7 +9335,7 @@ Back to Top CSS
 .text-section {
   flex: 1;
   min-width: 300px;
-  padding: 20px 0;
+  padding: 20px;
 }
 
 .logo-section {
@@ -9411,7 +9410,7 @@ Back to Top CSS
 .parent-container {
   display: flex;
   flex-wrap: wrap;
-  padding: 20px 0;
+  padding: 20px;
 }
 
 .left-section {
@@ -9552,7 +9551,7 @@ h2 {
 /*--------------------whybootcamp----------------------*/
 
 .why-bootcamp {
-  padding: 20px 0;
+  padding: 20px;
 }
 
 /* .why-bootcamp h2 {

@@ -27,36 +27,13 @@ class CategoriesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required',
         ]);
-
-        $accreditations = [];
-
-        foreach ($request->accreditation_bodies as $index => $bodyName) {
-            $imagePath = null;
-
-            if (isset($request->file('image')[$index])) {
-                $img = $request->file('image')[$index];
-                $imageName = time() . '_' . $img->getClientOriginalName();
-
-                // Move the file to public/admin/accreditation_images
-                $img->move(public_path('admin/accreditation_images'), $imageName);
-            }
-
-            $accreditations[] = [
-                'name' => $bodyName,
-                'image' => $imageName,
-            ];
-        }
-
-        $category = new Category();
-        $category->name = $request->name;
-        $category->accreditation_bodies = json_encode($accreditations);
+        $category           = new Category();
+        $category->name     = $request->name;
         $category->save();
-
         return redirect()->route('admin.categories.index')->with('message', 'Category added successfully.');
     }
-
 
     public function edit($id)
     {
@@ -64,39 +41,16 @@ class CategoriesController extends Controller
         return view('admin.categories.edit', compact('category'));
     }
 
-   public function update(Request $request, $id)
-{
-    $request->validate([
-        'name' => 'required|string',
-    ]);
-
-    $category = Category::findOrFail($id);
-    $accreditations = [];
-
-    foreach ($request->accreditation_bodies as $index => $bodyName) {
-        $imageName = $request->old_image[$index] ?? null;
-
-        if (isset($request->file('image')[$index])) {
-            $img = $request->file('image')[$index];
-            $imageName = time() . '_' . $img->getClientOriginalName();
-
-            // Move the file to public/admin/accreditation_images
-            $img->move(public_path('admin/accreditation_images'), $imageName);
-        }
-
-        $accreditations[] = [
-            'name' => $bodyName,
-            'image' => $imageName,
-        ];
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name'      => 'required',
+        ]);
+        $category = Category::findOrFail($id);
+        $category->name     = $request->name;
+        $category->save();
+        return redirect()->route('admin.categories.index')->with('message', 'Category updated successfully.');
     }
-
-    $category->name = $request->name;
-    $category->accreditation_bodies = json_encode($accreditations);
-    $category->save();
-
-    return redirect()->route('admin.categories.index')->with('message', 'Category updated successfully.');
-}
-
 
     public function destroy($id)
     {

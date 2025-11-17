@@ -56,15 +56,6 @@
                                         @enderror
                                     </div>
 
-                                    {{-- Logo --}}
-                                    <div class="mb-2">
-                                        <label class="form-label">@lang('Logo')</label>
-                                       <input type="file" name="logo" class="form-control">
-                                        @error('short_title')
-                                            <div class="alert alert-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
                                     {{-- Category --}}
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>
@@ -557,7 +548,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn" style="position: fixed; bottom: 15px;">@lang('Add Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn">@lang('Add Course')</button>
                 </form>
             </div>
         </div>

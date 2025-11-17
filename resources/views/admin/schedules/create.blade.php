@@ -305,24 +305,24 @@
             .catch(function(error) {
                 console.error(error);
             });
-            function validatePrices($row) {
-                let discount = parseFloat($row.find('.discount-price').val()) || 0;
-                let original = parseFloat($row.find('.original-price').val()) || 0;
+            // function validatePrices($row) {
+            //     let discount = parseFloat($row.find('.discount-price').val()) || 0;
+            //     let original = parseFloat($row.find('.original-price').val()) || 0;
 
-                if (discount >= original && discount > 0 && original > 0) {
-                    $row.find('.price-error').show();
-                    return false;
-                } else {
-                    $row.find('.price-error').hide();
-                    return true;
-                }
-            }
+            //     if (discount >= original && discount > 0 && original > 0) {
+            //         $row.find('.price-error').show();
+            //         return false;
+            //     } else {
+            //         $row.find('.price-error').hide();
+            //         return true;
+            //     }
+            // }
 
             // Attach keyup/change validation
-            $(document).on('keyup change', '.discount-price, .original-price', function () {
-                let $row = $(this).closest('.pricing-item');
-                validatePrices($row);
-            });
+            // $(document).on('keyup change', '.discount-price, .original-price', function () {
+            //     let $row = $(this).closest('.pricing-item');
+            //     validatePrices($row);
+            // });
 
             // Prevent submit if any invalid
             $('form').on('submit', function(e) {

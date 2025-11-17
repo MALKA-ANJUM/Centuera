@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Invoice #{{ $orders->orderId }}</title>
     <style>
-        body { font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif; }
+        body {font-family: Calibri; }
         .badge { display: inline-block; padding: 5px 10px; border-radius: 4px; font-size: 11px; }
         .bg-warning { background: #ffc107; color: #000; }
         .bg-success { background: #28a745; color: #fff; }
@@ -48,35 +48,6 @@
             <strong>Order # : {{$orders->orderId}}</strong><br>
             <strong>Order Date: {{ $orders->created_at->format('d M Y') }}</strong><br>
         </div>
-    </section>
-
-    <!-- Schedule Info -->
-    <h3 style="margin-bottom:5px; text-align:center;">Schedule</h3>
-    <section style="margin-bottom:20px;">
-        @if($orders->getSchedule)
-            <div style="padding:10px; border:1px solid #ddd; border-radius:5px;">
-                <!-- Type & Batch -->
-                <div style="margin-bottom:5px;">
-                    <strong>Type & Batch: </strong>
-                    <span style="background-color:#0d6efd; color:#fff; padding:3px 8px; border-radius:4px;">
-                        {{ $orders->getSchedule->type }} - {{ $orders->getSchedule->batche }}
-                    </span>
-                </div>
-
-                <!-- Date Range -->
-                <div style="margin-bottom:5px;">
-                    <strong>Dates: </strong>
-                    {{ \Carbon\Carbon::parse($orders->getSchedule->start_date)->format('d M Y') }}
-                    -
-                    {{ \Carbon\Carbon::parse($orders->getSchedule->end_date)->format('d M Y') }}
-                </div>
-
-            </div>
-        @else
-            <div style="padding:10px; border:1px solid #dc3545; border-radius:5px; color:#dc3545;">
-                No schedule available
-            </div>
-        @endif
     </section>
 
     <h3 style="margin-bottom:5px;text-align:center;">Courses</h3>
