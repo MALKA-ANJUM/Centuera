@@ -108,7 +108,11 @@ class CourseController extends Controller
                 $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
                 $course->upload_curriculum = $currImageName;
             }
-
+            if ($request->hasFile('logo')) {
+                $logoImageName = time() . '_logo.' . $request->logo->getClientOriginalExtension();
+                $request->logo->move(public_path('uploads/logo'), $logoImageName);
+                $course->logo = $logoImageName;
+            }
 
             // ✅ Slug (only if new course OR title changed)
             if (!$course->id || $course->isDirty('title')) {
@@ -383,7 +387,8 @@ class CourseController extends Controller
                         $partner['image']->isValid()
                     ) {
                         $img = $partner['image'];
-                        $imgName = time() . '_' . $img->getClientOriginalName();
+                        $imgName = time()
+                         . '_' . $img->getClientOriginalName();
                         $img->move(public_path('uploads/premier_partner'), $imgName);
                         $imagePath = $imgName;
                     }
@@ -419,6 +424,11 @@ class CourseController extends Controller
                 $request->upload_curriculum->move(public_path('uploads/curriculum'), $currImageName);
                 $course->upload_curriculum = $currImageName;
             }
+            if ($request->hasFile('logo')) {
+                $logoImageName = time() . '_curr.' . $request->logo->getClientOriginalExtension();
+                $request->logo->move(public_path('uploads/logo'), $logoImageName);
+                $course->logo = $logoImageName;
+            }
 
             // ✅ Slug (only if title changed)
             if ($course->isDirty('title')) {
@@ -444,18 +454,15 @@ class CourseController extends Controller
                 $course->training_course = json_encode($trainingData);
             }
 
-            $saved = $course->save();
-            if ($request->course_id) {
-                    CourseKeyFeature::where('course_id', $course->id)->delete();
-                    CourseSkillsCovered::where('course_id', $course->id)->delete();
-                    CourseCurriculum::where('course_id', $course->id)->delete();
-                    CourseCertification::where('course_id', $course->id)->delete();
-                    // CourseTrustedPartner::where('course_id', $course->id)->delete();
-                    CourseVideo::where('course_id', $course->id)->delete();
-                    Faq::where('course_id', $course->id)->delete();
-                    // Benefit::where('course_id', $course->id)->delete();
-                    Seo::where('course_id', $course->id)->delete();
-            }
+            CourseKeyFeature::where('course_id', $course->id)->delete();
+            CourseSkillsCovered::where('course_id', $course->id)->delete();
+            CourseCurriculum::where('course_id', $course->id)->delete();
+            CourseCertification::where('course_id', $course->id)->delete();
+            // CourseTrustedPartner::where('course_id', $course->id)->delete();
+            CourseVideo::where('course_id', $course->id)->delete();
+            Faq::where('course_id', $course->id)->delete();
+            // Benefit::where('course_id', $course->id)->delete();
+            Seo::where('course_id', $course->id)->delete();
 
             // ...existing code for saving features, skills, SEO, curriculum, certifications, partners, videos, faqs, benefits...
             if ($request->feature) {
@@ -645,7 +652,7 @@ class CourseController extends Controller
                     ->whereNotIn('id', $existingIds)
                     ->delete();
             }
-
+            $course->save();
 
 
             if($request->auto_save == true){

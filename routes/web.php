@@ -132,12 +132,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
          Route::post('photo/add/{id}', [PhotoController::class, 'photoAdd'])->name('photo.add');
         Route::get('delete/{id}', [PhotoController::class, 'PhotoDelete'])->name('photo.delete');
          
-        // banner image
-        Route::get('banner', [WebsiteController::class, 'banner'])->name('banner');
-        Route::post('update-banner/{id}', [WebsiteController::class, 'updateBanner'])->name('update.banner');
-        Route::post('update/user-banner', [WebsiteController::class, 'updateUserBanner'])->name('update.user.banner');
-        Route::get('delete-banner/{image}', [WebsiteController::class, 'deleteBanner'])->name('delete.banner');
-        Route::get('delete-user-banner/{image}', [WebsiteController::class, 'deleteUserBanner'])->name('delete.user.banner');
+        Route::prefix('banner')->name('banner.')->group(function () {
+            Route::get('/', [WebsiteController::class, 'index'])->name('index');
+            Route::post('update', [WebsiteController::class, 'update'])->name('update');
+            Route::delete('delete/{id}', [WebsiteController::class, 'destroy'])->name('delete');
+        });
+
 
         //subscriptions
         Route::prefix('subscriptions')->name('subscriptions.')->group(function () {

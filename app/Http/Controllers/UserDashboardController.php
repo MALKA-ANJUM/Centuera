@@ -18,8 +18,8 @@ class UserDashboardController extends Controller
 {
     public function dashboard(Request $request)
     {
-        $countries = Country::get();
-        $orders = Order::orderBy('id', 'desc')->where('email', auth()->user()->email)->paginate(10);
+        $countries  = Country::get();
+        $orders     = Order::orderBy('id', 'desc')->where('email', auth()->user()->email)->paginate(10);
 
         return view('user.dashboard', compact('countries', 'orders'));
     }
@@ -53,25 +53,25 @@ class UserDashboardController extends Controller
     }
     public function orderInvoice($id)
     {
-        $countries = Country::get();
-        $orders= Order::findOrFail($id);
+        $countries  = Country::get();
+        $orders     = Order::findOrFail($id);
 
-        $pdf = Pdf::loadView('user.order-invoice', compact('countries', 'orders'));
+        $pdf        = Pdf::loadView('user.order-invoice', compact('countries', 'orders'));
         return $pdf->download('invoice-'.$orders->orderId.'.pdf');
     }
 
     public function updateBasic(Request $request)
     {
         $request->validate([
-            'title' => 'nullable|string|max:10',
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|string|in:F,M,OTH,NO',
-            'dob' => 'required|date',
+            'title'             => 'nullable|string|max:10',
+            'first_name'        => 'required|string|max:255',
+            'middle_name'       => 'nullable|string|max:255',
+            'last_name'         => 'required|string|max:255',
+            'gender'            => 'required|string|in:F,M,OTH,NO',
+            'dob'               => 'required|date',
             'training_funded_by' => 'nullable|string|in:self,organisation',
-            'profile_picture' => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048',
-            'linkedin' => 'nullable|url|max:255',
+            'profile_picture'   => 'nullable|image|mimes:png,jpg,jpeg,gif|max:2048',
+            'linkedin'          => 'nullable|url|max:255',
         ]);
 
         try {
@@ -85,14 +85,14 @@ class UserDashboardController extends Controller
             }
 
             // Update user fields
-            $user->title = $request->title;
-            $user->first_name = $request->first_name;
-            $user->middle_name = $request->middle_name;
-            $user->last_name = $request->last_name;
-            $user->gender = $request->gender;
-            $user->dob = $request->dob;
+            $user->title        = $request->title;
+            $user->first_name   = $request->first_name;
+            $user->middle_name  = $request->middle_name;
+            $user->last_name    = $request->last_name;
+            $user->gender       = $request->gender;
+            $user->dob          = $request->dob;
             $user->training_funded_by = $request->training_funded_by;
-            $user->linkedin = $request->linkedin;
+            $user->linkedin     = $request->linkedin;
             $user->save();
 
             session()->flash('success', 'User Basic Details Updated successfully!');
@@ -106,24 +106,24 @@ class UserDashboardController extends Controller
     public function updateContact(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'mobile' => 'required|string|max:20',
-            'country' => 'required|integer',
-            'state' => 'required|integer',
-            'city' => 'required|string|max:255',
-            'timezone_id' => 'required',
-            'address' => 'nullable|string|max:1000',
+            'email'         => 'required|email',
+            'mobile'        => 'required|string|max:20',
+            'country'       => 'required|integer',
+            'state'         => 'required|integer',
+            'city'          => 'required|string|max:255',
+            'timezone_id'   => 'required',
+            'address'       => 'nullable|string|max:1000',
         ]);
 
         try {
-            $user = User::where('id', Auth()->user()->id)->first();
-            $user->email = $request->email;
-            $user->mobile = $request->mobile;
-            $user->country = $request->country;
-            $user->state = $request->state;
-            $user->city = $request->city;
+            $user           = User::where('id', Auth()->user()->id)->first();
+            $user->email    = $request->email;
+            $user->mobile   = $request->mobile;
+            $user->country  = $request->country;
+            $user->state    = $request->state;
+            $user->city     = $request->city;
             $user->timezone_id = $request->timezone_id;
-            $user->address = $request->address;
+            $user->address  = $request->address;
             $user->save();
 
             session()->flash('success', 'User Contact Details Updated successfully!');
@@ -149,7 +149,7 @@ class UserDashboardController extends Controller
         }
 
         try {
-            $user = User::findOrFail(Auth::id());
+            $user           = User::findOrFail(Auth::id());
             $user->password = Hash::make($request->password);
             $user->save();
 
@@ -177,11 +177,11 @@ class UserDashboardController extends Controller
     public function addReviewRatings(Request $request)
     {
         try {
-            $rating = new Rating();
-            $rating->course_id = $request->course_id;
-            $rating->user_id = auth()->user()->id;
-            $rating->rating = $request->rating;
-            $rating->review = $request->review;
+            $rating             = new Rating();
+            $rating->course_id  = $request->course_id;
+            $rating->user_id    = auth()->user()->id;
+            $rating->rating     = $request->rating;
+            $rating->review     = $request->review;
             $rating->save();
 
             return redirect()->back()->with('success', 'Rating Added');

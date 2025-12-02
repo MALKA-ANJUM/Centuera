@@ -102,11 +102,17 @@
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Start Time</label>
-                                        <input type="time" name="starttime" value="{{ $schedule->starttime }}" class="form-control" required step="60">
+                                        <input type="time" class="form-control" name="starttime" step="60"
+                                            value="{{ $schedule->starttime }}" 
+                                            required 
+                                        >
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">End Time</label>
-                                        <input type="time" name="end_time" value="{{ $schedule->end_time }}" class="form-control" required step="60">
+                                        <input type="time" name="end_time" class="form-control" step="60"
+                                            value="{{ $schedule->end_time }}" 
+                                            required 
+                                        >
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label class="form-label">Trainer Name</label>
@@ -152,14 +158,6 @@
                                                 <label class="form-label">Country</label>
                                                 <input type="text" class="form-control" name="country" id="country" readonly>
                                                 <input type="hidden" class="form-control" value="price->country_id" name="country_id" id="country_id">
-                                                <!-- <select name="country_id[]" class="form-select ctrm_select2" required>
-                                                    <option value="">Select country</option>
-                                                    <option value="0" {{ $price->country_id == 0 ? 'selected' : '' }}>All</option>
-                                                    @foreach($countries as $country)
-                                                        <option value="{{ $country->id }}" {{ $price->country_id == $country->id ? 'selected' : '' }}>{{ $country->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <div class="country-error text-danger" style="display:none;">You have already selected this country in another row.</div> -->
                                             </div>
 
                                            <div class="col-md-3">
@@ -176,11 +174,6 @@
                                                     Original Price must be greater than Discount.
                                                 </div>
                                             </div>
-
-
-                                            <!-- <div class="col-md-2 d-flex align-items-end">
-                                                <button type="button" class="btn btn-sm btn-danger remove-pricing">Delete</button>
-                                            </div> -->
                                         </div>
                                     </div>
                                 @endforeach
@@ -229,9 +222,9 @@
             min-height: 200px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @endpush
 @push('script')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

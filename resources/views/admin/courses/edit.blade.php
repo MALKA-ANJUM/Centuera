@@ -60,6 +60,21 @@
                                         @enderror
                                     </div>
 
+                                    {{-- Logo --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">@lang('Logo')</label>
+                                        <input type="file" name="logo" class="form-control">
+                                        @if (!empty($course->logo))
+                                            <div class="mb-1">
+                                                <a href="{{ asset('uploads/logo/' . $course->logo) }}" target="_blank">
+                                                    <span style="font-size: 13px;">View Image</span>
+                                                </a>
+                                            </div>
+                                        @endif
+                                        @error('logo')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     {{-- Category --}}
                                     <div class="mb-2">
                                         <label class="form-label">@lang('Category') <span class="text-danger">*</span></label>

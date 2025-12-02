@@ -4,22 +4,19 @@
 @section('meta_keywords', $courseDetails->getSeoData->meta_keyword ?? '')
 @section('content')
 <!-- Courses Section Start -->
-<div class="container-fluid px-3" id="course-section-start">
-    <div class="row courses-demo-container">
-        <div class="col-md-6 left-course-container">
+<div class="container" id="course-section-start">
+    <div class="row courses-demo-container px-0">
+        <div class="col-md-6 left-course-container px-0">
             <h1>{{ $courseDetails->title ?? '' }}</h1>
             <h6>{!! $courseDetails->short_description !!}</h6>
-            @php
-                $descriptionWithChecks = preg_replace(
-                    '/<(p|li)>(.*?)<\/(p|li)>/i',
-                    '<$1><span><i class="ri-checkbox-circle-line"></i></span> $2</$1>',
-                    $courseDetails->description
-                );
-            @endphp
-
-            {!! $descriptionWithChecks !!}
-
-
+                @php
+                    $descriptionWithChecks = preg_replace(
+                        '/<(p|li)>(.*?)<\/(p|li)>/i',
+                        '<$1 class="d-flex"><span><i class="ri-checkbox-circle-line pe-2"></i></span> $2</$1>',
+                        $courseDetails->description
+                    );
+                @endphp
+                {!! $descriptionWithChecks !!}
 
             <div class="demo-course-btn d-flex flex-wrap">
                 <a class="demo-course-btn-one text-center" href="#view_schedule">View Training Options</a>
@@ -72,9 +69,9 @@
 </div>
 
 <!-------------------section-2 ------------------->
-<section class="course-container-pmp container">
+<section class="container">
     <div class="row">
-        <div class="pmp-course-left-text col-md-8">
+        <div class="pmp-course-left-text col-md-8 px-0">
             <h2>{{ $courseDetails->short_title }} Overview</h2>
             <p>{!! $courseDetails->overview !!}</p>
 
@@ -127,6 +124,155 @@
         </div>
 
         <div class="pmp-course-table col-md-4">
+           @php
+            $classroomSchedule = $courseDetails->getCourseScheduleMany
+                ->where('batche', 'Classroom')
+                ->sortBy('start_date')
+                ->first();
+
+            $onlineSchedule = $courseDetails->getCourseScheduleMany
+                ->where('batche', 'Live Online Class')
+                ->sortBy('start_date')
+                ->first();
+
+            if ($classroomSchedule && $classroomSchedule->prices) {
+                $discountPercentageOfClassroom = 
+                    (($classroomSchedule->prices->original_price - $classroomSchedule->prices->discount_price) 
+                    / $classroomSchedule->prices->original_price) * 100;
+            }
+
+            if ($onlineSchedule && $onlineSchedule->prices) {
+                $discountPercentageOfOnline = 
+                    (($onlineSchedule->prices->original_price - $onlineSchedule->prices->discount_price) 
+                    / $onlineSchedule->prices->original_price) * 100;
+            }
+            @endphp
+
+            {{-- Upcoming Classroom Card --}}
+            @if($classroomSchedule != null)
+                <div class="card px-2 py-2 position-relative rounded-3 border-0 card-nbg12 mb-4">
+                    <div class="train_forms fs-6 fw-bold text-nowrap mb-0">
+                        Upcoming Classroom Schedule
+                    </div>
+                    <img src="{{ asset('frontend-assets/img/all-img/line1.png') }}" alt="star" width="166" height="2">
+                    <div class="ribbon-container position-absolute">
+                        <img class="ribbon1 position-absolute" src="{{ asset('frontend-assets/img/all-img/stickbadge.png') }}" alt="ribbon" width="90" height="94">
+                        <span class="ribbon-text position-absolute text-nowrap fw-bold text-white">{{ round($discountPercentageOfClassroom) }}% OFF</span>
+                    </div>
+                    <p class="mb-0 text-truncate-multiline1 w-90 trainer-fs1">{{ $courseDetails->title  }}</p>
+                    <div class="d-flex gap-1">
+                        <div class="d-flex flex-column crd-left-wdth">
+                            <div class="d-flex align-items-start flex-column">
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <i class="ri-time-line" style="color: #bf6022;"></i>
+                                    <p id="dateValue" class="pt-0 slot-fs mb-0">
+                                        {{ \Carbon\Carbon::parse($classroomSchedule->start_date)->format('M d') }} -
+                                        {{ \Carbon\Carbon::parse($classroomSchedule->end_date)->format('M d, Y') }} |
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start flex-column">
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <i class="ri-calendar-line" style="color: #bf6022;"></i>
+                                    <p id="dateValue" class="pt-0 slot-fs mb-0">
+                                        @php
+                                            $timezones = json_decode($classroomSchedule->country->timezones, true);
+                                            $abbreviation = $timezones[0]['abbreviation'] ?? '';
+                                        @endphp
+                                        {{ $abbreviation }}
+                                        {{ \Carbon\Carbon::parse($classroomSchedule->starttime)->format('h:i A') }} -
+                                        {{ \Carbon\Carbon::parse($classroomSchedule->end_time)->format('h:i A') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <img id="trainer-fs-img" class="rounded-circle" 
+                                    src="{{ $classroomSchedule->trainner_image 
+                                            ? asset('uploads/trainners/'.$classroomSchedule->trainner_image) 
+                                            : asset('frontend-assets/img/all-img/default.jpg') }}" 
+                                    alt="trainer" width="40px" height="40px">
+                                <a id="trainer-fs" href="#" class="">{{ $classroomSchedule->trainner_name ?? 'Trainer TBD' }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <div id="orig-price" class="fs-65 fw-bold">
+                            {{ $classroomSchedule->country->currency  }} {{ number_format($classroomSchedule->prices->discount_price, 2) }}
+                        </div>
+                        <del>{{ $classroomSchedule->country->currency  }} {{ number_format($classroomSchedule->prices->original_price, 2) }}</del>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2 gap-3">
+                        <a href="{{ route('user.order.summary', $classroomSchedule->id) }}?participants=1" class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">
+                            ENROLL NOW
+                        </a>
+                        <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" class="d-flex align-items-center text-nowrap gap-1 crds-12">
+                            <span>View all Schedules <i class="fa-regular fa-chevrons-right fs-6 mt-1 crds-12"></i></span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Upcoming Online Bootcamp Card --}}
+            @if($onlineSchedule)
+                <div class="card px-2 py-2 position-relative rounded-3 border-0 card-nbg12 mb-4">
+                    <div class="train_forms fs-6 fw-bold text-nowrap mb-0">
+                        Upcoming Online Schedule
+                    </div>
+                    <img src="{{ asset('frontend-assets/img/all-img/line1.png') }}" alt="star" width="166" height="2">
+                    <div class="ribbon-container position-absolute">
+                        <img class="ribbon1 position-absolute" src="{{ asset('frontend-assets/img/all-img/stickbadge.png') }}" alt="ribbon" width="90" height="94">
+                        <span class="ribbon-text position-absolute text-nowrap fw-bold text-white">{{ round($discountPercentageOfOnline) }}% OFF</span>
+                    </div>
+                    <p class="mb-0 text-truncate-multiline1 w-90 trainer-fs1">{{ $courseDetails->title }}</p>
+                    <div class="d-flex gap-1">
+                        <div class="d-flex flex-column crd-left-wdth">
+                            <div class="d-flex align-items-start flex-column">
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <i class="ri-time-line" style="color: #bf6022;"></i>
+                                    <p id="dateValue" class="pt-0 slot-fs mb-0">
+                                        {{ \Carbon\Carbon::parse($onlineSchedule->start_date)->format('M d') }} -
+                                        {{ \Carbon\Carbon::parse($onlineSchedule->end_date)->format('M d, Y') }} |
+                                    </p>
+                                </div>
+                            </div>
+                        
+                            <div class="d-flex align-items-start flex-column">
+                                <div class="d-flex align-items-baseline gap-1">
+                                    <i class="ri-calendar-line" style="color: #bf6022;"></i>
+                                    <p id="dateValue" class="pt-0 slot-fs mb-0">
+                                        {{ $onlineSchedule->time_zone }}
+                                        {{ \Carbon\Carbon::parse($onlineSchedule->starttime)->format('h:i A') }} -
+                                        {{ \Carbon\Carbon::parse($onlineSchedule->end_time)->format('h:i A') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <img id="trainer-fs-img" class="rounded-circle" 
+                                    src="{{ $onlineSchedule->trainner_image 
+                                            ? asset('uploads/trainners/'.$onlineSchedule->trainner_image) 
+                                            : asset('frontend-assets/img/all-img/default.jpg') }}" 
+                                    alt="trainer" width="40px" height="40px">
+                                <a id="trainer-fs" href="#" class="">{{ $onlineSchedule->trainner_name ?? 'Trainer TBD' }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <div id="orig-price" class="fs-65 fw-bold">
+                            {{ $onlineSchedule->country->currency }} {{ number_format($onlineSchedule->prices->discount_price, 2) }}
+                        </div>
+                        <del>{{ $onlineSchedule->country->currency }} {{ number_format($onlineSchedule->prices->original_price, 2) }}</del>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2 gap-3">
+                        <a href="{{ route('user.order.summary', $onlineSchedule->id) }}?participants=1" class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">
+                            ENROLL NOW
+                        </a>
+                        <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" class="d-flex align-items-center text-nowrap gap-1 crds-12">
+                            <span>View all Schedules <i class="fa-regular fa-chevrons-right fs-6 mt-1 crds-12"></i></span>
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <div class="cohort-form">
                 @if($courseDetails->getCourseSchedule != null)
                 <div class="real-cohort-form" data-start-date="{{ $courseDetails->getCourseSchedule->start_date }}">
@@ -187,7 +333,7 @@
 
                 </div>
                 <div class="info-text">
-                    <p>By providing your contact details, you agree to our 
+                    <p>By providing your contact details, you agree to our
                         <a href="{{ route('privacy.policy') }}">
                             <span class="info-text-span">
                                 Privacy Policy
@@ -196,7 +342,7 @@
                     </p>
                 </div>
                 <div class="form-group">
-                    <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" type="button" id="viewSchedulesBtn" class="btn-secondary">View Schedules</a>
+                    <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" type="button" id="viewSchedulesBtn" class="btn rounded fw-light" style="border: 1px solid orangered; color: orangered">View Schedules</a>
                 </div>
                 </form>
             </div>
@@ -213,44 +359,44 @@
 
 <!-----------------benefits-section---------------->
 @php
-    use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 
-    $benefitsData = [];
-    foreach ($courseDetails->getBenefits as $i => $benefit) {
-        $salary = json_decode($benefit->salary, true);
-        if (is_string($salary)) {
-            $salary = json_decode($salary, true);
-        }
-        $salary = is_array($salary) ? $salary : [];
+$benefitsData = [];
+foreach ($courseDetails->getBenefits as $i => $benefit) {
+$salary = json_decode($benefit->salary, true);
+if (is_string($salary)) {
+$salary = json_decode($salary, true);
+}
+$salary = is_array($salary) ? $salary : [];
 
-        $company = json_decode($benefit->company, true);
-        if (is_string($company)) {
-            $company = json_decode($company, true);
-        }
-        $company = is_array($company) ? $company : [];
+$company = json_decode($benefit->company, true);
+if (is_string($company)) {
+$company = json_decode($company, true);
+}
+$company = is_array($company) ? $company : [];
 
-        $companies = array_map(function ($logo) {
-            return asset('uploads/company_images/' . ltrim($logo, '/'));
-        }, $company);
-        
-        // key to reference this benefit in JS
-        $key = Str::slug($benefit->designation) ?: ('role' . $i);
+$companies = array_map(function ($logo) {
+return asset('uploads/company_images/' . ltrim($logo, '/'));
+}, $company);
 
-        $benefitsData[$key] = [
-            'designation' => $benefit->designation,
-            'salary' => [
-            'min' => $salary['min'] /1000 ?? 0 ,
-            'avg_min' => $salary['avg_min'] / 1000 ?? 0,
-            'average' => $salary['average'] / 1000 ?? 0,
-            'avg_max' => $salary['avg_max'] / 1000 ?? 0,
-            'max' => $salary['max'] /1000 ?? 0,
-        ],
-            'companies' => $companies,
-        ];
-    }
+// key to reference this benefit in JS
+$key = Str::slug($benefit->designation) ?: ('role' . $i);
+
+$benefitsData[$key] = [
+'designation' => $benefit->designation,
+'salary' => [
+'min' => $salary['min'] /1000 ?? 0 ,
+'avg_min' => $salary['avg_min'] / 1000 ?? 0,
+'average' => $salary['average'] / 1000 ?? 0,
+'avg_max' => $salary['avg_max'] / 1000 ?? 0,
+'max' => $salary['max'] /1000 ?? 0,
+],
+'companies' => $companies,
+];
+}
 @endphp
 @if($courseDetails->getBenefits->count() > 0)
-<section class="benefits-section container">
+<section class="container">
     <h2>Benefits</h2>
     <div class="col-md-8">
         {!! $courseDetails->benefits !!}
@@ -288,7 +434,7 @@
     <h2>Training Option</h2>
     <div class="row">
         @foreach(json_decode($courseDetails->training_course) as $key => $course)
-         @if($course->status == 1)
+        @if($course->status == 1)
 
         {{-- Handle each course type once --}}
         @switch($key)
@@ -301,10 +447,10 @@
                             <h4>{{ $course->level_name }}</h4>
                         </div>
                         <div class="card-body">
-                              @php
+                            @php
                                 $descriptionWithChecks = preg_replace(
                                     '/<(p|li)>(.*?)<\/(p|li)>/i',
-                                    '<$1><span><i class="ri-checkbox-circle-line"></i></span> $2</$1>',
+                                    '<$1 class="d-flex pe-2"><span><i class="ri-checkbox-circle-line pe-2"></i></span> $2</$1>',
                                     $course->description
                                 );
                             @endphp
@@ -317,9 +463,9 @@
                                     {{ isset($price['Classroom']->start_date) 
                                         ? \Carbon\Carbon::parse($price['Classroom']->start_date)->format('jS M') 
                                         : '' }},
-                                    {{ $price['Classroom']->type ?? '' }} Class
-                                </p>
-                                <a class="text-primary text-decoration-underline"
+                                        {{ $price['Classroom']->type ?? '' }} Class
+                                    </p>
+                                    <a class="text-primary text-decoration-underline"
                                 href="{{ route('user.course.schedule', $courseDetails->slug) . '?' . http_build_query([
                                         'type'   => '',
                                         'month'  => '',
@@ -374,7 +520,7 @@
                              @php
                                 $descriptionWithChecks = preg_replace(
                                     '/<(p|li)>(.*?)<\/(p|li)>/i',
-                                    '<$1><span><i class="ri-checkbox-circle-line"></i></span> $2</$1>',
+                                    '<$1 class="d-flex"><span><i class="ri-checkbox-circle-line pe-2"></i></span> $2</$1>',
                                     $course->description
                                 );
                             @endphp
@@ -440,7 +586,7 @@
                             @php
                                 $descriptionWithChecks = preg_replace(
                                     '/<(p|li)>(.*?)<\/(p|li)>/i',
-                                    '<$1><span><i class="ri-checkbox-circle-line"></i></span> $2</$1>',
+                                    '<$1 class="d-flex"><span><i class="ri-checkbox-circle-line pe-2"></i></span> $2</$1>',
                                     $course->description
                                 );
                             @endphp
@@ -456,7 +602,7 @@
             @break
 
         @endswitch
-    @endif
+        @endif
         @endforeach
     </div>
 </section>
@@ -474,6 +620,7 @@
             <h4 class="mt-3">Pre-requisites</h4>
             {!! $courseDetails->prerequisites !!}
             @if($courseDetails->getCourseCurriculum->count() > 0)
+            <h4 class="mt-3 mb-2">Learning Path</h4>
             <div id="accordion">
                 @foreach($courseDetails->getCourseCurriculum as $index => $curriculum)
                 @php
@@ -581,7 +728,7 @@
                     </div>
                     <!-- Company name -->
                     <div class="mb-3 company_name d-none">
-                        <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name" >
+                        <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
@@ -663,7 +810,7 @@
             <h2 class="mt-4">Supercharge Your Business with Skilled Teams </h2>
             <p class="mt-4"> {{ $courseDetails->business_with_skilled }} </p>
 
-            <button class="transform-class-btn mt-4" data-bs-toggle="modal" data-bs-target="#contactUsModal">Skill
+            <button class="btn style-three border rounded" data-bs-toggle="modal" data-bs-target="#contactUsModal">Skill
                 Up Your Teams ></button>
 
         </div>
@@ -743,19 +890,19 @@
                     </small>
                     <div class="rating mb-2 text-warning d-flex justify-content-between">
                         @php
-                            $rating = round($firstCourse->average_rating); // uses accessor
-                            $maxStars = 5;
+                        $rating = round($firstCourse->average_rating); // uses accessor
+                        $maxStars = 5;
                         @endphp
 
                         <ul class="d-flex list-unstyle customer-ratings">
                             @for ($i = 1; $i <= $maxStars; $i++)
-                                @if ($i <= $rating)
-                                    <li><i class="ri-star-fill"></i></li>
+                                @if ($i <=$rating)
+                                <li><i class="ri-star-fill"></i></li>
                                 @else
-                                    <li><i class="ri-star-line"></i></li>
+                                <li><i class="ri-star-line"></i></li>
                                 @endif
-                            @endfor
-                            <li><span>({{ number_format($firstCourse->average_rating, 1) }})</span></li>
+                                @endfor
+                                <li><span>({{ number_format($firstCourse->average_rating, 1) }})</span></li>
                         </ul>
 
                         <span>
@@ -775,36 +922,36 @@
             <div class="col-md-8">
                 <div class="row g-4">
                     @foreach($relatedCourses->skip(1) as $course)
-                        <div class="col-md-6">
-                            <div class="program-box p-3 shadow-sm rounded">
-                                <h6 class="fw-bold mb-2">{{ $course->title }}</h6>
-                                <small class="fw-bold text-primary bg-light px-2 py-1">
-                                    {{ $course->getCategory->name }}
-                                </small>
+                    <div class="col-md-6">
+                        <div class="program-box p-3 shadow-sm rounded">
+                            <h6 class="fw-bold mb-2">{{ $course->title }}</h6>
+                            <small class="fw-bold text-primary bg-light px-2 py-1">
+                                {{ $course->getCategory->name }}
+                            </small>
 
-                                <div class="rating text-warning d-flex justify-content-between">
-                                   @php
-                                        $rating = round($course->average_rating); // uses accessor
-                                        $maxStars = 5;
-                                    @endphp
+                            <div class="rating text-warning d-flex justify-content-between">
+                                @php
+                                $rating = round($course->average_rating); // uses accessor
+                                $maxStars = 5;
+                                @endphp
 
-                                    <ul class="d-flex list-unstyle customer-ratings">
-                                        @for ($i = 1; $i <= $maxStars; $i++)
-                                            @if ($i <= $rating)
-                                                <li><i class="ri-star-fill"></i></li>
-                                            @else
-                                                <li><i class="ri-star-line"></i></li>
-                                            @endif
+                                <ul class="d-flex list-unstyle customer-ratings">
+                                    @for ($i = 1; $i <= $maxStars; $i++)
+                                        @if ($i <=$rating)
+                                        <li><i class="ri-star-fill"></i></li>
+                                        @else
+                                        <li><i class="ri-star-line"></i></li>
+                                        @endif
                                         @endfor
                                         <li><span>({{ number_format($course->average_rating, 1) }})</span></li>
-                                    </ul>
+                                </ul>
 
-                                      <span>
-                                            {{ number_format($course->learner_field + $course->getRating->count()) }} Learners
-                                        </span>
-                                </div>
+                                <span>
+                                    {{ number_format($course->learner_field + $course->getRating->count()) }} Learners
+                                </span>
                             </div>
                         </div>
+                    </div>
                     @endforeach
                 </div>
             </div>
@@ -813,7 +960,6 @@
     </div>
 </div>
 @endif
-
 
 <!------------------why-bootcamp-section---------------------->
 <div class="container">
@@ -824,13 +970,13 @@
                 <div class="video-frame">
                     <!-- <iframe src="{{ $courseDetails->video_url }}" frameborder="0"
                         allowfullscreen></iframe> -->
-                        <!-- {!! $courseDetails->video_url !!} -->
-                    <iframe width="560" height="315" 
-                        src="{{ $courseDetails->video_url }}" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
+                    <!-- {!! $courseDetails->video_url !!} -->
+                    <iframe width="560" height="315"
+                        src="{{ $courseDetails->video_url }}"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
                         allowfullscreen></iframe>
                 </div>
                 <div class="info-sections">
@@ -847,7 +993,6 @@
         </section>
     </div>
 </div>
-
 @endsection
 
 
@@ -863,16 +1008,16 @@
                 <div class="modal-body p-0">
                     <div class="row g-0">
                         <!-- Left Section -->
-                        <div class="d-none col-md-6 d-lg-flex flex-column justify-content-between bg-primary text-white p-4">
-                            <div>
-                                <h3 class="fw-bold text-warning">Corporate Training</h3>
-                                <p class="mb-4 text-warning">Upskill or reskill your teams</p>
+                        <div class="d-none col-md-6 d-lg-flex flex-column justify-content-between bg-primary text-white">
+                            <div class="p-4">
+                                <h3 class="text-center" style="color: #012833">Corporate Training</h3>
+                                <p class="mb-4 text-center" style="color: #012833">Upskill or reskill your teams</p>
                                 <ul class="list-unstyled" style="list-style: none;">
-                                    <li><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
-                                    <li><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
-                                    <li><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
-                                    <li><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
-                                    <li><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
                                 </ul>
                             </div>
                             <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Meeting" class="img-fluid mt-3">
@@ -883,7 +1028,7 @@
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <h4 class="fw-bold text-center" id="contactUsModalLabel">Get a Quote</h4>
+                            <h4 class="fw-bold text-center" id="contactUsModalLabel" style="color: rgba(33, 37, 41, 0.75);">Get a Quote</h4>
                             <p class="small text-muted mb-3">Fill in the details to get a callback from our team</p>
                             <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
                             <input type="hidden" name="type" value="enquiry">
@@ -897,7 +1042,7 @@
                             <div class="input-group mb-3">
                                 <select name="country_code" class="form-select select2" required>
                                     @foreach($countries as $country)
-                                        <option value="{{ $country->phonecode }}">+{{ $country->phonecode }}</option>
+                                    <option value="{{ $country->phonecode }}">+{{ $country->phonecode }}</option>
                                     @endforeach
                                 </select>
                                 <input type="text" class="form-control" name="phone" placeholder="Phone Number *" required>
@@ -905,10 +1050,13 @@
                             <div class="mb-3">
                                 <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
                             </div>
+                            <div class="mb-3 d-block">
+                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                            </div>
                             <div class="form-check mb-3">
                                 <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
                                 <label class="form-check-label small" for="privacyPolicy">
-                                    By providing your contact details, you agree to our 
+                                    By providing your contact details, you agree to our
                                     <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
                                 </label>
                             </div>
@@ -923,7 +1071,6 @@
         </div>
     </div>
 </div>
-
 @endpush
 
 
@@ -958,9 +1105,9 @@
         });
     });
 
-    $(document).on("change", "input[name='enquiry_for']", function () { 
-        let $form = $(this).closest("form");           // scope to current form
-        let $companyField = $form.find(".company_name"); 
+    $(document).on("change", "input[name='enquiry_for']", function() {
+        let $form = $(this).closest("form"); // scope to current form
+        let $companyField = $form.find(".company_name");
 
         if ($(this).val() === "company") {
             $companyField.removeClass("d-none");
@@ -968,7 +1115,6 @@
             $companyField.addClass("d-none");
         }
     });
-
 </script>
 <script>
     var benefitsData = @json($benefitsData);
@@ -983,7 +1129,7 @@
     }
 
     // update chart
-    function updateChart(salary) { 
+    function updateChart(salary) {
         var data = [salary.min, salary.avg_min, salary.average, salary.avg_max, salary.max];
 
         if (salaryChart) salaryChart.destroy();
@@ -1003,15 +1149,15 @@
             },
             options: {
                 plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.raw; // raw number from dataset
-                                    return '$' + value.toFixed(2) + 'k';
-                                }
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let value = context.raw; // raw number from dataset
+                                return '$' + value.toFixed(2) + 'k';
                             }
                         }
-                    },
+                    }
+                },
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -1149,13 +1295,45 @@
         max-width: 800px !important;
     }
 
-    .courseLead span.select2.select2-container.select2-container--default{
+    .courseLead span.select2.select2-container.select2-container--default {
         width: 65px !important;
     }
+
     .left-course-container ul,
-    .left-course-container ol
-    {
+    .left-course-container ol {
         list-style: none;
     }
+
+    /* upcoming schedule */
+    .card-nbg12 {
+        background: linear-gradient(to bottom, rgb(211 237 255 / 33%) 22%, rgba(240, 249, 255, 0) 99%);
+    }
+
+    .ribbon-container {
+        position: absolute;
+        top: -5px;
+        right: -1px;
+        z-index: 1;
+        width: 90px;
+        height: 94px;
+    }
+
+    .ribbon1 {
+        width: 110%;
+        height: auto;
+        top: -3px;
+        left: 3px;
+    }
+
+    .ribbon-text {
+        top: 24px;
+        left: 61%;
+        transform: translateX(-50%) rotate(45deg);
+        color: #fff;
+        font-size: 12px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+        z-index: 2;
+    }
+
 </style>
 @endpush

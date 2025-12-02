@@ -64,7 +64,7 @@
                 @endphp
 
                 @if($validSchedules->count() > 0)
-                    @foreach($validSchedules as $schedule)
+                    @foreach($validSchedules as $index => $schedule)
                         <div class="mb-3 shadow-sm border rounded-3">
                             <div class="row g-0 align-items-center p-2">
                                 {{-- LEFT SECTION --}}
@@ -118,13 +118,12 @@
                                 {{-- MIDDLE SECTION --}}
                                 <div class="col-md-4 text-center border-end">
                                     @if($course->upload_curriculum)
-                                        <a href="{{ asset('uploads/curriculum/'. $course->upload_curriculum) }}" 
+                                        <a data-bs-toggle="modal" data-course-id="{{ $course->id }}" data-bs-target="#curriculumModal"
                                             class="d-block mb-2 text-decoration-none text-primary" target="_blank">
                                             Download Curriculum 
                                             <i class="ri-download-2-line me-1"></i>
                                         </a>
                                     @endif
-
                                     <div class="d-flex justify-content-center align-items-center mb-2 mx-auto border border-2" 
                                     style="width: max-content;border-radius: 50px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
                                         <button class="btn btn-outline-secondary btn-sm counter-btn p-2" data-type="minus">-</button>
@@ -171,6 +170,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if(($index + 1) % 4 == 0)
+                            <div class="my-4 p-3 text-white text-center rounded-3 talkToUs">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ asset('frontend-assets/img/all-img/help.png') }}" alt="" style="height: 50px;" class="me-3">
+                                        <h5 class="mb-0 text-white">Struggling to identify an appropriate Schedule?</h5>
+                                    </div>
+                                    <a href="#contactUsModal" data-bs-toggle="modal"   class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">Talk to us</a>
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
 
                     {{-- Pagination --}}
@@ -281,80 +292,78 @@
 @endsection
 @push('modal')
 <div class="modal fade" id="contactUsModal" tabindex="-1" aria-labelledby="contactUsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title " id="contactUsModalLabel">Connect us</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content overflow-hidden" style="border-radius: 10px;">
+            <!-- <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div> -->
             <form method="post" action="{{ route('lead') }}">
                 @csrf
-                <div class="modal-body row">
-                    <div class="col-md-6">
-                        <img src="{{ asset('frontend-assets/img/callback-popup.jpg') }}" alt="Contact Us">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="hidden" name="course_id" value="{{ $course->id }}">
-                        <input type="hidden" name="type" value="enquiry">
-
-                        <div class="mb-3">
-                            <input type="text" class="form-control pb-0" name="name" placeholder="Name *" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <input type="email" class="form-control pb-0" name="email" placeholder="Email *" required>
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0  pb-0" required>
-                                @foreach($countries as $country)
-                                <option
-                                    value="{{ $country->phonecode }}"
-                                    data-flag='{!! $country->flag !!}'
-                                    data-id="{{ $country->id }}">
-                                    +{{ $country->phonecode }} {!! $country->flag !!}
-                                </option>
-                                @endforeach
-                            </select>
-                            <input type="text" class="form-control p-2 pb-0" name="phone" placeholder="Mobile *" required>
-                        </div>
-
-                        <div class="mb-2 enquiry-field">
-                            <label class="form-label fw-semibold">Enquiry for:</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="enquiry_for" value="myself" id="enquiryMyself">
-                                <label class="form-check-label" for="enquiryMyself">Myself</label>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Left Section -->
+                        <div class="d-none col-md-6 d-lg-flex flex-column justify-content-between bg-primary text-white">
+                            <div class="p-4">
+                                <h3 class="text-center" style="color: #012833">Corporate Training</h3>
+                                <p class="mb-4 text-center" style="color: #012833">Upskill or reskill your teams</p>
+                                <ul class="list-unstyled" style="list-style: none;">
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
+                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
+                                </ul>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="enquiry_for" value="company" id="enquiryCompany">
-                                <label class="form-check-label" for="enquiryCompany">My Company</label>
+                            <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Meeting" class="img-fluid mt-3">
+                        </div>
+
+                        <!-- Right Section -->
+                        <div class="col-md-6 bg-white p-4">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                        </div>
+                            <h4 class="fw-bold text-center" id="contactUsModalLabel" style="color: rgba(33, 37, 41, 0.75);">Get a Quote</h4>
+                            <p class="small text-muted mb-3">Fill in the details to get a callback from our team</p>
+                            <input type="hidden" name="type" value="enquiry">
 
-                        <!-- Company name -->
-                        <div class="mb-3 company_name d-none">
-                            <input type="text" class="form-control" name="company_name" id="" placeholder="Company Name" >
-                        </div>
-
-                        <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
-                            <label class="form-check-label" for="privacyPolicy">
-                                By providing your contact details, you agree to our
-                                <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
-                            </label>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="name" placeholder="First Name *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" name="email" placeholder="Email *" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <select name="country_code" class="form-select select2" required>
+                                    @foreach($countries as $country)
+                                    <option value="{{ $country->phonecode }}">+{{ $country->phonecode }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control" name="phone" placeholder="Phone Number *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
+                            </div>
+                            <div class="mb-3 d-block">
+                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                                <label class="form-check-label small" for="privacyPolicy">
+                                    By providing your contact details, you agree to our
+                                    <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                                </label>
+                            </div>
+                            <button class="btn btn-primary w-100 fw-bold" type="submit">
+                                Enquire Now
+                                <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" data-animation="fadeInRight" data-delay=".8s" type="submit"><span>Submit<i class="fa fa-spinner fa-spin" id="submitSpin" style="display:none;"></i></span></button>
                 </div>
             </form>
         </div>
     </div>
-</div>
+</div>  
 @endpush
 
 @push('style')
@@ -375,7 +384,7 @@
     .modal span.select2-selection.select2-selection--single {
         width: 75px;
     }
-    .modal-dialog {
+    #contactUsModal .modal-dialog {
         max-width: 800px !important;
     }
     .tooltip-inner {
@@ -391,7 +400,23 @@
     .tooltip-arrow::before {
         border-top-color: #fff !important; /* Match background */
     }
-
+    .talkToUs{
+       background-color: #012833;
+    }
+    #curriculumModal span.select2-selection.select2-selection--single {
+        border: none !important;
+        border-bottom: 1px solid #ccc !important;
+        height: 41px !important;
+        padding-top: 7px;
+        margin-top: 4.2px;
+        border-radius: 0 !important;
+    }
+    #curriculumModal .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 10px !important;
+    }
+    #curriculumModal span.select2.select2-container.select2-container--default.select2-container--below.select2-container--focus{
+        width: 70px !important;
+    }
 </style>
 @endpush
 
@@ -442,6 +467,141 @@
 
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    });
+
+    $(document).ready(function () {
+        let storedCountryId = localStorage.getItem('selected_country_id');
+        if (storedCountryId) {
+            $(".modal-phone-flag option").each(function () {
+                if ($(this).data("id") == storedCountryId) {
+                    $(this).prop("selected", true);
+                }
+            });
+        }
+
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#curriculumModal')
+        });
+
+        $('#curriculumModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget);
+            let courseId = button.data('course-id');
+            $(this).find('#course_id').val(courseId);
+        });
+
+        $('#curriculumForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let $submitBtn = $(this).find('button[type="submit"]');
+            $submitBtn.prop('disabled', true).text('Processing...');
+
+            $.ajax({
+                url: "{{ route('lead') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#curriculumModal').modal('hide');
+
+                    if (response.file) {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        
+                        // 🔽 Trigger file download
+                        let link = document.createElement('a');
+                        link.href = response.file;
+                        link.setAttribute('download', response.file.split('/').pop());
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        setTimeout(() => {
+                            location.reload(); // 🔥 Reload page
+                        }, 2000);
+                    } else {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr) {
+                    $('#curriculumModal').modal('hide');
+                    if (xhr.status === 404) {
+                        toastr.error('Curriculum file not found for this course.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        toastr.error('Something went wrong! Please try again.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                complete: function () {
+                    $submitBtn.prop('disabled', false).text('Download Syllabus');
+                }
+            });
+        });
+    });
 </script>
 @endpush
+
+
+@push('modal')
+<div class="modal fade" id="curriculumModal" tabindex="-1" aria-labelledby="curriculumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body p-4">
+
+                <!-- Close Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Title -->
+                <h5 class="text-center fw-bold mb-4" id="curriculumModalLabel">Course Syllabus</h5>
+
+                <form id="curriculumForm">
+                    @csrf
+                    <input type="hidden" name="type" value="curriculum">
+                    <input type="hidden" id="course_id" name="course_id" value="">
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                @foreach($countries as $country)
+                                <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                    +{{ $country->phonecode }} {!! $country->flag !!}
+                                </option>
+                                @endforeach
+                            </select>
+                            <input type="tel" maxlength="10"  oninput="restrictToNumbers(this)"  class="form-control ps-3" id="phone" name="phone" placeholder="Enter your Phone No." required>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy -->
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                        <label class="form-check-label small" for="privacyPolicy">
+                            By providing your contact details, you agree to our
+                            <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold" type="submit" style="border-radius: 8px;">
+                        Download Syllabus
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
+

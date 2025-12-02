@@ -68,7 +68,8 @@
             position: absolute;
             top: 100%;
             left: 0;
-            width: 700px;
+            width: 1000px;
+            /* Increased width for third column */
             background: #fff;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
             display: flex;
@@ -79,7 +80,8 @@
 
         /* Left Panel - Categories */
         .categories-list {
-            width: 40%;
+            width: 30%;
+            /* Adjusted for 3-column layout */
             background: #f9f9f9;
             max-height: 400px;
             overflow-y: auto;
@@ -89,20 +91,23 @@
         .category-item {
             padding: 12px 15px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, color 0.3s;
         }
 
-        .category-item:hover {
+        .category-item:hover,
+        .category-item.active {
             background: #007bff;
             color: #fff;
         }
 
-        /* Right Panel - Courses */
+        /* Middle Panel - Courses */
         .courses-list {
-            width: 60%;
+            width: 40%;
+            /* Adjusted for 3-column layout */
             padding: 15px;
             max-height: 400px;
             overflow-y: auto;
+            border-right: 1px solid #ddd;
         }
 
         .courses-content ul {
@@ -118,13 +123,33 @@
         .courses-content ul li a {
             color: #333;
             text-decoration: none;
+            transition: color 0.3s;
         }
 
         .courses-content ul li a:hover {
             color: #007bff;
         }
 
-        /* Show dropdown on hover */
+        /* Right Panel - Accreditation */
+        .accreditation-list {
+            width: 30%;
+            /* New column */
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .accreditation-content img {
+            display: block;
+            margin-bottom: 5px;
+            margin-right: 10px;
+            width: 15%;
+            object-fit: contain;
+            height: auto;
+        }
+
+        /* Dropdown Show/Hide */
         .mega-dropdown .mega-menu {
             display: none;
         }
@@ -132,10 +157,35 @@
         .mega-dropdown:hover .mega-menu {
             display: flex;
         }
+
         .mega-dropdown .list-unstyle li {
             display: block !important;
         }
+        .deal-header {
+            background: #fde9d9; /* Light orange/beige */
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            border-bottom: 1px solid #ddd;
+        }
+        .deal-text p {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 20px;
+        }
+        .deal-text i {
+            font-size: 18px;
+        }
+        
+        .payment-gateway img {
+            padding: 4px;
+            width: 27%;
+            padding-left: 0px;
+        }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="{{asset('flag-icons-main/css/flag-icons.min.css')}}" rel="stylesheet">
     @stack('style')
     @stack('modal')
@@ -226,11 +276,26 @@
             </div>
         </div>
     </div>
+    @php
+        $generalSetting = App\Models\Generalsettings::first();
+        $stealDeal = $generalSetting->steal_the_deal;
+    @endphp
 
+    @if(!empty($stealDeal))
+        <div class="deal-header text-center py-2">
+            <div class="container">
+                <div class="deal-text d-flex justify-content-center align-items-center flex-wrap gap-4">
+                    <p><i class="fas fa-tags me-2" style="color: #f0a601"></i> 30% Savings on Standard Course Fees</p>
+                    <p><i class="fas fa-calendar-alt me-2" style="color: #f0a601"></i> Enroll by 25th September</p>
+                    <p><i class="fas fa-lock me-2" style="color: #f0a601"></i> Unlock FREE Self-Learning Courses</p>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="navbar-area" id="navbar">
         <div class="navbar-top">
             <div class="container" style="width: 100%;">
-                <div class="main-max-width">
+                <div class="">
                     <div class="row align-items-center justify-content-between">
                         <div class="col-xl-7 col-sm-6 col-lg-7 col-md-6 p-0">
                             <ul class="navbar-contact d-lg-flex align-items-lg-center list-unstyle">
@@ -241,7 +306,7 @@
                                     </a>
                                 </li>
                                 @php
-                                    $categories = App\Models\Category::with('getCourses')->where('features', 1)->get(); 
+                                $categories = App\Models\Category::with(['getCourses'])->where('features', 1)->get();
                                 @endphp
                                 @if($categories->count() > 0)
                                 <li class="nav-item dropdown mega-dropdown">
@@ -265,26 +330,53 @@
                                             <!-- Left Side (Categories) -->
                                             <div class="categories-list">
                                                 @foreach($categories as $index => $category)
-                                                <div class="category-item" data-category="cat-{{ $category->id }}">
+                                                <div class="category-item {{ $index === 0 ? 'active' : '' }}" data-category="cat-{{ $category->id }}">
                                                     {{ $category->name }}
                                                 </div>
                                                 @endforeach
                                             </div>
 
-                                            <!-- Right Side (Courses) -->
+                                            <!-- Middle Side (Courses) -->
                                             <div class="courses-list">
                                                 @foreach($categories as $index => $category)
                                                 <div class="courses-content" id="cat-{{ $category->id }}" style="{{ $index !== 0 ? 'display:none;' : '' }}">
-                                                    <h5 class="mb-3 border-bottom">{{ $category->name }} ({{ $category->getCourses->count() }} Courses)</h5>
+                                                    <div class="d-flex justify-content-between mb-3 border-bottom">
+                                                        <h6>{{ $category->name }} ({{ $category->getCourses->count() }} Courses)</h6>
+                                                        <a href="{{ route('course.list', ['category' => $category->id]) }}">View All</a>
+                                                    </div>
+
                                                     @if($category->getCourses->count() > 0)
                                                     <ul>
                                                         @foreach($category->getCourses as $course)
-                                                        <li class="d-block"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></li>
+                                                        <li class="d-flex justify-content-start align-items-start">
+                                                            <img src="{{ asset('uploads/logo/'.$course->logo) }}" class="me-2" alt="" width="30px">
+                                                            <a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a>
+                                                        </li>
                                                         @endforeach
                                                     </ul>
                                                     @else
                                                     <p>No courses available</p>
                                                     @endif
+                                                </div>
+                                                @endforeach
+                                            </div>
+
+                                            <!-- Right Side (Accreditation Bodies) -->
+                                            <div class="accreditation-list">
+                                                @foreach($categories as $index => $category)
+                                                @php
+                                                $accreditations = json_decode($category->accreditation_bodies, true) ?? [];
+                                                @endphp
+                                                <div class="accreditation-content" id="acc-{{ $category->id }}" style="{{ $index !== 0 ? 'display:none;' : '' }}">
+                                                    <h6 class="mb-2">Accreditation Bodies</h6>
+                                                    @forelse($accreditations as $acc)
+                                                    <div class="mb-4 d-flex align-items-center">
+                                                        <img src="{{ asset('admin/accreditation_images/' . $acc['image']) }}" alt="{{ $acc['name'] }}" width="80">
+                                                        <p class="mb-0 lh-1">{{ $acc['name'] }}</p>
+                                                    </div>
+                                                    @empty
+                                                    <p>No accreditation available</p>
+                                                    @endforelse
                                                 </div>
                                                 @endforeach
                                             </div>
@@ -294,7 +386,7 @@
                                 @endif
 
                                 <li class="nav-item dropdown">
-                                    <div class="dropdown">
+                                    <div class="dropdown rounded overflow-hidden">
                                         <input type="text" placeholder="What do you want to learn?" class="search-input" id="searchCourse" autocomplete="off">
                                         <i class="ri-search-2-line"></i>
                                         <div class="dropdown-content">
@@ -326,7 +418,7 @@
                             @endauth
 
                             @guest
-                            <a href="{{ route('login') }}" class="btn btn-primary w-max-content">Login</a>
+                            <a href="{{ route('login') }}" class="btn btn-primary" style="width: 130px">Login</a>
                             @endguest
                         </div>
                         <div class="col-xl-4 col-sm-5 col-lg-4 col-md-4">
@@ -351,7 +443,7 @@
             </div>
         </div>
         <div class="container">
-            <div class="main-max-width">
+            <div class="">
                 <nav class="navbar insocour-nav navbar-expand-lg">
                     <a class="navbar-brand lg-none" href="{{ route('index') }}">
                         <img class="logo-light" src="{{ asset('frontend-assets/img/logo/logo.png')}}" alt="logo"
@@ -437,3 +529,5 @@
         </div>
     </div>
     <!-- Responsive Navbar End -->
+
+ 
