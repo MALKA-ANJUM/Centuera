@@ -1,7 +1,6 @@
 # centura
 
 
-
 ## Getting started
 
 To make it easy for you to get started, here's a list of recommended next steps.
