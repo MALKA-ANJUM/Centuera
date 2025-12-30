@@ -21,170 +21,212 @@
     </div>
     <!-- Footer Section Start -->
     <div class="footer-area ft-bg">
-        <div class="footer-widget-info pb-5">
+        <div class="footer-widget-info pb-2">
             <div class="container">
-                    <div class="row text-white">
+                <div class="row text-white">
+                    <div class="col-md-3 mt-4 col-6">
+                        <div style="width: 50%;" class="text-center">
+                            <div class="d-flex justify-content-center">
+                                <span class="fi fi-us font-large-1"></span>
+                                <p class="mb-1 ms-2">USA</p>
+                            </div>
+                            <p class="mb-0 text-nowrap"><a href="tel:+17139009707" class="text-white">+1 713 900 9707</a></p>
+                        </div>
+                    </div>
                         <div class="col-md-3 mt-4 col-6">
                             <div style="width: 50%;" class="text-center">
-                                <div class="d-flex justify-content-center">
-                                    <span class="fi fi-us font-large-1"></span>
-                                    <p class="mb-1 ms-2">USA</p>
-                                </div>
-                                <p class="mb-0">+1 713 900 9707 </p>
-                            </div>
+                            <div class="d-flex justify-content-center">
+                            <span class="fi fi-ca font-large-1"></span>
+                            <p class="mb-1 ms-2">Canada</p>
                         </div>
-                         <div class="col-md-3 mt-4 col-6">
-                             <div style="width: 50%;" class="text-center">
-                                <div class="d-flex justify-content-center">
-                                <span class="fi fi-ca font-large-1"></span>
-                                <p class="mb-1 ms-2">Canada</p>
+                        <p class="mb-0 text-nowrap"><a href="tel:+17139255626" class="text-white">+1 713 925 5626</a></p>
                             </div>
-                            <p class="mb-0">+1 713 925 5626 </p>
-                             </div>
+                    </div>
+                        <div class="col-md-3 mt-4 col-6">
+                            <div style="width: 50%;" class="text-center">
+                            <div class="d-flex justify-content-center">
+                            <span class="fi fi-gb font-large-1"></span>
+                            <p class="mb-1 ms-2">UK</p>
                         </div>
-                         <div class="col-md-3 mt-4 col-6">
-                             <div style="width: 50%;" class="text-center">
-                                <div class="d-flex justify-content-center">
-                                <span class="fi fi-gb font-large-1"></span>
-                                <p class="mb-1 ms-2">UK</p>
+                        <p class="mb-0 text-nowrap"><a href="tel:+447476975480" class="text-white">+44 747 697 5480</a></p>
                             </div>
-                            <p class="mb-0">+44 747 697 5480</p>
-                             </div>
+                    </div>
+                    <div class="col-md-3 mt-4 col-6">
+                            <div style="width: 50%;" class="text-center">
+                            <div class="d-flex justify-content-center">
+                            <span class="fi fi-au font-large-1"></span>
+                            <p class="mb-1 ms-2">Australia</p>
                         </div>
-                         <div class="col-md-3 mt-4 col-6">
-                             <div style="width: 50%;" class="text-center">
-                                <div class="d-flex justify-content-center">
-                                <span class="fi fi-au font-large-1"></span>
-                                <p class="mb-1 ms-2">Australia</p>
+                        <p class="mb-0 text-nowrap"><a href="tel:+61261528662" class="text-white">+61 261 528 662</a></p>
                             </div>
-                            <p class="mb-0">+61 261 528 662</p>
-                             </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-sm-6 col-md-6">
+                        <div class="footer-widget info-web">
+                            <div class="image">
+                                <a class="text-decoration-none" href="{{ route('index') }}">
+                                    <img src="{{ asset('admin/generalSetting/' . $generalSetting->logo )}}" alt="image"
+                                        style="width: 200px;">
+                                </a>
+                            </div>
+                            <p class="pra-light mb-30">Consulting is a dynamic and multifaceted field
+                                that involves providing expert advice and
+                                guidance to individuals,</p>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-4 col-sm-6 col-md-6">
-                            <div class="footer-widget info-web">
-                                <div class="image">
-                                    <a class="text-decoration-none" href="{{ route('index') }}">
-                                        <img src="{{ asset('admin/generalSetting/' . $generalSetting->logo )}}" alt="image"
-                                            style="width: 200px;">
+                    <div class="col-lg-2 col-sm-6 col-md-6">
+                        <div class="footer-widget">
+                            <h4 class="text-white">Quick Links</h4>
+                            <ul>
+                                <li><a href="{{ route('about') }}">About Company</a></li>
+                                <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                                <li><a href="/privacy-policy">Privacy Policy</a></li>
+                                <li><a href="/refund-policy">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-md-6">
+                        <div class="footer-widget ml-70">
+                            @php 
+                                $categories = App\Models\Category::where('features', 1)->get();
+                            @endphp
+                            <h4 class="text-white">Categories</h4>
+                            <ul>
+                                @if(count($categories) > 0)
+                                    @foreach($categories as $index => $category)
+                                        <li><a href="{{ route('course.list', ['category' => $category->id]) }}">{{ $category->name	}}</a></li>
+                                    @endforeach
+                                @endif
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6 col-md-6">
+                        <div class="footer-widget">
+                            <h4 class="text-white">Get Our Weeekly Newsletter</h4>
+                                <form id="subscribeForm" class="subscribe-from d-flex align-items-center rounded" style="background-color: #0076b1;">
+                                <input class="from-control p-2" type="email" id="emailInput" style="width: 70%;" placeholder="type your email address" required>
+                                <button class="btn text-white p-2" type="submit">Subscribe</button>
+                            </form>
+                            <div id="subscribeMessage" style="margin-top:10px;"></div>
+                    
+                            <div class="contact-item">
+                                <div class="payment-info my-4">
+                                    <h6>Follow Us</h6>
+                                </div>
+                                <div class="cpr-right">
+                                    <a href="https://www.facebook.com/" target="_blank">
+                                        <i class="ri-facebook-fill"></i>
+                                    </a>
+                                    <a href="https://www.instagram.com/" target="_blank">
+                                        <i class="ri-instagram-line"></i>
+                                    </a>
+                                    <a href="https://twitter.com/" target="_blank">
+                                        <i class="ri-twitter-fill"></i>
+                                    </a>
+                                    <a href="https://linkedin.com/" target="_blank">
+                                        <i class="ri-linkedin-fill"></i>
                                     </a>
                                 </div>
-                                <p class="pra-light mb-30">Consulting is a dynamic and multifaceted field
-                                    that involves providing expert advice and
-                                    guidance to individuals,</p>
+                            </div>
 
-                                <div class="">
-                                    <h2 class="text-white">Get Our Weeekly Newsletter:</h2>
-                                    <form id="subscribeForm" class="subscribe-from d-flex align-items-center rounded" style="background-color: #0076b1;">
-                                        <input class="from-control p-2" type="email" id="emailInput" style="width: 70%;" placeholder="type your email address" required>
-                                        <button class="btn text-white p-2" type="submit">Subscribe</button>
-                                    </form>
-                                    <div id="subscribeMessage" style="margin-top:10px;"></div>
+                            <div class="contact-item">
+                                <div class="payment-info mt-4">
+                                    <h6>We Accept</h6>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-sm-6 col-md-6">
-                            <div class="footer-widget">
-                                <h4 class="text-white">Quick Links</h4>
-                                <ul>
-                                    <li><a href="{{ route('about') }}">About Company</a></li>
-                                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
-                                    <li><a href="/privacy-policy">Privacy Policy</a></li>
-                                    <li><a href="/refund-policy">Refund Policy</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-sm-6 col-md-6">
-                            <div class="footer-widget ml-70">
-                                @php 
-                                    $categories = App\Models\Category::where('features', 1)->get();
-                                @endphp
-                                <h4 class="text-white">Categories</h4>
-                                <ul>
-                                    @if(count($categories) > 0)
-                                        @foreach($categories as $index => $category)
-                                            <li><a href="{{ route('course.list', ['category' => $category->id]) }}">{{ $category->name	}}</a></li>
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-sm-6 col-md-6">
-                            <div class="footer-widget">
-                                <h4 class="text-white">Get In Touch</h4>
-                                <div class="contact-item d-flex align-items-center country">
-                                    <div class="icon">
-                                        <i class="ri-map-pin-5-fill"></i>
-                                    </div>
-                                    <div class="select_country d-flex" style="position:relative;">
-                                        <span class="select__flag" id="flag-display" style="cursor:pointer;"></span>
-                                        <!-- <select id="country-select"
-                                            class="select__input"
-                                            name="country"
-                                            style="opacity:0; position:absolute; top:0; left:0; width:100%; height:100%; cursor:pointer;">
-                                            <option value="">Select Country</option>
-                                        </select> -->
-                                    </div>
-                                </div>
-
-                                <div class="contact-item d-flex align-items-center">
-                                    <div class="icon">
-                                        <i class="ri-phone-fill"></i>
-                                    </div>
-                                    <div class="content">
-                                        <a href="tel:+{{ $generalSetting->mobile }}">{{ $generalSetting->mobile }}</a>
-                                    </div>
-                                </div>
-                                <div class="contact-item d-flex align-items-center">
-                                    <div class="icon">
-                                        <i class="ri-mail-unread-fill"></i>
-                                    </div>
-                                    <div class="content">
-                                        <a href="mailto:{{ $generalSetting->email }}">{{ $generalSetting->email }}</a>
-                                    </div>
-                                </div>
-                                <div class="contact-item">
-                                    <div class="payment-info">
-                                        <h6>We Accept</h6>
-                                    </div>
-                                    <div class="payment-gateway d-block mt-2 rounded-0">
-                                        <img src="{{ asset('frontend-assets/payment-logo/paypal.png')}}" alt="paypal" width="100%">
-                                        <img src="{{ asset('frontend-assets/payment-logo/VISA.png')}}" alt="visa" width="100%">
-                                        <img src="{{ asset('frontend-assets/payment-logo/American-Express.png')}}" alt="american-express" width="100%">
-                                        <img src="{{ asset('frontend-assets/payment-logo/Stripe.png')}}" alt="stripe" width="100%">
-                                        <img src="{{ asset('frontend-assets/payment-logo/mastercard.png')}}" alt="mastercard" width="100%">
-                                    </div>
+                                <div class="payment-gateway d-block mt-2 rounded-0">
+                                    <img src="{{ asset('frontend-assets/payment-logo/paypal.png')}}" alt="paypal" width="27%">
+                                    <img src="{{ asset('frontend-assets/payment-logo/VISA.png')}}" alt="visa" width="27%">
+                                    <img src="{{ asset('frontend-assets/payment-logo/Stripe.png')}}" alt="stripe" width="27%">
+                                    <img src="{{ asset('frontend-assets/payment-logo/American-Express.png')}}" alt="american-express" width="35%">
+                                    <img src="{{ asset('frontend-assets/payment-logo/mastercard.png')}}" alt="mastercard" width="35%">
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+               <div class="d-flex justify-content-center disclaimer">
+                    <div class="accordion accordion-flush bg-transparent" id="accordionFlushExample">
+                        <div class="accordion-item bg-transparent">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                                <button class="accordion-button collapsed w-auto mx-auto p-1" type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#flush-collapseOne" 
+                                        aria-expanded="false" 
+                                        aria-controls="flush-collapseOne">
+                                    Disclaimer
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" 
+                                aria-labelledby="flush-headingOne" 
+                                data-bs-parent="#accordionFlushExample">
+                                <div class="accordion-body text-white">
+                                    <ul>
+                                        <li>
+                                            PMP, PMI, PMBOK, CAPM, PgMP, PfMP, ACP, PBA, RMP, and SP are all registered trademarks of the Project Management Institute, Inc.
+                                        </li>
+                                        <li>
+                                            CBAP® is a registered trademark of IIBA.
+                                        </li>
+                                        <li>
+                                            ITIL® is a registered trademark of AXELOS Limited, utilized with permission from AXELOS Limited. The Swirl logoTM is a trademark of AXELOS Limited, also used with permission from AXELOS Limited. All rights reserved.
+                                        </li>
+                                        <li>
+                                            PRINCE2® is a registered trademark of AXELOS Limited, used with permission from AXELOS Limited. The Swirl logoTM is a trademark of AXELOS Limited, used under permission from AXELOS Limited. All rights reserved.
+                                        </li>
+                                        <li>
+                                            Certified ScrumMaster® (CSM) and Certified Scrum Trainer® (CST) are registered trademarks of SCRUM ALLIANCE®.
+                                        </li>
+                                        <li>
+                                            Professional Scrum Master is a registered trademark of Scrum.org.
+                                        </li>
+                                        <li>
+                                            The APMG-International Finance for Non-Financial Managers and the Swirl Device logo are trademarks of The APM Group Limited.
+                                        </li>
+                                        <li>
+                                            The Open Group® and TOGAF® are trademarks of The Open Group.
+                                        </li>
+                                        <li>
+                                            IIBA®, the IIBA® logo, BABOK®, and Business Analysis Body of Knowledge® are registered trademarks owned by the International Institute of Business Analysis.
+                                        </li>
+                                        <li>
+                                            CBAP® is a registered certification mark owned by the International Institute of Business Analysis. Certified Business Analysis Professional, EEP, and the EEP logo are trademarks owned by the International Institute of Business Analysis.
+                                        </li>
+                                        <li>
+                                            COBIT® is a trademark of ISACA® registered in the United States and other countries.
+                                        </li>
+                                        <li>
+                                            CISA® is a registered trademark of the Information Systems Audit and Control Association (ISACA) and the IT Governance Institute.
+                                        </li>
+                                        <li>
+                                            CISSP® is a registered mark of The International Information Systems Security Certification Consortium ((ISC)2).
+                                        </li>
+                                        <li>
+                                            CompTIA A+, CompTIA Network+, and CompTIA Security+ are registered marks of CompTIA Inc.
+                                        </li>
+                                        <li>
+                                            CISCO®, CCNA®, and CCNP® are trademarks of Cisco and are registered trademarks in the United States and certain other countries.
+                                        </li>
+                                        <li>
+                                            CSM®, CSPO®, CSD®, CSP®, A-CSPO®, and A-CSM® are registered trademarks of Scrum Alliance®.
+                                        </li>
+                                        <li>
+                                            TOGAF® is a registered trademark of The Open Group in the U.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         <div class="copy-right-area">
             <div class="container">
-                    <div class="row mb-3">
-                        <div class="col-lg-6 col-xm-6 col-md-6">
-                            <div class="cpr-left">
-                                <p class="mb-0">Copyright @ 2014-2025 Centura America's Inc All Rights Reserved.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-xm-6 col-md-6">
-                            <div class="cpr-right">
-                                <ul>
-                                    <li><span>Follow Us:</span></li>
-                                    <li><a href="https://www.facebook.com/" target="_blank"><i
-                                                class="ri-facebook-fill"></i></a></li>
-                                    <li><a href="https://www.instagram.com/" target="_blank"><i
-                                                class="ri-instagram-line"></i></a></li>
-                                    <li><a href="https://twitter.com/" target="_blank"><i
-                                                class="ri-twitter-fill"></i></a></li>
-                                    <li><a href="https://linkedin.com/" target="_blank"><i
-                                                class="ri-linkedin-fill"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <div class="cpr-left text-center">
+                    <p class="">Copyright @ 2014-2025 Centura America's Inc All Rights Reserved.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -207,9 +249,15 @@
                             <h3 class="text-center" style="color: #012833">Being Friends & Colleagues</h3>
                             <p class="fw-bold text-center" style="color: #012833">Avail Group Discount</p>
                             <ul class="text-white ps-0" style="list-style: none;" >
-                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Enroll with your groups or friends</li>
-                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Get details on our social group enrollment pricing</li>
-                                <li style="color: #012833"> <i class="ri-arrow-right-s-fill ms-0"></i> Group learning boosts completion rates by 30% and improves outcomes</li>
+                                <div class="d-flex" style="color: #012833">
+                                    <i class="ri-arrow-right-s-fill ms-0"></i><li> Enroll with your groups or friends</li>
+                                </div>
+                                <div class="d-flex" style="color: #012833">
+                                    <i class="ri-arrow-right-s-fill ms-0"></i><li> Get details on our social group enrollment pricing</li>
+                                </div>
+                                <div class="d-flex" style="color: #012833">
+                                    <i class="ri-arrow-right-s-fill ms-0"></i><li> Group learning boosts completion rates by 30% and improves outcomes</li>
+                                </div>
                             </ul>
                         </div>
                     <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
@@ -419,7 +467,7 @@
     <script src="{{ asset('frontend-assets/js/owl.carousel.min.js')}}"></script>
     <script src="{{ asset('frontend-assets/js/carousel-thumbs.min.js')}}"></script>
     <script src="{{ asset('frontend-assets/js/main.js')}}"></script>
-    <!-- <script src="{{ asset('frontend-assets/js/chatbot.js')}}"></script> -->
+    <script src="{{ asset('frontend-assets/js/chatbot.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
@@ -476,26 +524,39 @@
     </script>
 
     <script>
-        $(document).ready(function () {
-            let storedCountryIso = localStorage.getItem('detected_country_iso');
+        $(document).ready(function () { 
+            //  let storedCountryIso = localStorage.getItem('detected_country_iso');
+            // var countryId = localStorage.getItem('selected_country_id') || 0;s
 
-            // Fetch countries list from backend
             $.ajax({
                 url: '{{ route("get.countries") }}',
                 type: 'GET',
                 success: function (countries) {
-                    detectCountryByIP(countries, storedCountryIso);
+                    detectCountryByIP(countries);
+                    
                 },
                 error: function () {
                     console.error('Failed to load countries list');
                 }
             });
 
-            function showFlag(country) {
+            function showFlag(country) { 
                 let flagClass = `fi fi-${country.iso2.toLowerCase()} font-large-1`;
                 $('#flag-display').attr('class', 'select__flag ' + flagClass);
                 localStorage.setItem('detected_country_iso', country.iso2);
                 localStorage.setItem('selected_country_id', country.id);
+
+                $.ajax({
+                    url: '{{ route("user.set.country") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        country_id: country.id
+                    },
+                    success: function(response) {
+                        console.log("Country stored in session:", response);
+                    }
+                });
             }
 
             function detectCountryByIP(countries) {
@@ -574,20 +635,6 @@
     
     <script>
         $(document).ready(function() {  
-            var countryId = localStorage.getItem('selected_country_id') || 0;
-
-            $.ajax({
-                url: '{{ route("user.set.country") }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    country_id: countryId
-                },
-                success: function(response) {
-                    // console.log("Country stored in session:", response);
-                }
-            });
-        
             $('#subscribeForm').on('submit', function(e) {
                 e.preventDefault();
 

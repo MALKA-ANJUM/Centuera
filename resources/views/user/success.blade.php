@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Payment Success')
+@section('title', 'Payment Success | Centuera')
 @section('content')
 
 <div class="container d-flex justify-content-center align-items-center border rounded mb-3">

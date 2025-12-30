@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Refund Policy')
+@section('title', 'Refund Policy | Centuera')
 @section('content')
 <!-- BEGIN: Content-->
 

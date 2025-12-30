@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Centuera: World\'s Leading Training Provider for Professionals')
 @section('content')
 <!-- BEGIN: Content-->
 <!-- Hero Section Start -->
@@ -8,7 +8,7 @@
         <div class="main-max-width">
             <div class="hero-slider owl-carousel owl-theme">
                 @foreach ($banners as $banner)
-                <div class="silde-item">
+                <div class="silde-item pt-5">
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <div class="content">
@@ -480,15 +480,15 @@
                                 </div>
                             </div>
                             <div class="box-content">
-                                <p>{{ $testimonial->description }}</p>
+                                <p>{!! $testimonial->description !!}</p>
                             </div>
                             <div class="ratings">
                                 <ul class="d-flex list-unstyle p-0">
                                     @for($i = 0; $i < 5; $i++)
                                         <li>
-                                        <i class="ri-star{{ $i < $testimonial->rating ? '-fill' : '' }}"></i>
+                                            <i class="ri-star{{ $i < $testimonial->rating ? '-fill' : '' }}"></i>
                                         </li>
-                                        @endfor
+                                    @endfor
                                 </ul>
                             </div>
                         </div>
@@ -588,7 +588,7 @@
                 <div class="col-lg-4 col-sm-6">
                     <div class="single-blog-box">
                         <div class="image position-relative">
-                            <a href="#">
+                            <a href="{{ route('blog.view', $blog->slug) }}">
                                 <img src="{{ asset('admin/blog/'. $blog->image) }}" alt="image" style="min-height: 275px">
                             </a>
                         </div>
@@ -597,7 +597,7 @@
                                 <li><i class="ri-calendar-2-line"></i><span>{{ \Carbon\Carbon::parse($blog->date)->format('d-m-Y') }}</span></li>
                             </ul>
                             <h3 class="mb-15 fs-20">
-                                <a href="#">{{ \Illuminate\Support\Str::limit($blog->title, 30) }}</a>
+                                <a href="{{ route('blog.view', $blog->slug) }}">{{ \Illuminate\Support\Str::limit($blog->title, 30) }}</a>
                             </h3>
                         </div>
                     </div>
@@ -890,67 +890,70 @@
         width: 70px !important;
     }
 
-        .callbackmodal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
+    .callbackmodal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .callbackmodal .modal-content {
-            width: 90%;
-            max-width: 800px; 
-            background: #fff;
-            /* padding: 25px 20px; */
-            border-radius: 8px;
-            position: relative;
-        }
+    .callbackmodal .modal-content {
+        width: 90%;
+        max-width: 800px; 
+        background: #fff;
+        /* padding: 25px 20px; */
+        border-radius: 8px;
+        position: relative;
+    }
 
-        .callbackmodal .close {
-            position: absolute;
-            right: 12px;
-            top: 6px;
-            font-size: 24px;
-            cursor: pointer;
-        }
+    .callbackmodal .close {
+        position: absolute;
+        right: 12px;
+        top: 6px;
+        font-size: 24px;
+        cursor: pointer;
+    }
 
-        .callbackmodal .modal-body {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-        }
+    .callbackmodal .modal-body {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
 
-        .callbackmodal .modal-image {
-            flex: 1;
-           
-            background-color: #79CAF6;
-        }
+    .callbackmodal .modal-image {
+        flex: 1;
+        
+        background-color: #79CAF6;
+    }
 
-        .callbackmodal .modal-image img {
-            /* border-radius: 8px; */
-            max-width: 100%;
-            max-height: 320px;
-            object-fit: cover;
-        }
+    .callbackmodal .modal-image img {
+        /* border-radius: 8px; */
+        max-width: 100%;
+        max-height: 320px;
+        object-fit: cover;
+    }
 
-        .callbackmodal .modal-form {
-            flex: 1;
-        }
-        .callbackmodal .select2-container .select2-selection--single{
-            height: 37px;
-        }
-        .callbackmodal .select2-container--default .select2-selection--single{
-            border: 0;
-            border-bottom: 1px solid #aaa;
-            border-radius: 0;
-        }
-
-        /* Mobile responsive */
+    .callbackmodal .modal-form {
+        flex: 1;
+    }
+    .callbackmodal .select2-container .select2-selection--single{
+        height: 37px;
+    }
+    .callbackmodal .select2-container--default .select2-selection--single{
+        border: 0;
+        border-bottom: 1px solid #aaa;
+        border-radius: 0;
+    }
+    .testimonial-cards.owl-carousel .owl-item img {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+    }
 </style>
 @endpush

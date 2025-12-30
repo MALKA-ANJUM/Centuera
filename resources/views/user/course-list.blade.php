@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Courses')
+@section('title', 'Courses | Centuera')
 @section('content')
 
 <!-- Responsive Navbar Start -->

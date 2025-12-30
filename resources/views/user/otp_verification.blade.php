@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'OTP Verification')
+@section('title', 'OTP Verification | Centuera')
 @section('content')
 <div class="container my-5">
     <div class="row justify-content-center">

@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'About')
+@section('title', 'About | Centuera')
 @section('content')
 <!-- BEGIN: Content-->
 

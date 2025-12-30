@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Forgot Password')
+@section('title', 'Forgot Password | Centuera')
 @section('content')
 <div class="container my-5">
     <div class="row justify-content-center">

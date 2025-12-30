@@ -1,11 +1,11 @@
 @extends('user.layouts.layout')
-@section('title', $courseDetails->getSeoData->meta_title ?? '')
+@section('title', ($courseDetails->getSeoData->meta_title ?? $courseDetails->title) . ' | Centuera')
 @section('meta_description', $courseDetails->getSeoData->meta_description ?? '')
 @section('meta_keywords', $courseDetails->getSeoData->meta_keyword ?? '')
 @section('content')
 <!-- Courses Section Start -->
 <div class="container" id="course-section-start">
-    <div class="row courses-demo-container px-0">
+    <div class="row courses-demo-container px-0 pt-3">
         <div class="col-md-6 left-course-container px-0">
             <h1>{{ $courseDetails->title ?? '' }}</h1>
             <h6>{!! $courseDetails->short_description !!}</h6>
@@ -20,7 +20,7 @@
 
             <div class="demo-course-btn d-flex flex-wrap">
                 <a class="demo-course-btn-one text-center" href="#view_schedule">View Training Options</a>
-                <button class="demo-course-btn-two" data-bs-toggle="modal" data-bs-target="#contactUsModal">Talk to
+                <button class="demo-course-btn-two" data-bs-toggle="modal" data-bs-target="#talktoOurAdvisor">Talk to
                     our advisor</button>
             </div>
 
@@ -71,11 +71,12 @@
 <!-------------------section-2 ------------------->
 <section class="container">
     <div class="row">
-        <div class="pmp-course-left-text col-md-8 px-0">
+        <div class="pmp-course-left-text col-md-8 px-3 px-md-0">
             <h2>{{ $courseDetails->short_title }} Overview</h2>
             <p>{!! $courseDetails->overview !!}</p>
 
             <div class="pmp-course-left-btn">
+                @if($courseDetails->exam_pass_guarantee != null)
                 <div class="tooltip-container">
                     <button class="pmp-course-left-btn-design">
                         <span class="me-2"><i class="ri-survey-fill"></i></span>Exam Pass Guarantee
@@ -85,6 +86,8 @@
                         {!! $courseDetails->exam_pass_guarantee !!}
                     </div>
                 </div>
+                @endif
+                @if($courseDetails->money_back_guarantee != null)
                 <div class="tooltip-container">
                     <button class="pmp-course-left-btn-design">
                         <span class="me-1"><i class="ri-money-dollar-circle-line"></i></span>100% Money Back
@@ -95,6 +98,7 @@
                         {!! $courseDetails->money_back_guarantee !!}
                     </div>
                 </div>
+                @endif
             </div>
             @if($courseDetails->keyFeatures->count() > 0)
             <h2 class="mt-5">Key Features</h2>
@@ -176,10 +180,10 @@
                                     <i class="ri-calendar-line" style="color: #bf6022;"></i>
                                     <p id="dateValue" class="pt-0 slot-fs mb-0">
                                         @php
-                                            $timezones = json_decode($classroomSchedule->country->timezones, true);
-                                            $abbreviation = $timezones[0]['abbreviation'] ?? '';
+                                            $timezones = collect(json_decode($classroomSchedule->country->timezones, true));
+                                            $timezone = $timezones->firstWhere('zoneName', $classroomSchedule->time_zone);
                                         @endphp
-                                        {{ $abbreviation }}
+                                        {{ $timezone['abbreviation'] }}
                                         {{ \Carbon\Carbon::parse($classroomSchedule->starttime)->format('h:i A') }} -
                                         {{ \Carbon\Carbon::parse($classroomSchedule->end_time)->format('h:i A') }}
                                     </p>
@@ -202,7 +206,8 @@
                         <del>{{ $classroomSchedule->country->currency  }} {{ number_format($classroomSchedule->prices->original_price, 2) }}</del>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-2 gap-3">
-                        <a href="{{ route('user.order.summary', $classroomSchedule->id) }}?participants=1" class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">
+                        <a href="{{ route('user.order.summary', $classroomSchedule->id) }}?participants=1" class="btn btn-primary fw-bold enroll-btn px-3 py-2"
+                            style="border-radius: 5px; width:max-content">
                             ENROLL NOW
                         </a>
                         <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" class="d-flex align-items-center text-nowrap gap-1 crds-12">
@@ -240,7 +245,12 @@
                                 <div class="d-flex align-items-baseline gap-1">
                                     <i class="ri-calendar-line" style="color: #bf6022;"></i>
                                     <p id="dateValue" class="pt-0 slot-fs mb-0">
-                                        {{ $onlineSchedule->time_zone }}
+                                        <!-- {{ $onlineSchedule->time_zone }} -->
+                                        @php
+                                            $timezones = collect(json_decode($onlineSchedule->country->timezones, true));
+                                            $timezone = $timezones->firstWhere('zoneName', $onlineSchedule->time_zone);
+                                        @endphp
+                                        {{ $timezone['abbreviation'] }}
                                         {{ \Carbon\Carbon::parse($onlineSchedule->starttime)->format('h:i A') }} -
                                         {{ \Carbon\Carbon::parse($onlineSchedule->end_time)->format('h:i A') }}
                                     </p>
@@ -263,7 +273,8 @@
                         <del>{{ $onlineSchedule->country->currency }} {{ number_format($onlineSchedule->prices->original_price, 2) }}</del>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-2 gap-3">
-                        <a href="{{ route('user.order.summary', $onlineSchedule->id) }}?participants=1" class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">
+                        <a href="{{ route('user.order.summary', $onlineSchedule->id) }}?participants=1" class="btn btn-primary fw-bold enroll-btn px-3 py-2" 
+                            style="border-radius: 5px; width:max-content">
                             ENROLL NOW
                         </a>
                         <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" class="d-flex align-items-center text-nowrap gap-1 crds-12">
@@ -276,7 +287,7 @@
             <div class="cohort-form">
                 @if($courseDetails->getCourseSchedule != null)
                 <div class="real-cohort-form" data-start-date="{{ $courseDetails->getCourseSchedule->start_date }}">
-                    <h1>Next Cohort Starts on {{$courseDetails->getCourseSchedule->start_date}}</h1>
+                    <h1>Next Cohort Starts on {{($courseDetails->getCourseSchedule->start_date)->format('d-m-Y')}}</h1>
                     <div class="countdown">
                         <div class="time-box">
                             <div class="heading">Days</div>
@@ -312,7 +323,7 @@
                             Mobile No. <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
+                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2 modal-phone-flag" required>
                                 @foreach($countries as $country)
                                 <option
                                     value="{{ $country->phonecode }}"
@@ -657,8 +668,10 @@ $benefitsData[$key] = [
                 @endif
 
                 <div class="schedule-btn d-flex flex-wrap">
-                    <button class="schedule-btn-one" data-bs-toggle="modal"
-                        data-bs-target="#contactUsModal">Download Syllabus</button>
+                    @if($courseDetails->upload_curriculum != null)
+                        <button class="schedule-btn-one"  data-bs-toggle="modal"
+                            data-bs-target="#curriculumModal">Download Syllabus</button>
+                    @endif
                     <a class="schedule-btn-two" href="{{ route('user.course.schedule', $courseDetails->slug) }}">View Schedules</a>
                 </div>
             </div>
@@ -669,13 +682,19 @@ $benefitsData[$key] = [
         <div class="col-md-4">
             @if($tollFreeNumber !=null)
                 <div class="contact-box d-flex align-items-center justify-content-between bg-white border rounded shadow-sm p-4">
-                    <div class="contact-box-left">
-                        <p class="mb-1 text-muted fw-semibold">Contact Us</p>
-                        <h4 class="mb-0 fw-bold text-primary">Toll Free: {{ $tollFreeNumber }}</h4>
+                    <div class="contact-box-left border-right">
+                        <p class="mb-1 text-muted">Contact Us</p>
+                        @php
+                            $formattedNumber = substr($tollFreeNumber, 0, 4) . '-' . 
+                                            substr($tollFreeNumber, 4, 3) . '-' . 
+                                            substr($tollFreeNumber, 7);
+                        @endphp
+                        <h4 class="mb-1 text-nowrap fw-light" style="letter-spacing: 1.5px;"> {{ $formattedNumber }}</h4>
+                        <p class="mb-1 text-muted">(Toll Free)</p>
                     </div>
-                    <div class="contact-box-right d-flex align-items-center justify-content-center">
-                        <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
-                            <i class="ri-phone-fill fs-4"></i>
+                    <div class="contact-box-right d-flex align-items-center justify-content-center" style="border-left: 1px solid #abb2b8bf;padding-left: 10px">
+                        <span class="text-primary d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                            <i class="ri-phone-fill fs-1"></i>
                         </span>
                     </div>
                 </div>   
@@ -699,7 +718,7 @@ $benefitsData[$key] = [
                             Mobile No. <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
+                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2 modal-phone-flag" required>
                                 @foreach($countries as $country)
                                 <option
                                     value="{{ $country->phonecode }}"
@@ -1013,11 +1032,11 @@ $benefitsData[$key] = [
                                 <h3 class="text-center" style="color: #012833">Corporate Training</h3>
                                 <p class="mb-4 text-center" style="color: #012833">Upskill or reskill your teams</p>
                                 <ul class="list-unstyled" style="list-style: none;">
-                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
-                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
-                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
-                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
-                                    <li style="color: #012833"><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
                                 </ul>
                             </div>
                             <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Meeting" class="img-fluid mt-3">
@@ -1039,13 +1058,17 @@ $benefitsData[$key] = [
                             <div class="mb-3">
                                 <input type="email" class="form-control" name="email" placeholder="Email *" required>
                             </div>
-                            <div class="input-group mb-3">
-                                <select name="country_code" class="form-select select2" required>
-                                    @foreach($countries as $country)
-                                    <option value="{{ $country->phonecode }}">+{{ $country->phonecode }}</option>
-                                    @endforeach
-                                </select>
-                                <input type="text" class="form-control" name="phone" placeholder="Phone Number *" required>
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                        @foreach($countries as $country)
+                                        <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                            +{{ $country->phonecode }} {!! $country->flag !!}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="tel" maxlength="10"  oninput="restrictToNumbers(this)"  class="form-control ps-3" id="phone" name="phone" placeholder="Enter your Phone No." required>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
@@ -1071,8 +1094,139 @@ $benefitsData[$key] = [
         </div>
     </div>
 </div>
-@endpush
 
+<div class="modal fade" id="talktoOurAdvisor" tabindex="-1" aria-labelledby="talktoOurAdvisorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content overflow-hidden" style="border-radius: 10px;">
+            <form method="post" action="{{ route('lead') }}">
+                @csrf
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Left Section -->
+                        <div class="d-none col-md-6 d-lg-flex flex-column justify-content-between bg-primary text-white">
+                            <div class="p-4">
+                                <h3 class="text-center" style="color: #012833">Talk to our Advisor</h3>
+                                <p class="mb-4 text-center" style="color: #012833">Upskill or reskill your teams</p>
+                                <ul class="list-unstyled" style="list-style: none;">
+                                    <li><i class="ri-arrow-right-s-fill"></i> Flexible pricing & billing options</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Private cohorts available</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Training progress dashboards</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Skills assessment & benchmarking</li>
+                                    <li><i class="ri-arrow-right-s-fill"></i> Platform integration capabilities</li>
+                                </ul>
+                            </div>
+                            <img src="{{ asset('frontend-assets/img/all-img/meeting.png') }}" alt="Meeting" class="img-fluid mt-3">
+                        </div>
+
+                        <!-- Right Section -->
+                        <div class="col-md-6 bg-white p-4">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <h4 class="fw-bold text-center" id="talktoOurAdvisorLabel" style="color: rgba(33, 37, 41, 0.75);">Get a Quote</h4>
+                            <p class="small text-muted mb-3">Fill in the details to get a callback from our team</p>
+                            <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
+                            <input type="hidden" name="type" value="enquiry">
+
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="name" placeholder="First Name *" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" name="email" placeholder="Email *" required>
+                            </div>
+                           <div class="mb-3">
+                                <div class="input-group">
+                                    <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                        @foreach($countries as $country)
+                                        <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                            +{{ $country->phonecode }} {!! $country->flag !!}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="tel" maxlength="10"  oninput="restrictToNumbers(this)"  class="form-control ps-3" id="phone" name="phone" placeholder="Enter your Phone No." required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
+                            </div>
+                            <div class="mb-3 d-block">
+                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                                <label class="form-check-label small" for="privacyPolicy">
+                                    By providing your contact details, you agree to our
+                                    <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                                </label>
+                            </div>
+                            <button class="btn btn-primary w-100 fw-bold" type="submit">
+                                Enquire Now
+                                <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="curriculumModal" tabindex="-1" aria-labelledby="curriculumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px !important; width: 90%; margin: 0 auto">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-body p-4">
+
+                <!-- Close Button -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Title -->
+                <h5 class="text-center fw-bold mb-4" id="curriculumModalLabel">Course Syllabus</h5>
+
+                <form id="curriculumForm">
+                    @csrf
+                    <input type="hidden" name="type" value="curriculum">
+                    <input type="hidden" id="course_id" name="course_id" value="">
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <select name="country_code" class="modal-phone-flag form-select rounded-start-3 me-0 select2" required>
+                                @foreach($countries as $country)
+                                <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                    +{{ $country->phonecode }} {!! $country->flag !!}
+                                </option>
+                                @endforeach
+                            </select>
+                            <input type="tel" maxlength="10"  oninput="restrictToNumbers(this)"  class="form-control ps-3" id="phone" name="phone" placeholder="Enter your Phone No." required>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy -->
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
+                        <label class="form-check-label small" for="privacyPolicy">
+                            By providing your contact details, you agree to our
+                            <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button class="btn btn-primary w-100 fw-bold" type="submit" style="border-radius: 8px;">
+                        Download Syllabus
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
 
 @push('script')
 <script>
@@ -1088,6 +1242,7 @@ $benefitsData[$key] = [
         }
 
         $('.phone-flag').select2();
+    
     });
 
     $(document).ready(function() {
@@ -1100,9 +1255,6 @@ $benefitsData[$key] = [
                 }
             });
         }
-        $('.modal-phone-flag').select2({
-            dropdownParent: $('#contactUsModal')
-        });
     });
 
     $(document).on("change", "input[name='enquiry_for']", function() {
@@ -1115,8 +1267,7 @@ $benefitsData[$key] = [
             $companyField.addClass("d-none");
         }
     });
-</script>
-<script>
+
     var benefitsData = @json($benefitsData);
     var salaryChart;
 
@@ -1208,11 +1359,9 @@ $benefitsData[$key] = [
         firstLi.style.color = '#fff';
         updateData(firstLi.getAttribute('data-role'));
     }
-</script>
-<script>
+
     $(document).ready(function() {
         let expanded = false;
-
         $("#toggleCertificates").on("click", function() {
             expanded = !expanded;
 
@@ -1225,6 +1374,7 @@ $benefitsData[$key] = [
             }
         });
     });
+
     $(document).ready(function() {
         let expandedCurriculum = false;
 
@@ -1245,6 +1395,7 @@ $benefitsData[$key] = [
             }
         });
     });
+
     $(document).ready(function() {
         let expandedFaqs = false;
 
@@ -1264,12 +1415,82 @@ $benefitsData[$key] = [
                 }, 400);
             }
         });
+
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#curriculumModal')
+        });
+
+         $('.modal-phone-flag').select2({
+            dropdownParent: $('#contactUsModal')
+        });
+        
+        $('.modal-phone-flag').select2({
+            dropdownParent: $('#talktoOurAdvisor')
+        });
+
+        $('#curriculumModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget);
+            let courseId = button.data('course-id');
+            $(this).find('#course_id').val(courseId);
+        });
+
+        $('#curriculumForm').on('submit', function (e) {
+            e.preventDefault();
+
+            let $submitBtn = $(this).find('button[type="submit"]');
+            $submitBtn.prop('disabled', true).text('Processing...');
+
+            $.ajax({
+                url: "{{ route('lead') }}",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#curriculumModal').modal('hide');
+
+                    if (response.file) {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        
+                        // 🔽 Trigger file download
+                        let link = document.createElement('a');
+                        link.href = response.file;
+                        link.setAttribute('download', response.file.split('/').pop());
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        setTimeout(() => {
+                            location.reload(); // 🔥 Reload page
+                        }, 2000);
+                    } else {
+                        toastr.success(response.message || 'Submitted successfully!');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                error: function (xhr) {
+                    $('#curriculumModal').modal('hide');
+                    if (xhr.status === 404) {
+                        toastr.error('Curriculum file not found for this course.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        toastr.error('Something went wrong! Please try again.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    }
+                },
+                complete: function () {
+                    $submitBtn.prop('disabled', false).text('Download Syllabus');
+                }
+            });
+        });
+
     });
-</script>
-<script>
-    $('.modal-phone-flag').select2({
-        dropdownParent: $('#contactUsModal')
-    });
+
+   
 </script>
 @endpush
 
@@ -1333,6 +1554,27 @@ $benefitsData[$key] = [
         font-size: 12px;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
         z-index: 2;
+    }
+
+    #curriculumModal span.select2-selection.select2-selection--single {
+        border: none !important;
+        border-bottom: 1px solid #ccc !important;
+        height: 41px !important;
+        padding-top: 7px;
+        margin-top: 4.2px;
+        border-radius: 0 !important;
+    }
+
+    #curriculumModal .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 10px !important;
+    }
+
+    #curriculumModal span.select2.select2-container.select2-container--default.select2-container--below.select2-container--focus{
+        width: 70px !important;
+    }
+
+    .left-course-container > h1{
+        font-size: 2.125rem;
     }
 
 </style>

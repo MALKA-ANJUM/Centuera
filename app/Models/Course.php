@@ -108,7 +108,7 @@ class Course extends Model
         $countryID = session('selected_country_id', 102);
 
         return $this->hasOne(CourseSchedule::class, 'course_id')
-            ->where('start_date', '>=', now())
+            ->where('start_date', '>=', now())->orderBy('start_date', 'asc')
             ->whereHas('prices', function($query) use ($countryID) {
                 $query->where('country_id', $countryID);
             })

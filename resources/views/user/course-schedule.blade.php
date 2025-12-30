@@ -1,41 +1,65 @@
 @extends('user.layouts.layout')
-@section('title', 'Schedules')
+@section('title', $course->title . ' | Centuera')
 @section('content')
 <section class="course-container-pmp">
     <div class="container p-0">
-        <h2 class="schedule-heading">Schedule for {{ $course->title ?? 'Course' }}</h2>
+        <h2 class="schedule-heading mb-2">Schedule for {{ $course->title }} in {{ $course->getCourseSchedule->country->name }}</h2>
 
         {{-- Schedules --}}
-        <div class="schedule-section">
+        <div class="schedule-section mt-0">
             <div class="left-section">
-                <h4 class="sparkling-box">
-                    <span><i class="ri-checkbox-circle-line"></i></span> 
-                    {{ request('batche') ?? 'Live Online Class, Classroom' }}
-                </h4>
                 <div class="filter-tittle">
-                    <h4 class="countSchedules">{{ $schedules->total() }} Schedules Available</h4>
+                    <div class="batch-one"> 
+                        <h4 class="ms-0" style="width: max-content"> 
+                            <span class='w3-text-red bold500'> 
+                                {{ request('batche') ?? 'Live Online Class, Classroom' }} || {{ $schedules->total() }} Schedules Available
+                            </span> 
+                        </h4> 
+                    </div>
                 </div>
 
                 {{-- Filter Form --}}
-                <div class="button-group">
+                <div class="button-group mb-2">
                     <form method="GET" action="{{ route('user.course.schedule', $course->slug) }}" id="filterForm" style="display: flex; gap: 10px; flex-wrap: wrap;">
                         {{-- Weekday / Weekend Dropdown --}}
-                        <select name="type" onchange="document.getElementById('filterForm').submit()">
+                        <select name="type" onchange="document.getElementById('filterForm').submit()" class="btn btn-primary fw-light p-2 w-auto ms-0">
                             <option value="">Select Schedule Type</option>
                             <option value="weekday" {{ request('type') == 'weekday' ? 'selected' : '' }}>Weekday</option>
                             <option value="weekend" {{ request('type') == 'weekend' ? 'selected' : '' }}>Weekend</option>
                         </select>
 
-                        {{-- Month --}}
-                        <select name="month" onchange="document.getElementById('filterForm').submit()">
+                        @php
+                        use Carbon\Carbon;
+
+                        $currentMonth = Carbon::now()->month; // current month number (1-12)
+                        $months = [
+                            1 => 'January',
+                            2 => 'Febuary',
+                            3 => 'March',
+                            4 => 'April',
+                            5 => 'May',
+                            6 => 'June',
+                            7 => 'July',
+                            8 => 'August',
+                            9 => 'September',
+                            10 => 'October',
+                            11 => 'November',
+                            12 => 'December'
+                        ];
+                        @endphp
+
+                        <select name="month" onchange="document.getElementById('filterForm').submit()"class="btn btn-primary fw-light p-2 w-auto">
                             <option value="">Select Month</option>
-                            @foreach(['August','September','October','November','December'] as $month)
-                                <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>{{ $month }}</option>
+                            @foreach($months as $num => $month)
+                                @if($num >= $currentMonth)
+                                    <option value="{{ $month }}" {{ request('month') == $month ? 'selected' : '' }}>{{ $month }}</option>
+                                @endif
                             @endforeach
                         </select>
 
+
                         {{-- Class Type --}}
-                        <select name="batche" onchange="document.getElementById('filterForm').submit()">
+                        <select name="batche" onchange="document.getElementById('filterForm').submit()" class="btn btn-primary fw-light p-2 w-auto">
                             <option value="">Select Class Type</option>
                             <option value="Live Online Class" {{ request('batche') == 'Live Online Class' ? 'selected' : '' }}>Live Online Class</option>
                             <option value="Classroom" {{ request('batche') == 'Classroom' ? 'selected' : '' }}>Classroom</option>
@@ -92,9 +116,10 @@
                                     <p class="mb-0 small">
                                         <i class="ri-time-line"></i>
                                         @php
-                                            $timezones = json_decode($schedule->country->timezones);
+                                            $timezones = collect(json_decode($schedule->country->timezones, true));
+                                            $timezone = $timezones->firstWhere('zoneName', $schedule->time_zone);
                                         @endphp
-                                        {{ $timezones[0]->abbreviation }}
+                                       {{ $timezone['abbreviation'] }}
                                         {{ $schedule->starttime ?? 'N/A' }} - {{ $schedule->end_time ?? 'N/A' }}
                                         | {{ $schedule->total_days_of_training ?? '' }} Days
                                     </p>
@@ -175,7 +200,7 @@
                             <div class="my-4 p-3 text-white text-center rounded-3 talkToUs">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
-                                        <img src="{{ asset('frontend-assets/img/all-img/help.png') }}" alt="" style="height: 50px;" class="me-3">
+                                        <img src="{{ asset('frontend-assets/img/all-img/conversation.png') }}" alt="" style="width: 60px" class="me-3">
                                         <h5 class="mb-0 text-white">Struggling to identify an appropriate Schedule?</h5>
                                     </div>
                                     <a href="#contactUsModal" data-bs-toggle="modal"   class="btn btn-danger fw-bold enroll-btn px-3 py-2" style="border-radius: 5px; background: linear-gradient(90deg, #FF7E5F 0%, #FF3D3D 100%);">Talk to us</a>
@@ -184,10 +209,11 @@
                         @endif
                     @endforeach
 
-                    {{-- Pagination --}}
-                    <div class="pagination-wrapper">
-                        {{ $schedules->links() }}
+                   {{-- Pagination --}}
+                    <div class="d-flex justify-content-end my-4">
+                        {{ $schedules->appends(request()->query())->links('vendor.pagination.custom-bootstrap') }}
                     </div>
+
                 @else
                     <div class="no-data" style="padding: 20px; background: #f8d7da; color: #721c24; border-radius: 8px; text-align: center; margin-top: 20px;">
                         <i class="ri-error-warning-line" style="font-size: 24px;"></i>
@@ -224,7 +250,7 @@
                 </div>
                 @endif
                 <div class="border rounded p-3">
-                    <h4>Register for More Information</h4>
+                    <h4 class="text-nowrap">Register for More Information</h4>
                     <form method="POST" class="mt-3" action="{{ route('lead') }}">
                         @csrf
                         <input type="hidden" name="course_id" value="{{ $course->id }}">

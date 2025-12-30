@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Login | Centuera')
 @section('content')
 
 <div class="container my-5">

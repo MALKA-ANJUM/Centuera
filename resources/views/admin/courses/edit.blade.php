@@ -930,7 +930,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2">@lang('Update Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" style="position: fixed; bottom: 15px;">@lang('Update Course')</button>
                 </form>
             </div>
         </div>

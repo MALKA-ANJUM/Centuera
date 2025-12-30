@@ -162,27 +162,36 @@
             display: block !important;
         }
         .deal-header {
-            background: #fde9d9; /* Light orange/beige */
+            background: #F9F7FA; /* Light orange/beige */
             font-size: 16px;
             font-weight: 600;
             color: #000;
             border-bottom: 1px solid #ddd;
         }
-        .deal-text p {
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 20px;
-        }
         .deal-text i {
-            font-size: 18px;
+            font-size: 14px;
         }
         
         .payment-gateway img {
             padding: 4px;
-            width: 27%;
+            /* width: 27%; */
             padding-left: 0px;
+        }
+
+        .cpr-right a {
+            font-size: 20px;
+            color: #fff;
+            padding: 10px;
+            margin-right: 9px;
+            border: 1px solid #fff;
+            border-radius: 50%;
+        }
+        .disclaimer .accordion-button.collapsed::after {
+            transform: rotate(0deg) !important;
+            margin-left: 10px;
+        }
+        .disclaimer .accordion-button:not(.collapsed)::after{
+            margin-left: 10px;
         }
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -282,12 +291,12 @@
     @endphp
 
     @if(!empty($stealDeal))
-        <div class="deal-header text-center py-2">
+        <div class="deal-header text-center py-0">
             <div class="container">
                 <div class="deal-text d-flex justify-content-center align-items-center flex-wrap gap-4">
-                    <p><i class="fas fa-tags me-2" style="color: #f0a601"></i> 30% Savings on Standard Course Fees</p>
-                    <p><i class="fas fa-calendar-alt me-2" style="color: #f0a601"></i> Enroll by 25th September</p>
-                    <p><i class="fas fa-lock me-2" style="color: #f0a601"></i> Unlock FREE Self-Learning Courses</p>
+                    <p class="mb-0"><img src="{{ asset('frontend-assets/img/all-img/upskill-logo.png') }}" alt="" width="55px"> 30% Savings on Standard Course Fees</p>
+                    <p class="mb-0"><i class="fas fa-calendar-alt" style="color: #f0a601"></i> Enroll by 25th September</p>
+                    <p class="mb-0"><i class="fas fa-lock" style="color: #f0a601"></i> Unlock FREE Self-Learning Courses</p>
                 </div>
             </div>
         </div>
@@ -311,7 +320,7 @@
                                 @if($categories->count() > 0)
                                 <li class="nav-item dropdown mega-dropdown">
                                     <div class="dropdown">
-                                        <button class="dropbtn btn btn-primary d-flex align-items-center gap-2">
+                                        <button class="dropbtn btn btn-primary d-flex align-items-center gap-2" style="white-space: nowrap;">
                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                                 <circle cx="4" cy="4" r="2" />
                                                 <circle cx="12" cy="4" r="2" />
@@ -349,7 +358,7 @@
                                                     <ul>
                                                         @foreach($category->getCourses as $course)
                                                         <li class="d-flex justify-content-start align-items-start">
-                                                            <img src="{{ asset('uploads/logo/'.$course->logo) }}" class="me-2" alt="" width="30px">
+                                                            <img src="{{ asset('uploads/logo/'.$course->logo) }}" class="me-2" alt="" width="40px">
                                                             <a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a>
                                                         </li>
                                                         @endforeach
@@ -371,7 +380,7 @@
                                                     <h6 class="mb-2">Accreditation Bodies</h6>
                                                     @forelse($accreditations as $acc)
                                                     <div class="mb-4 d-flex align-items-center">
-                                                        <img src="{{ asset('admin/accreditation_images/' . $acc['image']) }}" alt="{{ $acc['name'] }}" width="80">
+                                                        <img src="{{ asset('admin/accreditation_images/' . $acc['image']) }}" alt="{{ $acc['name'] }}" width="40px">
                                                         <p class="mb-0 lh-1">{{ $acc['name'] }}</p>
                                                     </div>
                                                     @empty
@@ -444,7 +453,7 @@
         </div>
         <div class="container">
             <div class="">
-                <nav class="navbar insocour-nav navbar-expand-lg">
+                <nav class="navbar insocour-nav navbar-expand-lg p-0">
                     <a class="navbar-brand lg-none" href="{{ route('index') }}">
                         <img class="logo-light" src="{{ asset('frontend-assets/img/logo/logo.png')}}" alt="logo"
                             style="height: 50px; width: 140px;">

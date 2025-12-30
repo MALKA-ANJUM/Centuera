@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Register | Centuera')
 @section('content')
 
 

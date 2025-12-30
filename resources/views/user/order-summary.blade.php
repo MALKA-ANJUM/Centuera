@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Order Summary')
+@section('title', 'Order Summary | Centuera')
 @section('content')
 
 <section class="course-container-pmp py-5">
@@ -35,9 +35,10 @@
                                                 <div class="fs-7 fw-normal"><i class="ri-time-line me-2"></i>
                                                     <span class="text-black fw-normal">
                                                         @php
-                                                        $timezones = json_decode($schedule->country->timezones, true);
+                                                            $timezones = collect(json_decode($schedule->country->timezones, true));
+                                                            $timezone = $timezones->firstWhere('zoneName', $schedule->time_zone);
                                                         @endphp
-                                                        {{ $timezones[0]['abbreviation'] }}
+                                                        {{ $timezone['abbreviation'] }}
                                                     </span>
                                                     <span class="text-black fw-normal"> • {{ date("g:i A", strtotime($schedule->starttime)) }} - {{ date("g:i A", strtotime($schedule->end_time)) }} </span>
                                                 </div>
@@ -84,7 +85,7 @@
                                         <div class="col-md-6">
                                             <input type="email" id="email" class="form-control border rounded px-3" placeholder="Email*" name="email" value="{{ auth()->user()->email ?? '' }}" required>
                                         </div>
-                                        <input type="text" name="coupon_id" value="" id="coupon_id">
+                                        <input type="hidden" name="coupon_id" value="" id="coupon_id">
                                         <!-- Phone -->
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -207,12 +208,25 @@
         </div>
     </div>
 </section>
+<!-- Full Page Loader -->
+<div id="loaderOverlay" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(255,255,255,0.8); z-index:9999; 
+            justify-content:center; align-items:center;">
+    <div class="spinner-border text-primary" role="status" style="width:4rem; height:4rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
 @endsection
 
 
 @push('style')
 <style>
+    #loaderOverlay {
+        display: none;
+        display: flex; /* This will only apply when you call .fadeIn() */
+    }
     .course-container-pmp {
         background: #f8f9fa;
         min-height: 100vh;
@@ -253,6 +267,14 @@
 @push('script')
 <script src="https://js.stripe.com/v3/"></script>
 <script>
+    function showLoader() {
+        $("#loaderOverlay").fadeIn();
+    }
+
+    function hideLoader() {
+        $("#loaderOverlay").fadeOut();
+    }
+
     $(document).ready(function() {
         $("#toggleAltBtn").on("click", function() {
             $("#altContact").toggleClass("d-none");
@@ -557,6 +579,8 @@
                 });
                 return false; // ⛔ Stop before Stripe request
             }
+
+    showLoader();
 
 
             // ✅ Proceed only if valid

@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Payment Cancelled')
+@section('title', 'Payment Cancelled | Centuera')
 @section('content')
 
 @section('content')

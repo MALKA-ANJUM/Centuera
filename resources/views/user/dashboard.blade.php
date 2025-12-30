@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Dashboard')
+@section('title', 'Dashboard | Centuera')
 @section('content')
 @php
 $activeTab = request('tab', session('form', 'profile'));

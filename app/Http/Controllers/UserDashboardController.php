@@ -182,6 +182,7 @@ class UserDashboardController extends Controller
             $rating->user_id    = auth()->user()->id;
             $rating->rating     = $request->rating;
             $rating->review     = $request->review;
+            $rating->order_id   = $request->order_id;
             $rating->save();
 
             return redirect()->back()->with('success', 'Rating Added');

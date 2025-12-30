@@ -557,7 +557,7 @@
                             </div>
                         </div>
                     </div> <!-- End row -->
-                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn">@lang('Add Course')</button>
+                    <button type="submit" class="btn btn-primary mt-2" id="submitBtn" style="position: fixed; bottom: 15px;">@lang('Add Course')</button>
                 </form>
             </div>
         </div>

@@ -21,4 +21,16 @@ class Order extends Model
         return $this->belongsTo(Course::class, 'orders', 'id', 'courses');
     }
 
+    public function getRating()
+    {
+        return $this->hasOne(\App\Models\Rating::class, 'order_id', 'orderId')
+            ->where('user_id', auth()->id());
+    }
+
+    public function getSchedule()
+    {
+        return $this->belongsTo(CourseSchedule::class, 'schedule_id', 'id');
+    }
+
+
 }

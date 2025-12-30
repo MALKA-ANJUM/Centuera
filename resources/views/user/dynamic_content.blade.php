@@ -1,7 +1,5 @@
 @extends('user.layouts.layout')
-
-@section('title', $dynamicPages->title)
-
+@section('title', $dynamicPages->title . ' | Centuera')
 @section('content')
 <div class="blog-section ptb-100">
     <div class="container">

@@ -1,6 +1,5 @@
 @extends('user.layouts.layout')
-
-@section('title', $blog->title)
+@section('title', $blog->title . ' | Centuera')
 @section('meta_description', $blog->meta)
 
 @section('content')

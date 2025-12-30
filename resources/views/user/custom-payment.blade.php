@@ -1,5 +1,5 @@
 @extends('user.layouts.layout')
-@section('title', 'Custom Payment')
+@section('title', 'Custom Payment | Centuera')
 @section('content')
 <!-- BEGIN: Content-->
 

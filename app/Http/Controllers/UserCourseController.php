@@ -47,7 +47,6 @@ class UserCourseController extends Controller
 				->where('slug', $slug)
 				->first();
 		$price = collect(); // fallback to empty collection
-		// return $courseDetails->getCourseScheduleMany;
 		if (!empty($courseDetails) && $courseDetails->getCourseScheduleMany) {
 			$price 		= $courseDetails->getCourseScheduleMany
 				->groupBy('batche')
@@ -55,7 +54,7 @@ class UserCourseController extends Controller
 					return $batches->sortBy('start_date')->first();
 				});
 		}
-		// return $courseDetails->getCourseScheduleMany;
+		// return $courseDetails->getCourseSchedule;
         $countries 		= Country::get();
 		$settings 		= Generalsettings::first();
 		$countryRules 	= collect(json_decode($settings->country_rule, true)); // decode JSON to array
@@ -82,12 +81,15 @@ class UserCourseController extends Controller
     }
 	public function courseSchedule(Request $request, $slug)
 	{
-		$countryID 		= Session::get('selected_country_id');
-		$course 		= Course::where('slug', $slug)->firstOrFail();
-        $countries 		= Country::get();
-		$currency 		= Country::where('id', $countryID)->first()->currency ?? 0;
-		$schedulesQuery = $course->schedules()->with(['prices']);
-		$courses  		= Course::all();
+		$countryID = Session::get('selected_country_id');
+		$course = Course::where('slug', $slug)->firstOrFail();
+		$countries = Country::all();
+		$currency = Country::where('id', $countryID)->value('currency') ?? 0;
+		$courses = Course::all();
+
+		// Start a query builder for schedules
+		$schedulesQuery = $course->getCourseScheduleMany();
+
 		// Weekday / Weekend filter
 		if ($request->filled('type')) {
 			if ($request->type === 'weekday') {
@@ -108,10 +110,12 @@ class UserCourseController extends Controller
 			$schedulesQuery->where('batche', $request->batche);
 		}
 
-		$schedules = $schedulesQuery->where('start_date', '>=', now())->paginate(10);
-		return view('user.course-schedule', compact('course', 'schedules', 'countries', 'currency', 'countryID', 'courses'));
+		// Paginate schedules
+		$schedules = $schedulesQuery->paginate(6);
+		return view('user.course-schedule', compact(
+			'course', 'schedules', 'countries', 'currency', 'countryID', 'courses'
+		));
 	}
-
 
     public function searchCourses(Request $request)
     {
