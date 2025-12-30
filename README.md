@@ -1,5 +1,4 @@
-# centura
-
+# Centuera
 
 
 ## Getting started
