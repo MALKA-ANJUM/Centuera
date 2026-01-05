@@ -77,6 +77,7 @@
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
    @stack('style')
+   @stack('modal')
 </head>
 <!-- END: Head-->
 <!-- BEGIN: Body-->

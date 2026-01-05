@@ -82,6 +82,7 @@ class UserCourseController extends Controller
 	public function courseSchedule(Request $request, $slug)
 	{
 		$countryID = Session::get('selected_country_id');
+		$currentCountry = Country::where('id', $countryID)->first();
 		$course = Course::where('slug', $slug)->firstOrFail();
 		$countries = Country::all();
 		$currency = Country::where('id', $countryID)->value('currency') ?? 0;
@@ -113,7 +114,7 @@ class UserCourseController extends Controller
 		// Paginate schedules
 		$schedules = $schedulesQuery->paginate(6);
 		return view('user.course-schedule', compact(
-			'course', 'schedules', 'countries', 'currency', 'countryID', 'courses'
+			'course', 'schedules', 'countries', 'currency', 'countryID', 'courses', 'currentCountry'
 		));
 	}
 

@@ -55,6 +55,11 @@ class CourseSchedule extends Model
     {
         return $this->hasMany(CourseSchedulePrice::class, 'schedule_id');
     }
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'time_zone', 'timezones');
+    }
+
     
     protected $appends = ['country'];
 

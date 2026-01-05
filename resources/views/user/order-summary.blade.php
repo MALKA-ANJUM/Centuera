@@ -196,11 +196,11 @@
                     <div class="card-body">
                         <h5 class="coupon-header fs-6 fw-semibold me-1 mb-2">Coupon Code</h5>
                         <form action="">
-                             <div class="input-group">
-                            <input type="text" id="couponCode" class="form-control" placeholder="Apply a Code">
-                            <button class="btn btn-primary" id="applyCouponBtn">Apply</button>
-                        </div>
-                        <small id="couponMessage" class="text-success fw-semibold"></small>
+                            <div class="input-group">
+                                <input type="text" id="couponCode" class="form-control" placeholder="Apply a Code">
+                                <button class="btn btn-primary" id="applyCouponBtn">Apply</button>
+                            </div>
+                            <small id="couponMessage" class="text-success fw-semibold"></small>
                         </form>
                     </div>
                 </div>
@@ -444,6 +444,8 @@
 
         let subtotal = parseFloat($("#subtotal").text());
         let courseId = "{{ $schedule->course_id }}";
+        let classtype = "{{ $schedule->batche }}";
+
 
         $.ajax({
             url: "{{ route('apply.coupon') }}",
@@ -452,7 +454,8 @@
                 _token: "{{ csrf_token() }}",
                 coupon_code: code,
                 subtotal: subtotal,
-                course_id: courseId
+                course_id: courseId,
+                classtype: classtype
             },
             success: function (response) {
                 if (response.success) {

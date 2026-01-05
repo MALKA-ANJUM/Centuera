@@ -40,10 +40,32 @@
                                 @endif
                                 <div class="card-header border-bottom d-flex align-items-center">
                                     <form action="" method="GET" class="d-flex ms-auto">
-                                        <input type="text" name="search" class="form-control"
-                                            placeholder="Search by Type,Batch" value="{{ request('search') }}">
-                                        <button type="submit" class="btn btn-primary ms-2"><i
+                                        <select name="country" class="form-select me-2 select2">
+                                            <option value="">All Countries</option>
+                                            @foreach($countries as $country)
+                                                <option value="{{ $country->id }}" 
+                                                    {{ request('country') == $country->id ? 'selected' : '' }}>
+                                                    {{ $country->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        {{-- <input type="text" name="search" class="form-control"
+                                            placeholder="Search by Type,Batch" value="{{ request('search') }}"> --}}
+                                            <!-- Type filter dropdown -->
+                                        <select name="type" class="form-select mx-1">
+                                            <option value="">Batch Types</option>
+                                            <option value="Weekday" {{ request('type') == 'Weekday' ? 'selected' : '' }}>Weekday</option>
+                                            <option value="Weekend" {{ request('type') == 'Weekend' ? 'selected' : '' }}>Weekend</option>
+                                        </select>
+                                        
+                                        <select name="batche" class="form-select mx-1">
+                                            <option value="">Batche</option>
+                                            <option value="Classroom" {{ request('batche') == 'Classroom' ? 'selected' : '' }}>Classroom</option>
+                                            <option value="Live Online Class" {{ request('batche') == 'Live Online Class' ? 'selected' : '' }}>Live Online Class</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary"><i
                                                 class="fa fa-search"></i></button>
+                                        <a href="{{ route('admin.schedule.course.schedules', $course->id) }}" class="btn btn-secondary ms-1"><i class="fa fa-refresh"></i></a>
                                     </form>
                                 </div>
                                 <div class="card-datatable table-responsive">
@@ -55,6 +77,7 @@
                                                 <th>Batch Type</th>
                                                 <th>Batch</th>
                                                 <th>Start Date</th>
+                                                <th>country</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -66,6 +89,7 @@
                                                     <td>{{ $schedule->type ?? '-' }}</td>
                                                     <td>{{ $schedule->batche ?? '-' }}</td>
                                                     <td>{{ $schedule->start_date->format('d-m-Y') }}</td>
+                                                    <td>{{ $schedule->country->name ?? '-' }}</td>
                                                     <td>
                                                         <a class="btn btn-outline-primary btn-sm" title="Edit"
                                                             href="{{ route('admin.schedule.edit', $schedule->id) }}">
@@ -96,3 +120,10 @@
     </div>
     <!-- END: Content-->
 @endsection
+@push('style')
+<style>
+    span.select2-selection.select2-selection--single{
+        width: 200px
+    }
+</style>
+@endpush

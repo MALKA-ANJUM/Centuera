@@ -29,8 +29,9 @@
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Subject</th>
+                                    <th>Phone</th>
                                     <th>Message</th>
+                                    <th>View</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -39,8 +40,17 @@
                                         <td>{{ $contacts->firstItem() + $index }}</td>
                                         <td>{{ $contact->name }}</td>
                                         <td>{{ $contact->email }}</td>
-                                        <td>{{ $contact->subject }}</td>
-                                        <td>{{ Str::limit($contact->message, 50) }}</td>
+                                        <td>{{ $contact->mobile }}</td>
+                                        <td>{{ $contact->message }}</td>
+                                        <td>
+                                            <a href="javascript:void(0)" 
+                                            class="btn btn-outline-primary btn-sm viewLead"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#viewLeadModal"
+                                             data-contact='@json($contact)'>
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -60,4 +70,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="viewLeadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body d-flex">
+           <b >Message: &nbsp; </b>
+            <p><span id="message"></span></p>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('script')
+<script>
+  $(document).on("click", ".viewLead", function () {
+        let contact = $(this).data("contact");
+
+        $("#message").text(contact.message ?? "N/A");
+    });
+</script>
+@endpush
+

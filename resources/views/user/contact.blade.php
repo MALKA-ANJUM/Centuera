@@ -10,7 +10,7 @@
                 <div class="page-title-content">
                     <h2>Contact</h2>
                     <ul class="page-breadcrumb align-items-center list-unstyle">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
                         <li class="breadcrumb-item"></li>
                         <li class="primery-link">Contact</li>
                     </ul>

@@ -94,7 +94,17 @@
                                         <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-
+                                <div class="col-md-6 mb-2">
+                                    <label for="type" class="form-label">@lang('Class Type')</label>
+                                    <select class="form-control" name="class_type" id="class_type" required>
+                                        <option value="">@lang('Select Class Type')</option>
+                                        <option value="classroom">@lang('Classroom')</option>
+                                        <option value="online">@lang('Online')</option>
+                                    </select>
+                                    @error('class_type')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary">@lang('Add')</button>
                         </form>

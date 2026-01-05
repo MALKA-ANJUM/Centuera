@@ -3,7 +3,7 @@
 @section('content')
 <section class="course-container-pmp">
     <div class="container p-0">
-        <h2 class="schedule-heading mb-2">Schedule for {{ $course->title }} in {{ $course->getCourseSchedule->country->name }}</h2>
+        <h2 class="schedule-heading mb-2">Schedule for {{ $course->title }} in {{ $currentCountry->name }}</h2>
 
         {{-- Schedules --}}
         <div class="schedule-section mt-0">
@@ -251,7 +251,7 @@
                 @endif
                 <div class="border rounded p-3">
                     <h4 class="text-nowrap">Register for More Information</h4>
-                    <form method="POST" class="mt-3" action="{{ route('lead') }}">
+                    <form method="POST" class="mt-3 courseLead" action="{{ route('lead') }}">
                         @csrf
                         <input type="hidden" name="course_id" value="{{ $course->id }}">
                         <input type="hidden" name="type" value="enquiry">
@@ -323,7 +323,7 @@
             <!-- <div class="modal-header border-0">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div> -->
-            <form method="post" action="{{ route('lead') }}">
+            <form method="post" action="{{ route('lead') }}" class="courseLead">
                 @csrf
                 <div class="modal-body p-0">
                     <div class="row g-0">
@@ -370,7 +370,7 @@
                                 <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
                             </div>
                             <div class="mb-3 d-block">
-                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                                <input type="text" class="form-control" name="company_name" placeholder="Company Name" required>
                             </div>
                             <div class="form-check mb-3">
                                 <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
@@ -630,4 +630,39 @@
     </div>
 </div>
 @endpush
+@push('script')
+<script>
+       $(document).on("submit", ".courseLead", function (e) {
+        e.preventDefault();
 
+        let form = $(this);
+        let formData = form.serialize();
+
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            data: formData,
+            success: function (response) {
+                if (response.status === "success") {
+                    toastr.success(response.message);
+                    form[0].reset(); 
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message || "Something went wrong!");
+                }
+            },
+            error: function (xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        toastr.error(value[0]);
+                    });
+                } else {
+                    toastr.error("Something went wrong. Please try again.");
+                }
+            },
+        });
+    });
+</script>
+@endpush

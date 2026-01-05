@@ -115,16 +115,16 @@
                                     <h6>Follow Us</h6>
                                 </div>
                                 <div class="cpr-right">
-                                    <a href="https://www.facebook.com/" target="_blank">
+                                    <a href="{{ $generalSetting->facebook }}" target="_blank">
                                         <i class="ri-facebook-fill"></i>
                                     </a>
-                                    <a href="https://www.instagram.com/" target="_blank">
+                                    <a href="{{ $generalSetting->instagram }}" target="_blank">
                                         <i class="ri-instagram-line"></i>
                                     </a>
-                                    <a href="https://twitter.com/" target="_blank">
+                                    <a href="{{ $generalSetting->twitter }}" target="_blank">
                                         <i class="ri-twitter-fill"></i>
                                     </a>
-                                    <a href="https://linkedin.com/" target="_blank">
+                                    <a href="{{ $generalSetting->linkedin }}" target="_blank">
                                         <i class="ri-linkedin-fill"></i>
                                     </a>
                                 </div>

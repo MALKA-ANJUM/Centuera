@@ -19,9 +19,9 @@ class RequestCallbackExport implements FromCollection, WithHeadings
                     'id' => $callbacks->id,
                     'created_at' => $callbacks->created_at->format('d-m-Y'),
                     'name' => $callbacks->name,
-                    'phone' => $callbacks->phone,
+                    'phone' => '+'.$callbacks->country_code.'-'.$callbacks->phone,
                     'email' => $callbacks->email,
-                    'course_id' => $callbacks->course_id,
+                    'course_id' =>$callbacks->course ? $callbacks->course->title : 'Other',
                     
                 ];
             });

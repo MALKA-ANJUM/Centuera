@@ -40,7 +40,9 @@ class UserController extends Controller
 
 	public function about()
 	{
-		return view('user.about');
+		$testimonials 	= Testimonial::latest()->take(6)->get();
+		$blogs 			= Blog::latest()->take(3)->get();
+		return view('user.about', compact('testimonials', 'blogs'));
 	}
 
 	public function userBlog()
@@ -143,6 +145,7 @@ class UserController extends Controller
 		$lead->phone = $request->phone;
 		$lead->enquiry_for = $request->enquiry_for;
 		$lead->company_name = $request->company_name;
+		$lead->learners = $request->learners;
 		$lead->save();
 
 		if ($request->type === 'curriculum') {

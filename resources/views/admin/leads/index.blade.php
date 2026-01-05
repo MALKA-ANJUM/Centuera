@@ -30,8 +30,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
-                                    <th>Message</th>
-                                    <th>Actions</th>
+                                    <th>View</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,10 +39,15 @@
                                         <td>{{ $leads->firstItem() + $index }}</td>
                                         <td>{{ $lead->name }}</td>
                                         <td>{{ $lead->email }}</td>
-                                        <td>{{ $lead->phone }}</td>
-                                        <td>{{ Str::limit($lead->message, 50) }}</td>
+                                        <td>+{{ $lead->country_code }} {{ $lead->phone }}</td>
                                         <td>
-                                            <a href="{{ route('admin.leads.show', $lead->id) }}" class="btn btn-primary btn-sm">View</a>
+                                            <a href="javascript:void(0)" 
+                                            class="btn btn-outline-primary btn-sm viewLead"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#viewLeadModal"
+                                             data-lead='@json($lead)'>
+                                                <i class="fa fa-eye"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty
@@ -65,3 +69,55 @@
 </div>
 
 @endsection
+@push('modal')
+<!-- View Modal -->
+<div class="modal fade" id="viewLeadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Lead Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Name: </strong> <span id="leadName"></span></li>
+                <li class="list-group-item"><strong>Email: </strong> <span id="leadEmail"></span></li>
+                <li class="list-group-item"><strong>Phone: </strong>+<span id="leadCountry"></span> <span id="leadPhone"></span></li>
+                <li class="list-group-item"><strong>Type: </strong> <span id="leadType"></span></li>
+                <li class="list-group-item" id="leadEnquiryRow">
+                    <strong>Enquiry For:</strong> <span id="leadEnquiry"></span>
+                </li>
+                <li class="list-group-item"><strong>Company: </strong> <span id="leadCompany"></span></li>
+                <li class="list-group-item"><strong>Learners: </strong> <span id="leadLearners"></span></li>
+            </ul>
+
+        </div>
+        </div>
+    </div>
+</div>
+@endpush
+@push('script')
+<script>
+  $(document).on("click", ".viewLead", function () {
+        let lead = $(this).data("lead");
+
+        $("#leadName").text(lead.name ?? "-");
+        $("#leadEmail").text(lead.email ?? "-");
+        $("#leadPhone").text(lead.phone ?? "-");
+        $("#leadCountry").text(lead.country_code ?? "-");
+        $("#leadType").text(lead.type ?? "-");
+        $("#leadCompany").text(lead.company_name ?? "-");
+        $("#leadLearners").text(lead.learners ?? "-");
+
+        // Enquiry For - show only if exists
+        if (lead.enquiry_for) {
+            $("#leadEnquiryRow").show();
+            $("#leadEnquiry").text(lead.enquiry_for);
+        } else {
+            $("#leadEnquiryRow").hide();
+        }
+    });
+
+
+</script>
+@endpush

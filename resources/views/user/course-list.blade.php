@@ -16,7 +16,7 @@
     </div>
     <div class="offcanvas-body">
         <ul class="responsive-menu">
-            <li><a href="index-2.html">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="about.html">About</a></li>
             <li><a href="courses.html">Courses</a></li>
             <li><a href="blog.html">Blogs</a></li>
@@ -32,7 +32,7 @@
             <div class="page-title-content">
                 <h2>Courses</h2>
                 <ul class="page-breadcrumb align-items-center list-unstyle">
-                    <li class="breadcrumb-item"><a href="index-2.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
                     <li class="breadcrumb-item"></li>
                     <li class="primery-link">Courses</li>
                 </ul>

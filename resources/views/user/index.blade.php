@@ -222,22 +222,25 @@
                                 </div>
                             </div>
                             <div class="content">
-                                <h5 class="mb-0">{{ $course->title }}</h5>
-                                @if($course->getCourseSchedule && $course->getCourseSchedule->prices)
+                                <!-- <h5 class="mb-0">{{ $course->title }}</h5> -->
                                 <div class="meta-info d-flex align-items-center justify-content-between">
                                     <h3 class="mb-1 fs-20"><a href="{{ route('course.details', $course->slug) }}">{{ $course->title }}</a></h3>
+                                    @if($course->getCourseSchedule && $course->getCourseSchedule->prices)
                                     <div class="cr-price px-2">
-                                        <h5 class="fs-16 text-nowrap"><span class="price"> {{ $course->getCourseSchedule->country->currency }} {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}</span>
+                                        <h5 class="fs-16 text-nowrap">
+                                            <span class="price">
+                                                {{ $course->getCourseSchedule->country->currency }} {{ $course->getCourseSchedule->prices->discount_price ?? 0 }}
+                                            </span>
                                             <br>
                                             @if($course->getCourseSchedule && $course->getCourseSchedule)
                                             <span class="old-price">
                                                 {{ $course->getCourseSchedule->country->currency }} {{ $course->getCourseSchedule->prices->original_price ?? 0 }}
                                             </span>
                                             @endif
-
+                                        </h5>
                                     </div>
+                                    @endif
                                 </div>
-                                @endif
                             </div>
                             <div class="d-flex justify-content-center align-items-center rating-section">
                                 @php
@@ -583,7 +586,7 @@
                 </div>
             </div>
 
-            <div class="row justify-content-center">
+            <div class="row">
                 @foreach($blogs as $blog)
                 <div class="col-lg-4 col-sm-6">
                     <div class="single-blog-box">
@@ -949,11 +952,6 @@
         border: 0;
         border-bottom: 1px solid #aaa;
         border-radius: 0;
-    }
-    .testimonial-cards.owl-carousel .owl-item img {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
     }
 </style>
 @endpush

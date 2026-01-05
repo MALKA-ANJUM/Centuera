@@ -77,20 +77,48 @@ class ScheduleController extends Controller
         return redirect()->route('admin.schedule.course.schedules', $schedule->course_id)->with('success', 'Schedule created successfully!');
     }
 
-    public function courseSchedules(Request $request, $id)
+   public function courseSchedules(Request $request, $id)
     {
         $course = Course::findOrFail($id);
 
-        $query = CourseSchedule::where('course_id', $id);
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('type', 'like', "%{$search}%")
-                ->orWhere('batche', 'like', "%{$search}%");
+        $query = CourseSchedule::with(['getCourse'])
+            ->where('course_id', $id);
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+        if ($request->filled('batche')) {
+            $query->where('batche', $request->batche);
+        }
+
+        $schedules = $query->orderBy('id', 'desc')->get();
+
+        // Country filter after fetching
+        if ($request->filled('country')) {
+            $selectedCountryId = $request->country;
+            $schedules = $schedules->filter(function ($schedule) use ($selectedCountryId) {
+                return $schedule->country && $schedule->country->id == $selectedCountryId;
             });
         }
-        $schedules = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        return view('admin.schedules.course_schedules', compact('schedules', 'course'));
+
+        // Manual pagination
+        $perPage = 10;
+        $page = $request->get('page', 1);
+        $paginatedSchedules = new \Illuminate\Pagination\LengthAwarePaginator(
+            $schedules->forPage($page, $perPage),
+            $schedules->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $countries = Country::all();
+
+        return view('admin.schedules.course_schedules', [
+            'schedules' => $paginatedSchedules,
+            'course' => $course,
+            'countries' => $countries,
+        ]);
     }
 
     public function edit($id)

@@ -395,7 +395,7 @@
                                 @endif
 
                                 <li class="nav-item dropdown">
-                                    <div class="dropdown rounded overflow-hidden">
+                                    <div class="dropdown rounded">
                                         <input type="text" placeholder="What do you want to learn?" class="search-input" id="searchCourse" autocomplete="off">
                                         <i class="ri-search-2-line"></i>
                                         <div class="dropdown-content">
@@ -435,13 +435,13 @@
                                 <span class="fs-16 fc-main">Follow Us:</span>
                                 <div class="option-item">
                                     <ul class="social-profile list-unstyle position-relative">
-                                        <li><a href="https://www.facebook.com/people/Centuera/61559120999420/"
+                                        <li><a href="{{ $generalSetting->facebook }}"
                                                 target="_blank"><i class="ri-facebook-fill"></i></a></li>
-                                        <li><a href="https://www.linkedin.com/company/centuera-americas-llc/?viewAsMember=true"
+                                        <li><a href="{{ $generalSetting->linkedin }}"
                                                 target="_blank"><i class="ri-linkedin-fill"></i></a></li>
-                                        <li><a href="https://www.instagram.com/" target="_blank"><i
+                                        <li><a href="{{ $generalSetting->instagram }}" target="_blank"><i
                                                     class="ri-instagram-line"></i></a></li>
-                                        <li><a href="https://www.twitter.com/" target="_blank"><i
+                                        <li><a href="{{ $generalSetting->twitter }}" target="_blank"><i
                                                     class="ri-twitter-fill"></i></a></li>
                                     </ul>
                                 </div>
@@ -513,7 +513,7 @@
     <div class="responsive-navbar offcanvas offcanvas-end border-0" data-bs-backdrop="static" tabindex="-1"
         id="navbarOffcanvas">
         <div class="offcanvas-header">
-            <a href="index-2.html" class="logo d-inline-block">
+            <a href="/" class="logo d-inline-block">
                 <img class="logo-light" src="{{ asset('frontend-assets/img/logo/logo.png')}}" alt="Image">
             </a>
             <button type="button" class="close-btn bg-transparent position-relative lh-1 p-0 border-0"

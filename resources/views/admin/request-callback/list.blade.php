@@ -42,7 +42,7 @@
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{($callback->created_at)->format('d-M-Y') }}</td>
                                                         <td>{{ $callback->name }}</td>
-                                                        <td>{{ $callback->phone }}</td>
+                                                        <td>+{{ $callback->country_code }} {{ $callback->phone }}</td>
                                                         <td>{{ $callback->email }}</td>
                                                         <td>{{ $callback->course ? $callback->course->title : 'Other' }}</td>
                                                         <td>

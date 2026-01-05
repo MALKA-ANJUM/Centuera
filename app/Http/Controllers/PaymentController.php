@@ -239,6 +239,17 @@ class PaymentController extends Controller
             return response()->json(['success' => false, 'message' => 'Coupon not valid for this course.']);
         }
 
+        $map = [
+            'Classroom' => 'classroom',
+            'Live Online Class' => 'online',
+        ];
+
+        $scheduleClassType = $map[$request->classtype] ?? strtolower($request->classtype);
+
+        if ($coupon->class_type !== $scheduleClassType) {
+            return response()->json(['success' => false, 'message' => 'Coupon not valid for this class type.']);
+        }
+
         // Apply discount
         $discount = 0;
         if ($coupon->type === 'fixed') {

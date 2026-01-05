@@ -19,6 +19,7 @@ class Coupon extends Model
         'value',
         'course_id',
         'code',
+        'class_type'
     ];
 
     protected $dates = ['deleted_at'];

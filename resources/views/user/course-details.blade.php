@@ -338,6 +338,7 @@
                     </div>
                     <button type="submit" class="btn-primary">Submit</button>
                 </form>
+
                 <div class="form-group">
                     {{-- <button type="submit" class="btn-primary" data-bs-toggle="modal"
                             data-bs-target="#contactUsModal">Talk to Advisor</button> --}}
@@ -702,7 +703,7 @@ $benefitsData[$key] = [
 
             <div class="info-box">
                 <h5 class="text-center">Request more information</h5>
-                <form method="POST" class="mt-3" action="{{ route('lead') }}" class="courseLead">
+                <form method="POST" class="mt-3 courseLead" action="{{ route('lead') }}">
                     @csrf
                     <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
                     <input type="hidden" name="type" value="enquiry">
@@ -1022,7 +1023,7 @@ $benefitsData[$key] = [
             <!-- <div class="modal-header border-0">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div> -->
-            <form method="post" action="{{ route('lead') }}">
+            <form method="post" action="{{ route('lead') }}" class="courseLead">
                 @csrf
                 <div class="modal-body p-0">
                     <div class="row g-0">
@@ -1074,7 +1075,7 @@ $benefitsData[$key] = [
                                 <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
                             </div>
                             <div class="mb-3 d-block">
-                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                                <input type="text" class="form-control" name="company_name" placeholder="Company Name" required>
                             </div>
                             <div class="form-check mb-3">
                                 <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
@@ -1098,7 +1099,7 @@ $benefitsData[$key] = [
 <div class="modal fade" id="talktoOurAdvisor" tabindex="-1" aria-labelledby="talktoOurAdvisorLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content overflow-hidden" style="border-radius: 10px;">
-            <form method="post" action="{{ route('lead') }}">
+            <form method="post" action="{{ route('lead') }}" class="courseLead">
                 @csrf
                 <div class="modal-body p-0">
                     <div class="row g-0">
@@ -1150,7 +1151,7 @@ $benefitsData[$key] = [
                                 <input type="number" class="form-control" name="learners" placeholder="Number of Learners (2 or above) *" required>
                             </div>
                             <div class="mb-3 d-block">
-                                <input type="number" class="form-control" name="company_name" placeholder="Company Name" required>
+                                <input type="text" class="form-control" name="company_name" placeholder="Company Name" required>
                             </div>
                             <div class="form-check mb-3">
                                 <input type="checkbox" class="form-check-input" id="privacyPolicy" required>
@@ -1490,7 +1491,39 @@ $benefitsData[$key] = [
 
     });
 
-   
+    $(document).on("submit", ".courseLead", function (e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let formData = form.serialize();
+
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            data: formData,
+            success: function (response) {
+                if (response.status === "success") {
+                    toastr.success(response.message);
+                    form[0].reset(); 
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error(response.message || "Something went wrong!");
+                }
+            },
+            error: function (xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    $.each(xhr.responseJSON.errors, function (key, value) {
+                        toastr.error(value[0]);
+                    });
+                } else {
+                    toastr.error("Something went wrong. Please try again.");
+                }
+            },
+        });
+    });
+
 </script>
 @endpush
 

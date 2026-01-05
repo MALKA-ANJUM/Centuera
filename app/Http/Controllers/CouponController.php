@@ -41,6 +41,7 @@ class CouponController extends Controller
             'course_id' => 'nullable|array',
             'course_id.*' => 'integer|exists:courses,id',
             'code' => 'required|string|max:255|unique:coupons,code',
+            'class_type' => 'required',
         ]);
 
         // Convert dates to YYYY-MM-DD
@@ -72,6 +73,7 @@ class CouponController extends Controller
             'course_id' => 'nullable|array',
             'course_id.*' => 'integer|exists:courses,id',
             'code' => 'required|string|max:255|unique:coupons,code,' . $coupon->id,
+            'class_type' => 'required',
         ]);
 
         // 🔥 Convert date format to YYYY-MM-DD
