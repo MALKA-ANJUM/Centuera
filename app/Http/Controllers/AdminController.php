@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LeadExport;
 use Exception;
 use App\Models\Admin;
 use App\Models\Contact;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Exports\SubscriptionExport;
 use App\Http\Controllers\Controller;
+use App\Models\Lead;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -189,4 +192,46 @@ class AdminController extends Controller
     $leads = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
     return view('admin.leads.index', compact('leads'));
   }
+  	public function deleteSelected(Request $request)
+	{
+		$ids = $request->ids;
+
+		if(!$ids || !is_array($ids)) {
+			return response()->json(['status' => 'error', 'message' => 'No leads selected']);
+		}
+
+		Lead::whereIn('id', $ids)->delete();
+
+		return response()->json(['status' => 'success', 'message' => 'Selected leads deleted successfully']);
+	}
+	public function leadExport()
+	{
+		return Excel::download(new LeadExport, 'leads.xlsx');
+	}
+
+   //Customers (USERS) listing in Admin Panel
+	public function customersList(Request $request)
+	{
+		$search = $request->input('search');
+		$query = User::query();
+
+		//search (by name, email, or phone)
+		if (!empty($search)) {
+			$query->where(function ($q) use ($search) {
+				$q->where('first_name', 'like', "%$search%")
+					->orWhere('last_name', 'like', "%$search%")
+					->orWhere('email', 'like', "%$search%")
+					->orWhere('mobile', 'like', "%$search%");
+			});
+		}
+		$users = $query->latest()->paginate(10);
+
+		return view('admin.customers.list', compact('users', 'search'));
+	}
+	public function customersView($id)
+	{
+		$user = User::findOrFail($id);
+		return view('admin.customers.view', compact('user'));
+	}
+
 }

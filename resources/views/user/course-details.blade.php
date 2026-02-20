@@ -22,6 +22,7 @@
                 <a class="demo-course-btn-one text-center" href="#view_schedule">View Training Options</a>
                 <button class="demo-course-btn-two" data-bs-toggle="modal" data-bs-target="#talktoOurAdvisor">Talk to
                     our advisor</button>
+                <a href="{{ route('user.course.schedule', $courseDetails->slug) }}" class="demo-course-btn-two" style="border: 1px solid orangered; color: orangered">View Schedules</a>
             </div>
 
             <div class="training-team">
@@ -323,7 +324,7 @@
                             Mobile No. <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2 modal-phone-flag" required>
+                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
                                 @foreach($countries as $country)
                                 <option
                                     value="{{ $country->phonecode }}"
@@ -336,6 +337,9 @@
                             <input type="text" class="form-control p-2" id="phone" name="phone" placeholder="9090909090" required>
                         </div>
                     </div>
+                    <!-- Google reCAPTCHA -->
+                    <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                     <button type="submit" class="btn-primary">Submit</button>
                 </form>
 
@@ -443,7 +447,43 @@ $benefitsData[$key] = [
 <!--------------------Training-option-------------------->
 @if($courseDetails->training_course != null)
 <section class="container" id="view_schedule">
-    <h2>Training Option</h2>
+    <div class="d-flex justify-content-between mb-2">
+        <h2>Training Option</h2>
+        <div class="city d-flex justify-content-between align-items-center">
+            <span class="cityName text-nowrap me-3"></span>
+            <button class="btn btn-primary mb-0" id="chooseCityBtn">Change City</button>
+        </div>
+    </div>
+
+  <div class="modal fade" id="cityModal" tabindex="-1" aria-labelledby="cityModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 100%; max-width: 400px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white" id="cityModalLabel">Select Your City</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="cityForm">
+                    <div class="mb-3">
+                        <label for="countrySelect" class="form-label">Country</label>
+                        <select class="form-select" id="countrySelect" disabled></select>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label for="cityInput" class="form-label">City</label>
+                        <input type="text" id="cityInput" class="form-control" placeholder="Type city name..." autocomplete="off" required>
+                        <div id="citySuggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveCity">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="row">
         @foreach(json_decode($courseDetails->training_course) as $key => $course)
         @if($course->status == 1)
@@ -686,9 +726,9 @@ $benefitsData[$key] = [
                     <div class="contact-box-left border-right">
                         <p class="mb-1 text-muted">Contact Us</p>
                         @php
-                            $formattedNumber = substr($tollFreeNumber, 0, 4) . '-' . 
-                                            substr($tollFreeNumber, 4, 3) . '-' . 
-                                            substr($tollFreeNumber, 7);
+                            $formattedNumber = substr($tollFreeNumber, 0, 3) . '-' . 
+                                            substr($tollFreeNumber, 3, 3) . '-' . 
+                                            substr($tollFreeNumber, 6);
                         @endphp
                         <h4 class="mb-1 text-nowrap fw-light" style="letter-spacing: 1.5px;"> {{ $formattedNumber }}</h4>
                         <p class="mb-1 text-muted">(Toll Free)</p>
@@ -702,7 +742,7 @@ $benefitsData[$key] = [
             @endif
 
             <div class="info-box">
-                <h5 class="text-center">Request more information</h5>
+                <h5 class="text-center">Request More Information</h5>
                 <form method="POST" class="mt-3 courseLead" action="{{ route('lead') }}">
                     @csrf
                     <input type="hidden" name="course_id" value="{{ $courseDetails->id }}">
@@ -719,7 +759,7 @@ $benefitsData[$key] = [
                             Mobile No. <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2 modal-phone-flag" required>
+                            <select name="country_code" class="phone-flag form-select rounded-start-3 me-0 select2" required>
                                 @foreach($countries as $country)
                                 <option
                                     value="{{ $country->phonecode }}"
@@ -755,9 +795,9 @@ $benefitsData[$key] = [
                         <label class="form-check-label" for="privacyPolicy">By providing your contact details,
                             you agree to our privacy policy</label>
                     </div>
-                    <!--  <div class="form-group mt-3">
-                            <textarea class="form-control" rows="3" placeholder="Message"></textarea>
-                        </div> -->
+                    <!-- Google reCAPTCHA -->
+                    <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                     <div class="text-center">
                         <button class="btn btn-primary mt-4" data-animation="fadeInRight" data-delay=".8s" type="submit"><span>Submit<i class="fa fa-spinner fa-spin" id="submitSpin" style="display:none;"></i></span></button>
                     </div>
@@ -1084,6 +1124,9 @@ $benefitsData[$key] = [
                                     <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
                                 </label>
                             </div>
+                            <!-- Google reCAPTCHA -->
+                            <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                             <button class="btn btn-primary w-100 fw-bold" type="submit">
                                 Enquire Now
                                 <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
@@ -1160,6 +1203,9 @@ $benefitsData[$key] = [
                                     <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
                                 </label>
                             </div>
+                            <!-- Google reCAPTCHA -->
+                            <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                             <button class="btn btn-primary w-100 fw-bold" type="submit">
                                 Enquire Now
                                 <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
@@ -1235,7 +1281,7 @@ $benefitsData[$key] = [
         let storedCountryId = localStorage.getItem('selected_country_id');
 
         if (storedCountryId) {
-            $(".phone-flag option").each(function() {
+            $(".phone-flag option").each(function() { 
                 if ($(this).data("id") == storedCountryId) {
                     $(this).prop("selected", true);
                 }
@@ -1243,11 +1289,6 @@ $benefitsData[$key] = [
         }
 
         $('.phone-flag').select2();
-    
-    });
-
-    $(document).ready(function() {
-        let storedCountryId = localStorage.getItem('selected_country_id');
 
         if (storedCountryId) {
             $(".modal-phone-flag option").each(function() {
@@ -1395,9 +1436,7 @@ $benefitsData[$key] = [
                 }, 400);
             }
         });
-    });
-
-    $(document).ready(function() {
+  
         let expandedFaqs = false;
 
         $("#toggleFaqs").on("click", function() {
@@ -1521,6 +1560,123 @@ $benefitsData[$key] = [
                     toastr.error("Something went wrong. Please try again.");
                 }
             },
+        });
+    });
+
+    $(document).ready(function(){
+        const selectedCountryId = localStorage.getItem('selected_country_id');
+        const selectedCityId = localStorage.getItem('selected_city_id');
+        const selectedCityName = localStorage.getItem('selected_city_name'); // store city name when selected
+
+        const chooseCityBtn = $('#chooseCityBtn');
+        const countrySelect = $('#countrySelect');
+        const cityInput = $('#cityInput');
+        const citySuggestions = $('#citySuggestions');
+        const cityNameSpan = $('.cityName');
+
+        // Display previously selected city on page load
+        if (selectedCityName) {
+            cityNameSpan.html(` <i class="fa-solid fa-location-dot text-danger fs-5"></i> ${selectedCityName}`);
+        }
+
+        // Show modal and load country when button is clicked
+        chooseCityBtn.on('click', function () {
+            if (!selectedCountryId) {
+                alert('No country selected in localStorage.');
+                return;
+            }
+
+            $('#cityModal').modal('show');
+            loadCountry(selectedCountryId);
+
+            // Clear previous input and suggestions
+            cityInput.val('');
+            citySuggestions.empty();
+        });
+
+        // Load Country
+        function loadCountry(countryId) {
+            $.ajax({
+                url: "{{ route('get.country') }}",
+                type: 'POST',
+                data: { id: countryId },
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function (data) {
+                    countrySelect.html(`<option value="${data.id}" selected>${data.name}</option>`);
+                },
+                error: function (err) {
+                    console.error(err.responseText);
+                    alert('Failed to load country.');
+                }
+            });
+        }
+
+        // City input AJAX search
+        cityInput.on('input', function() {
+            const query = $(this).val();
+
+            if (query.length < 3) {
+                citySuggestions.empty();
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('get.cities') }}",
+                type: 'POST',
+                dataType: 'json',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: { country_id: selectedCountryId, term: query },
+                success: function(cities) {
+                    citySuggestions.empty();
+                    if (cities.length === 0) {
+                        citySuggestions.append('<div class="list-group-item">No cities found</div>');
+                        return;
+                    }
+
+                    $.each(cities, function(i, city) {
+                        citySuggestions.append(`<div class="list-group-item list-group-item-action city-item" data-id="${city.id}" data-name="${city.name}">${city.name}</div>`);
+                    });
+                },
+                error: function(err) {
+                    console.error(err.responseText);
+                }
+            });
+        });
+
+        // Select city from suggestions
+        $(document).on('click', '.city-item', function() {
+            const cityName = $(this).data('name');
+            const cityId = $(this).data('id');
+
+            cityInput.val(cityName);
+            citySuggestions.empty();
+
+            // Save to localStorage
+            localStorage.setItem('selected_city_id', cityId);
+            localStorage.setItem('selected_city_name', cityName);
+        });
+
+        // Hide suggestions when clicking outside
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#cityInput, #citySuggestions').length) {
+                citySuggestions.empty();
+            }
+        });
+
+        // Save selected city
+        $('#saveCity').on('click', function() {
+            const cityName = cityInput.val().trim();
+            if (!cityName) {
+                toastr.error('Please select a city.');
+                return;
+            }
+
+            cityNameSpan.html(`<i class="fa-solid fa-location-dot text-danger fs-5"></i> ${cityName}`);
+            $('#cityModal').modal('hide');
+            location.reload();
+
+            // Save again in case user typed city manually
+            localStorage.setItem('selected_city_name', cityName);
         });
     });
 

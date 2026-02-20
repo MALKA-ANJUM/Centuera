@@ -123,6 +123,7 @@ class PaymentController extends Controller
                 'total_amount' => $request->total_amount,
                 'currency' => $request->currency,
                 'coupon_id' => $request->coupon_id,
+                'city' => $request->city,
                 'schedule_id' => $request->schedule_id,
                 'workshop_start_date' => $request->workshop_start_date,
                 'workshop_end_date' => $request->workshop_end_date,

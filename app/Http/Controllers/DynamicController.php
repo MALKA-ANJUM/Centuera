@@ -1,10 +1,14 @@
 <?php
 
+
 namespace App\Http\Controllers;
+
 
 use App\Models\Dynamic;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DynamicUserMail;
 
 class DynamicController extends Controller
 {

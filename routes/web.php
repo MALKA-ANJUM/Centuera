@@ -58,6 +58,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profileform', [AdminController::class, 'profileForm'])->name('profileForm');
         Route::get('logout', [AdminLoginController::class, 'logout'])->name('logout');
         Route::post('update-profile/{id}', [AdminController::class, 'updateProfile'])->name('updateProfile');
+        Route::get('customers', [AdminController::class, 'customersList'])->name('customers.list');
+        Route::get('customers/view/{id}', [AdminController::class, 'customersView'])->name('customers.view');
         Route::get('user-list', [AdminController::class, 'userList'])->name('user-list');
         Route::get('add-user-form', [AdminController::class, 'addUserForm'])->name('add-user-form');
         Route::post('change-user-status', [AdminController::class, 'changeUserStatus'])->name('change-user-status');
@@ -65,6 +67,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('edit-user/{id}', [AdminController::class, 'editUser'])->name('edit-user');
         Route::get('contacts-list', [AdminController::class, 'contactus'])->name('contacts.list');
         Route::get('leads-list', [AdminController::class, 'leadsList'])->name('leads.list');
+        Route::get('lead-export', [AdminController::class, 'leadExport'])->name('leads.export');
+        Route::post('leads/delete-selected', [AdminController::class, 'deleteSelected'])->name('leads.deleteSelected');
         Route::post('update-user/{id}', [AdminController::class, 'updateUser'])->name('update-user');
         Route::get('change-user-password/{id}', [AdminController::class, 'changeUserPassword'])->name('change-user-password');
         Route::get('delete-user/{id}', [AdminController::class, 'deleteUser'])->name('delete-user');
@@ -89,6 +93,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
          Route::get('blog/edit/{id}', [BlogController::class, 'edit'])->name('blog.edit');
          Route::put('blog/{id}', [BlogController::class, 'update'])->name('blog.update');
          Route::get('blog/{id}', [BlogController::class, 'destroy'])->name('blog.destroy');
+         Route::post('upload-blog-image', [BlogController::class, 'uploadBlogImage'])->name('upload.blog.image');
+
 
          //testimonial   
         Route::get('testimonial-list', [TestimonialController::class, 'testimoniallisting'])->name('testimonial.list');
@@ -117,6 +123,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         //request-callback
         Route::get('request-callback', [UserController::class, 'requestCallback'])->name('request.callback');
         Route::get('export', [UserController::class, 'requestExport'])->name('request.export');
+        Route::post('callback/delete-selected', [UserController::class, 'deleteSelected'])->name('callback.deleteSelected');
 
         //Order Listing and EXPORT
         Route::get('order-list', [OrderController::class, 'orderList'])->name('order.list');
@@ -230,7 +237,8 @@ Route::get('course-details/{slug}', [UserCourseController::class, 'courseDetails
 Route::get('/{slug}', [UserController::class, 'showDynamicPage'])->name('dynamic_content');
 Route::get('privacy-policy', [UserDashboardController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('refund-policy', [UserDashboardController::class, 'refundPolicy'])->name('course.policy');
-
+Route::post('get-country', [UserDashboardController::class, 'getCountry'])->name('get.country');
+Route::post('get-cities', [UserDashboardController::class, 'getCities'])->name('get.cities');
 
 Route::prefix('user')->name('user.')->group(function () {
     Route::get('login', [UserLogincontroller::class, 'login'])->name('login');

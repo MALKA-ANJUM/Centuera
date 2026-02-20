@@ -17,7 +17,7 @@ $activeTab = request('tab', session('form', 'profile'));
                         <img src="https://cfaccounts.simplilearn.com/profile.png" alt="Profile Picture" class="rounded-circle" width="70" height="70">
                         @endif
                     </div>
-                    <h5 class="mb-4">Malka Anjum</h5>
+                    <h5 class="mb-4">{{ auth()->user()->first_name }} {{ auth()->user()->middle_name }} {{ auth()->user()->last_name }}</h5>
                     <!-- <p class="text-muted small mb-2">Profile completed 52%</p>
                     <div class="progress mb-5" style="height: 6px;">
                         <div class="progress-bar bg-success" role="progressbar" style="width: 52%"></div>

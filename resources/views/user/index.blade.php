@@ -723,7 +723,8 @@
     <div class="modal-dialog" style="min-width: 800px; width: 90%">
         <div class="modal-content">
             <div class="modal-body p-0">
-                <div class="modal-image d-none d-md-block">
+                <div class="row">
+                      <div class="col-md-6 modal-image d-none d-md-block">
                         <div class="desc p-4 pb-0">
                             <h3 class="text-center" style="color: #012833">Being Friends & Colleagues</h3>
                             <p class="fw-bold text-center" style="color: #012833">Avail Group Discount</p>
@@ -736,7 +737,7 @@
                     <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
                 </div>
                 <!-- Right: Form -->
-                <div class="modal-form py-3 pe-4 mt-3">
+                <div class="col-md-6 modal-form py-3 pe-4 mt-3">
                     <span class="close" id="closeModal">&times;</span>
                     <h4 class="border-bottom">Request a Callback</h4>
                     <form action="{{route('request.callback')}}" method="POST" class="mt-5">
@@ -786,8 +787,12 @@
                                 <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
                             </label>
                         </div>
+                        <!-- Google reCAPTCHA -->
+                        <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                         <button type="submit" class="btn btn-primary w-100">Submit Request</button>
                     </form>
+                </div>
                 </div>
             </div>
         </div>

@@ -20,7 +20,11 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RequestCallbackExport;
 use App\Models\Banner;
 use App\Models\Country;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use App\Mail\AdminNotificationMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 
 class UserController extends Controller
@@ -53,8 +57,14 @@ class UserController extends Controller
 
 	public function viewBlog($slug)
 	{
-		$blog = Blog::where('slug', $slug)->firstOrFail();
-		return view('user.blog-view', compact('blog'));
+		$blog 		= Blog::where('slug', $slug)->firstOrFail();
+        $countries 	= Country::get();
+		$recentBlogs = Blog::where('categories',  $blog->categories)
+                   ->latest()
+                   ->take(3)
+                   ->get();
+
+		return view('user.blog-view', compact('blog', 'countries', 'recentBlogs'));
 	}
 
 	public function showDynamicPage($slug)
@@ -80,7 +90,21 @@ class UserController extends Controller
 			'email' 	=> 'required|email|max:255',
 			'mobile' 	=> 'required|string|max:10',
 			'message' 	=> 'nullable|string',
+			'g-recaptcha-response' => 'required' 
 		]);
+
+
+		$response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+			'secret'   => env('GOOGLE_CAPTCHA_SECRET_KEY'),
+			'response' => $request->input('g-recaptcha-response'),
+			'remoteip' => $request->ip(),
+		]);
+
+		$responseData = $response->json();
+
+		if (!$responseData['success']) {
+			return back()->with('error', 'Captcha verification failed. Please try again.');
+		}
 
 		$contact		= new Contact();
 		$contact->name 	= $request->name;
@@ -88,6 +112,18 @@ class UserController extends Controller
 		$contact->mobile = $request->mobile;
 		$contact->message = $request->message;
 		$contact->save();
+
+		$details = [
+			'subject' => 'Contact ('. $request->name .')',
+			'name' => $request->name,
+			'email' => $request->email,
+			'mobile' => $request->mobile,
+			'message' => $request->message,
+		];
+
+		$adminEmail = env('ADMIN_EMAIL');
+    	Mail::to($adminEmail)->send(new AdminNotificationMail($details));
+
 		return redirect()->route('contact')->with('success', 'Your message has been sent successfully!');
 	}
 
@@ -117,6 +153,22 @@ class UserController extends Controller
 
 	public function callback(Request $request)
 	{
+		$request->validate([
+			'g-recaptcha-response' => 'required' 
+		]);
+
+		$response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+			'secret'   => env('GOOGLE_CAPTCHA_SECRET_KEY'),
+			'response' => $request->input('g-recaptcha-response'),
+			'remoteip' => $request->ip(),
+		]);
+
+		$responseData = $response->json();
+
+		if (!$responseData['success']) {
+			return back()->with('error', 'Captcha verification failed. Please try again.');
+		}
+
 		$callback 			= new RequestCallback();
 		$callback->name 	= $request->name;
 		$callback->email 	= $request->email;
@@ -126,6 +178,21 @@ class UserController extends Controller
 		$callback->course_id = $request->course_id;
 		$callback->message 	= $request->message;
 		$callback->save();
+
+		// Load course relation
+		$callback->load('course');
+		$details = [
+			'subject' => 'Request-Callback ('. $request->name .')',
+			'name' => $request->name,
+			'email' => $request->email,
+			'phone' => $request->phone,
+			'country_code' => $request->country_code,
+			'course' => $callback->course ? $callback->course->title : 'N/A',
+			'message' => $request->message,
+		];
+
+		$adminEmail = env('ADMIN_EMAIL');
+    	Mail::to($adminEmail)->send(new AdminNotificationMail($details));
 		return back()->with('success', 'Your request has been submitted successfully!');
 	}
 
@@ -134,7 +201,23 @@ class UserController extends Controller
 		$request->validate([
 			'email' => 'required|email',
 			'phone' => 'required',
+			'g-recaptcha-response' => 'required' 
 		]);
+
+		$response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+			'secret'   => env('GOOGLE_CAPTCHA_SECRET_KEY'),
+			'response' => $request->input('g-recaptcha-response'),
+			'remoteip' => $request->ip(),
+		]);
+
+		$responseData = $response->json();
+
+		if (!$responseData['success']) {
+			return response()->json([
+				'status'  => 'error',
+				'message' => 'Captcha verification failed. Please try again.',
+			], 422);
+		}
 
 		$lead = new Lead();
 		$lead->course_id = $request->course_id;
@@ -147,6 +230,28 @@ class UserController extends Controller
 		$lead->company_name = $request->company_name;
 		$lead->learners = $request->learners;
 		$lead->save();
+		// Load course relation
+		$lead->load('course');
+		$details = [
+			'subject' => 'Lead Request Form ('. $request->name .')',
+			'name' => $request->name,
+			'email' => $request->email,
+			'type' => $request->type,
+			'phone' => $request->phone,
+			'country_code' => $request->country_code,
+			'course' => $lead->course ? $lead->course->title : 'N/A',
+			'company_name' => $request->company_name,
+			'learners' => $request->learners,
+		];
+
+    	$mailSent = true;
+		try {
+			$adminEmail = env('ADMIN_EMAIL');
+			Mail::to($adminEmail)->send(new AdminNotificationMail($details));
+		} catch (\Throwable $e) {
+			$mailSent = false;
+			Log::error('Mail sending failed: '.$e->getMessage());
+		}
 
 		if ($request->type === 'curriculum') {
 			$course = Course::find($request->course_id);
@@ -157,6 +262,7 @@ class UserController extends Controller
 				return response()->json([
 					'status' => 'success',
 					'message' => 'Your request has been submitted successfully!',
+					'mail_sent' => $mailSent,
 					'file' => $fileUrl
 				]);
 			}
@@ -184,4 +290,17 @@ class UserController extends Controller
 	{
 		return Excel::download(new RequestCallbackExport, 'request-callbacks.xlsx');
 	}
+		public function deleteSelected(Request $request)
+	{
+		$ids = $request->ids;
+
+		if(!$ids || !is_array($ids)) {
+			return response()->json(['status' => 'error', 'message' => 'No callbacks selected']);
+		}
+
+		RequestCallback::whereIn('id', $ids)->delete();
+
+		return response()->json(['status' => 'success', 'message' => 'Selected callbacks deleted successfully']);
+	}
+
 }

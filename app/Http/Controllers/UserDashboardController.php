@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Country;
 use App\Models\Order;
 use App\Models\Rating;
@@ -190,4 +191,24 @@ class UserDashboardController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
+    public function getCountry(Request $request)
+    {
+        return Country::find($request->id);
+    }
+
+    public function getCities(Request $request)
+    {
+        $search = $request->get('term', '');
+        $countryId = $request->get('country_id');
+
+        $cities = City::where('country_id', $countryId)
+            ->where('name', 'like', '%' . $search . '%')
+            ->select('id', 'name')
+            ->take(20) // limit for performance
+            ->get();
+
+        return response()->json($cities);
+    }
+
 }

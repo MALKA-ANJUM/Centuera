@@ -21,60 +21,39 @@
                         <div class="col-12">
                             <div class="card">
                                <div class="card-header border-bottom">
+                                    <button id="deleteSelectedCallbacks" class="btn btn-danger">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                     <a href="{{ route('admin.request.export') }}" class="btn btn-success">
+                                        <i class="fa fa-file-excel"></i>
+                                    </a>
                                </div>
                                 <div class="card-datatable table-responsive">
                                     <table class="datatables-ajax table table-hover">
                                         <thead>
                                             <tr>
-                                                <th>@lang('ID')</th>
+                                                <th><input type="checkbox" id="selectAllCallbacks"></th>
+                                                <th>Sl. No</th>
                                                 <th>@lang('Date')</th>
                                                 <th>@lang('Name')</th>
+                                                <th>@lang('Country')</th>
                                                 <th>@lang('Mobile')</th>
                                                 <th>@lang('Email')</th>
                                                 <th>@lang('Program')</th>
-                                                <th>@lang('Action')</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if (count($callbacks) > 0)
                                                 @foreach ($callbacks as $index => $callback)
                                                     <tr>
+                                                        <td><input type="checkbox" class="callback-checkbox form-check-input" value="{{ $callback->id }}"></td>
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{($callback->created_at)->format('d-M-Y') }}</td>
                                                         <td>{{ $callback->name }}</td>
-                                                        <td>+{{ $callback->country_code }} {{ $callback->phone }}</td>
+                                                        <td>{{ $callback->getCountry->name }}</td>
+                                                        <td>@if($callback->phone) + @endif{{ $callback->country_code }} {{ $callback->phone }}</td>
                                                         <td>{{ $callback->email }}</td>
                                                         <td>{{ $callback->course ? $callback->course->title : 'Other' }}</td>
-                                                        <td>
-                                                            <a href="{{ route('admin.request.export') }}" class="btn btn-success">
-                                                                <i class="fa fa-file-excel"></i>
-                                                            </a>
-                                                        </td>
-                                                        {{-- <td>
-                                                            <a href="{{ route('admin.photo', $gallery->id) }}"
-                                                                class="btn btn-primary" tabindex="0"
-                                                                aria-controls="DataTables_Table_0">
-                                                                <span>
-                                                                    <svg width="24" height="24" viewBox="0 0 24 24"
-                                                                        fill="none" stroke="currentColor"
-                                                                        stroke-width="2" stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                        class="feather feather-plus me-50 font-small-4">
-                                                                        <line x1="12" y1="5" x2="12"
-                                                                            y2="19"></line>
-                                                                        <line x1="5" y1="12" x2="19"
-                                                                            y2="12"></line>
-                                                                    </svg>
-                                                                    Add Photo
-                                                                </span>
-                                                            </a>
-                                                            <a class="btn btn-outline-success"
-                                                                href="{{ route('admin.gallery.edit', $gallery->id) }}"
-                                                                id="editblog"><i class="fa fa-edit"></i></a>
-                                                            <a href="{{ route('admin.gallery.delete', $gallery->id) }}"
-                                                                class="btn btn-outline-danger"><i
-                                                                    class="fa fa-trash"></i></a>
-                                                        </td> --}}
                                                     </tr>
                                                 @endforeach
                                             @else
@@ -97,3 +76,72 @@
     </div>
     <!-- END: Content-->
 @endsection
+
+@push('script')
+<script>
+    // Select/Deselect all callbacks
+$(document).on("change", "#selectAllCallbacks", function() {
+    $(".callback-checkbox").prop("checked", $(this).is(":checked"));
+});
+
+// Multi-delete action
+$(document).on("click", "#deleteSelectedCallbacks", function() {
+    let selected = $(".callback-checkbox:checked").map(function() {
+        return $(this).val();
+    }).get();
+
+    if (selected.length === 0) {
+        toastr.warning("Please select at least one callback to delete.");
+        return;
+    }
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to delete selected callbacks?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{ route('admin.callback.deleteSelected') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    ids: selected
+                },
+                success: function(response) {
+                    if (response.status === "success") {
+                        Toastify({
+                            text: response.message,
+                            duration: 5000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#4fbe87",
+                        }).showToast();
+                        setTimeout(function() {
+                            location.reload();
+                        }, 200);
+                    } else {
+                        Toastify({
+                            text: response.message,
+                            duration: 5000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#f3616d",
+                        }).showToast();
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error("Something went wrong. Please try again.");
+                }
+            });
+        }
+    });
+});
+
+
+</script>
+@endpush

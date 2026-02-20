@@ -58,7 +58,8 @@
                                     <table class="datatables-ajax table table-hover">
                                         <thead>
                                             <tr>
-                                                <th>@lang('ID')</th>
+                                                <th>@lang('Sl. No')</th>
+                                                <th>@lang('Date')</th>
                                                 <th>@lang('Name')</th>
                                                 <th>@lang('Order Id')</th>
                                                 <th>@lang('Email')</th>
@@ -73,8 +74,9 @@
                                                 @foreach ($orders as $index => $order)
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
+                                                        <td class="text-nowrap">{{ ($order->created_at)->format('d-m-Y') }}</td>
                                                         <td>{{ $order->fullname }}</td>
-                                                        <td>{{ $order->orderId }}</td>
+                                                        <td class="text-nowrap">{{ $order->orderId }}</td>
                                                         <td>{{ $order->email }}</td>
                                                         <td>
                                                             @if($order->getSchedule)

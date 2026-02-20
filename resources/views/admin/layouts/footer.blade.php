@@ -53,6 +53,8 @@
  <script src="{{asset('app-assets/vendors/js/forms/repeater/jquery.repeater.min.js')}}"></script>
  <script src="{{asset('app-assets/js/scripts/forms/form-repeater.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.0/classic/ckeditor.js"></script>
+
 @stack('script')
 @stack('modal')
 
@@ -63,16 +65,17 @@
                 width: 14,
                 height: 14
             });
-        }
+        } 
     })
     function restrictToNumbers(input) {
       	input.value = input.value.replace(/[^0-9]/g, '');
     }
   </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @include('sweetalert::alert')
 <!-- CKEditor 5 CDN (only one include, latest version recommended) -->
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 </body>
 <!-- END: Body-->
 </html>

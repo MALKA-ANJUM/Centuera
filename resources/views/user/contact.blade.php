@@ -75,6 +75,9 @@
                                             class="bg-white input-style border-style w-100"
                                             placeholder="Your comments here"></textarea>
                                     </div>
+                                    <!-- Google reCAPTCHA -->
+                                    <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                                     <button class="btn style-one box-shadow-1" data-animation="fadeInRight" data-delay=".8s" type="submit"><span>Send Message</button>    
                                 </form>
                             </div>

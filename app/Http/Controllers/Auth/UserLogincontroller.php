@@ -93,13 +93,9 @@ class UserLogincontroller extends Controller
             ];
 
             Mail::to($user->email)->send(new UserForgotPasswordOTP($mailData));
-            session()->flash('message', 'OTP successfully sent to your E-mail');
-            session()->flash('alert-class', 'alert-success');
-            return view('user.otp_verification', compact('user'));
+            return view('user.otp_verification', compact('user'))->with('success', 'OTP successfully sent to your E-mail');
         } else {
-            session()->flash('message', 'No User Found');
-            session()->flash('alert-class', 'alert-danger');
-            return redirect()->back();
+            return redirect()->back()->with('error', 'No User Found');
         }
     }
 

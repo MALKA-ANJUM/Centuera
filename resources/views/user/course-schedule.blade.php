@@ -3,7 +3,7 @@
 @section('content')
 <section class="course-container-pmp">
     <div class="container p-0">
-        <h2 class="schedule-heading mb-2">Schedule for {{ $course->title }} in {{ $currentCountry->name }}</h2>
+        <h2 class="schedule-heading mb-2">Schedule for {{ $course->title }} in  {{ $currentCountry->name }} </h2><span id="currentCity"></span>
 
         {{-- Schedules --}}
         <div class="schedule-section mt-0">
@@ -303,6 +303,9 @@
                             <label class="form-check-label" for="privacyPolicy">By providing your contact details,
                                 you agree to our privacy policy</label>
                         </div>
+                        <!-- Google reCAPTCHA -->
+                        <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                         <div class="text-center">
                             <button class="btn btn-primary mt-4" data-animation="fadeInRight" data-delay=".8s" type="submit">
                                 <span>Submit<i class="fa fa-spinner fa-spin" id="submitSpin" style="display:none;"></i></span>
@@ -379,6 +382,9 @@
                                     <a href="{{ route('privacy.policy') }}" target="_blank">Privacy Policy</a>.
                                 </label>
                             </div>
+                            <!-- Google reCAPTCHA -->
+                            <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
                             <button class="btn btn-primary w-100 fw-bold" type="submit">
                                 Enquire Now
                                 <i class="fa fa-spinner fa-spin ms-2" id="submitSpin" style="display:none;"></i>
@@ -663,6 +669,15 @@
                 }
             },
         });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedCity = localStorage.getItem('selected_city_name');
+        const citySpan = document.getElementById('currentCity');
+
+        if (savedCity) {
+            citySpan.innerHTML = `<i class="fa-solid fa-location-dot text-danger fs-5"></i> ${savedCity}`;
+        }
     });
 </script>
 @endpush

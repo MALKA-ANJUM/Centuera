@@ -243,8 +243,8 @@
     <div id="callbackModal" class="modal callbackmodal" style="display: none;">
         <div class="modal-content overflow-hidden">
             <div class="modal-body p-0">
-                <!-- Left: Image -->
-                <div class="modal-image d-none d-md-block">
+                <div class="row">
+                    <div class="col-md-6 modal-image d-none d-md-block">
                         <div class="desc p-4 pb-0">
                             <h3 class="text-center" style="color: #012833">Being Friends & Colleagues</h3>
                             <p class="fw-bold text-center" style="color: #012833">Avail Group Discount</p>
@@ -260,61 +260,64 @@
                                 </div>
                             </ul>
                         </div>
-                    <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
-                </div>
-                <!-- Right: Form -->
-                <div class="modal-form py-3 pe-4 mt-3">
-                    <span class="close" id="closeModal">&times;</span>
-                    <h4 class="border-bottom">Request a Callback</h4>
-                    <form action="{{route('request.callback')}}" method="POST" class="mt-5">
-                        @csrf
-                        <div class="mb-3">
-                            <input type="text" name="name" class="form-control" placeholder="Name *" required>
-                        </div>
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <select name="country_code" id="phone-flag" class="form-select select2" required>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
-                                            +{{ $country->phonecode }} {!! $country->flag !!}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <input type="text" 
-                                    id="phone" 
-                                    name="phone" 
-                                    class="form-control ps-2" 
-                                    placeholder="9090909090" 
-                                    required 
-                                    maxlength="10"
-                                    oninput="restrictToNumbers(this)" 
-                                    autocomplete="tel">
+                        <img src="{{ asset('frontend-assets/img/all-img/call_center.png') }}" alt="Request Callback">
+                    </div>
+                    <div class=" col-md-6 modal-form py-3 pe-4 mt-3">
+                        <span class="close" id="closeModal">&times;</span>
+                        <h4 class="border-bottom">Request a Callback</h4>
+                        <form action="{{route('request.callback')}}" method="POST" class="mt-5">
+                            @csrf
+                            <div class="mb-3">
+                                <input type="text" name="name" class="form-control" placeholder="Name *" required>
                             </div>
-                        </div>
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <select name="country_code" id="phone-flag" class="form-select select2" required>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->phonecode }}" data-flag='{!! $country->flag !!}' data-id="{{ $country->id }}">
+                                                +{{ $country->phonecode }} {!! $country->flag !!}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="text" 
+                                        id="phone" 
+                                        name="phone" 
+                                        class="form-control ps-2" 
+                                        placeholder="9090909090" 
+                                        required 
+                                        maxlength="10"
+                                        oninput="restrictToNumbers(this)" 
+                                        autocomplete="tel">
+                                </div>
+                            </div>
 
-                        <div class="mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Email *">
-                        </div>
+                            <div class="mb-3">
+                                <input type="email" name="email" class="form-control" placeholder="Email *">
+                            </div>
 
-                        <div class="mb-3">
-                            <select name="course_id" id="course_id" class="form-control select2" required>
-                                <option value="">Select Program</option>
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                                @endforeach
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+                            <div class="mb-3">
+                                <select name="course_id" id="course_id" class="form-control select2" required>
+                                    <option value="">Select Program</option>
+                                    @foreach($courses as $course)
+                                        <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                    @endforeach
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
 
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="policy" name="policy" required>
-                            <label class="form-check-label" for="policy">
-                                By providing your contact details, you agree to our 
-                                <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Submit Request</button>
-                    </form>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="policy" name="policy" required>
+                                <label class="form-check-label" for="policy">
+                                    By providing your contact details, you agree to our 
+                                    <a href="/privacy-policy" target="_blank">Privacy Policy</a>.
+                                </label>
+                            </div>
+                            <!-- Google reCAPTCHA -->
+                            <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_CAPTCHA_SITE_KEY') }}"></div>
+
+                            <button type="submit" class="btn btn-primary w-100">Submit Request</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -475,6 +478,7 @@
     <script src="{{asset('app-assets/js/scripts/forms/form-select2.js')}}"></script>
     <script src="{{asset('app-assets/vendors/js/extensions/toastr.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     @stack('script')
     <script>
@@ -520,14 +524,8 @@
                 localStorage.setItem('selected_country_id', selectedVal || '');
                 updatePhoneLink();
             });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () { 
-            //  let storedCountryIso = localStorage.getItem('detected_country_iso');
-            // var countryId = localStorage.getItem('selected_country_id') || 0;s
-
+       
+        
             $.ajax({
                 url: '{{ route("get.countries") }}',
                 type: 'GET',
@@ -554,13 +552,14 @@
                         country_id: country.id
                     },
                     success: function(response) {
-                        console.log("Country stored in session:", response);
                     }
                 });
             }
 
             function detectCountryByIP(countries) {
                 $.get('https://ipapi.co/json/', function (data) {
+                        localStorage.setItem('selected_city_name', data.city);
+
                     // Match by ISO code instead of name
                     let matched = countries.find(
                         c => c.iso2.toLowerCase() === data.country_code.toLowerCase()
@@ -576,11 +575,7 @@
                 });
             }
 
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
+    
             $('#searchCourse').on('input', function() {
                 let query = $(this).val();
 
@@ -630,11 +625,7 @@
                     $('#courseDropdown').hide();
                 }
             });
-        });
-    </script>
-    
-    <script>
-        $(document).ready(function() {  
+         
             $('#subscribeForm').on('submit', function(e) {
                 e.preventDefault();
 
@@ -663,11 +654,7 @@
         $('.modal-phone-flag').select2({
             dropdownParent: $('#contactUsModal')
         });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            // Check if 'visited' key is NOT in localStorage
+   
             if (!localStorage.getItem("visited")) {
                 // Show the modal
                 var welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
@@ -676,9 +663,6 @@
                 // Set 'visited' in localStorage so it won't show next time
                 localStorage.setItem("visited", "true");
             }
-        });
-    </script>   
-    <script>
         document.querySelectorAll('.category-item').forEach(item => {
             item.addEventListener('mouseenter', function() {
                 document.querySelectorAll('.courses-content').forEach(c => c.style.display = 'none');

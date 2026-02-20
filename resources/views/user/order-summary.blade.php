@@ -105,11 +105,10 @@
                                             </div>
                                         </div>
                                         <input type="hidden" name="order_id" id="order_id" value="">
-                                        <!-- City -->
+                                       <!-- City -->
                                         <div class="col-md-6">
-                                            <input type="text" class="form-control border rounded px-3" placeholder="Enter City Name" name="city">
+                                            <input type="text" class="form-control border rounded px-3" placeholder="Enter City Name" name="city" id="cityInput" readonly>
                                         </div>
-
                                     </div>
 
                                     <!-- Submit Button -->
@@ -561,6 +560,7 @@
             let currency = "{{ $currencySymbol }}";
             let discount = $("#payWithStripe").data("discount") || 0;
             let coupon_id = $("#coupon_id").val();
+            let city = $("#cityInput").val();
 
             if (!name) {
                 valid = false;
@@ -583,7 +583,7 @@
                 return false; // ⛔ Stop before Stripe request
             }
 
-    showLoader();
+            showLoader();
 
 
             // ✅ Proceed only if valid
@@ -599,6 +599,7 @@
                 discount: discount,
                 currency : currency,
                 coupon_id: coupon_id,
+                city: city,
                 order_id: createdOrderId,
                 schedule_id: "{{ $schedule->id }}",
                 course_id: "{{ $schedule->course_id }}", // assuming you pass it
@@ -625,6 +626,13 @@
 
     // });
 
+    $(document).ready(function() {
+        // Check if a city was previously selected
+        const savedCity = localStorage.getItem('selected_city_name');
+        if (savedCity) {
+            $('#cityInput').val(savedCity);
+        }
+    });
 
 </script>
 @endpush

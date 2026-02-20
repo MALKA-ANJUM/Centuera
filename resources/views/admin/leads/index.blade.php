@@ -13,10 +13,17 @@
             <section>
                 <div class="card">
                     <div class="card-header border-bottom d-flex align-items-center">
+                        <button id="deleteSelected" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
+
                         <form action="" method="GET" class="d-flex ms-auto">
                             <input type="text" name="search" class="form-control" placeholder="Search by name, email, or phone" value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary ms-2"><i class="fa fa-search"></i></button>
                         </form>
+                        <a href="{{ route('admin.leads.export') }}" class="btn btn-success ms-2">
+                            <i class="fa fa-file-excel"></i>
+                        </a>
                     </div>
                     <div class="">
                         @if(session('success'))
@@ -26,9 +33,11 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th><input type="checkbox" id="selectAll"></th>
+                                    <th>Sl. No</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Country</th>
                                     <th>Phone</th>
                                     <th>View</th>
                                 </tr>
@@ -36,9 +45,13 @@
                             <tbody>
                                 @forelse($leads as $index => $lead)
                                     <tr>
+                                        <td>
+                                            <input type="checkbox" class="lead-checkbox form-check-input" value="{{ $lead->id }}">
+                                        </td>
                                         <td>{{ $leads->firstItem() + $index }}</td>
                                         <td>{{ $lead->name }}</td>
                                         <td>{{ $lead->email }}</td>
+                                        <td>{{ $lead->getCountry->name }}</td>
                                         <td>+{{ $lead->country_code }} {{ $lead->phone }}</td>
                                         <td>
                                             <a href="javascript:void(0)" 
@@ -117,6 +130,71 @@
             $("#leadEnquiryRow").hide();
         }
     });
+
+    // Select/Deselect all checkboxes
+    $(document).on("change", "#selectAll", function() {
+        $(".lead-checkbox").prop("checked", $(this).is(":checked"));
+    });
+
+// Multi-delete action
+    $(document).on("click", "#deleteSelected", function() {
+        let selected = $(".lead-checkbox:checked").map(function() {
+            return $(this).val();
+        }).get();
+
+        if (selected.length === 0) {
+            toastr.warning("Please select at least one lead to delete.");
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to delete selected leads?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Run delete logic only if confirmed
+                $.ajax({
+                    url: "{{ route('admin.leads.deleteSelected') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        ids: selected
+                    },
+                    success: function(response) {
+                        if (response.status === "success") {
+                            Toastify({
+                                text: response.message,
+                                duration: 5000,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "#4fbe87",
+                            }).showToast();
+                            setTimeout(function() {
+                                location.reload();
+                            }, 200);
+                        } else {
+                            Toastify({
+                                text: response.message,
+                                duration: 5000,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "#f3616d",
+                            }).showToast();
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error("Something went wrong. Please try again.");
+                    }
+                });
+            }
+        });
+    });
+
 
 
 </script>

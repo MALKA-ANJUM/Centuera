@@ -52,7 +52,7 @@
                     <!-- Schedule Info -->
                     <h5 class="mb-2 mt-4">Schedule</h5>
                     <div class="row g-4 mb-2">
-                        <div class="col-md-6 col-lg-6">
+                        <div class="col-md-4">
                             @if($orders->getSchedule)
                                 <div class="p-3 border rounded-3 d-flex flex-column align-items-start">
                                     <!-- Type & Batch -->
@@ -74,10 +74,18 @@
                                 </div>
                             @endif
                         </div>
-                         <div class="col-md-6 col-lg-6">
+                         <div class="col-md-4">
                             <div class="p-3 border rounded-3">
                                 <p class="text-muted mb-1"><i class="fa fa-clock text-secondary me-2"></i>Order Date</p>
                                 <h6 class="mb-0 fw-bold">{{ $orders->created_at->format('d M Y') }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3">
+                                <p class="text-muted mb-1"><i class="fa-solid fa-location-dot text-danger fs-5"></i> City</p>
+                                @if($orders->city)
+                                    <h6 class="mb-0 fw-bold">{{ $orders->city ?? '-' }}</h6>
+                                @endif
                             </div>
                         </div>
                     </div>

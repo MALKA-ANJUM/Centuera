@@ -20,5 +20,9 @@ public function course()
 {
     return $this->belongsTo(Course::class, 'course_id');
 }
+    public function getCountry()
+    {
+        return $this->belongsTo(Country::class, 'country_code', 'phonecode');
+    }
 
 }

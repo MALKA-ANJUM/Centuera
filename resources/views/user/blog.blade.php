@@ -24,19 +24,19 @@
     <div class="blog-section mt-5 ptb-100">
         <div class="container">
             <div class="main-max-width">
-                <div class="row justify-content-center">
+                <div class="row">
                     @foreach($blogs as $blog)
                         <div class="col-lg-4 col-sm-6">
                             <div class="single-blog-box">
                                 <div class="image position-relative">
                                     <a href="{{ route('blog.view', $blog->slug) }}">
-                                        <img src="{{ asset('admin/blog/'. $blog->image) }}" alt="image" style="min-height: 275px">
+                                        <img src="{{ asset('admin/blog/'. $blog->image) }}" alt="image" style="height: 250px; width: 100%; object-fit: fill">
                                     </a>
                                 </div>
                                 <div class="content" style="min-height: 175px;">
                                     <ul class="cr-items d-flex list-unstyle justify-content-between">
                                         <li><i class="ri-calendar-2-line"></i><span>{{ \Carbon\Carbon::parse($blog->date)->format('d-m-Y') }}</span></li>
-                                        <li><i class="ri-price-tag-3-line"></i><span>{{ $blog->categories }}</span></li>
+                                        <li><i class="ri-price-tag-3-line"></i><span>{{ $blog->getCategory->name ?? '' }}</span></li>
                                     </ul>
                                     <h3 class="mb-15 fs-20">
                                         <a href="{{ route('blog.view', $blog->slug) }}">{{ \Illuminate\Support\Str::limit($blog->title, 20) }}</a>
@@ -58,6 +58,10 @@
         </div>
     </div>
     <!-- Blog Section Start -->
-
+<style>
+    ul.pagination {
+        list-style-type: none;
+    }
+</style>
 <!-- END: Content-->
 @endsection

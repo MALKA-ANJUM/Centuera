@@ -71,6 +71,15 @@
                     {{ \Carbon\Carbon::parse($orders->getSchedule->end_date)->format('d M Y') }}
                 </div>
 
+                @if($orders->city)
+                <div style="margin-bottom:5px;">
+                    <strong>City: </strong>
+                    <span style="">
+                        {{ $orders->city }} 
+                    </span>
+                </div>
+                @endif
+
             </div>
         @else
             <div style="padding:10px; border:1px solid #dc3545; border-radius:5px; color:#dc3545;">
@@ -116,6 +125,8 @@
             </tbody>
         </table>
     </section><br>
+
+    
 
     <section style="margin-top: 5px;">
          {{-- <h3 style="margin-bottom:5px">Payment Information</h3> --}}

@@ -59,6 +59,12 @@
                     <span class="menu-title text-truncate font-size-12px" data-i18n="Rating">Rating</span>
                 </a>
             </li>
+            <li class="@if (request()->is('admin/customers*')) active @endif nav-item">
+                <a class="d-flex align-items-center" href="{{ route('admin.customers.list') }}">
+                    <i class="fa fa-users"></i>
+                    <span class="menu-title text-truncate font-size-12px" data-i18n="Customers">Customers</span>
+                </a>
+            </li>
             <li class="nav-item has-sub {{ request()->is('admin/request-callback') || request()->is('admin/subscriptions') || request()->is('admin/contacts-list') || request()->is('admin/leads-list') ? 'open' : '' }}">
                 <a class="d-flex align-items-center" href="#">
                     <i data-feather="users"></i>

@@ -10,6 +10,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Link of CSS files -->
     <link rel="stylesheet" href="{{ asset('frontend-assets/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ asset('frontend-assets/css/owl.carousel.min.css')}}">
@@ -288,19 +290,33 @@
     @php
         $generalSetting = App\Models\Generalsettings::first();
         $stealDeal = $generalSetting->steal_the_deal;
+   
+        $lines = preg_split('/(<p>|<br\s*\/?>)/i', $stealDeal, -1, PREG_SPLIT_NO_EMPTY);
+
+        $icons = [
+            0 => '<img src="'.asset('frontend-assets/img/all-img/upskill-logo.png').'" width="55px">',
+            1 => '<i class="fas fa-calendar-alt" style="color:#f0a601"></i>',
+            2 => '<i class="fas fa-lock" style="color:#f0a601"></i>',
+        ];
     @endphp
 
-    @if(!empty($stealDeal))
+    @if(!empty($lines))
         <div class="deal-header text-center py-0">
             <div class="container">
                 <div class="deal-text d-flex justify-content-center align-items-center flex-wrap gap-4">
-                    <p class="mb-0"><img src="{{ asset('frontend-assets/img/all-img/upskill-logo.png') }}" alt="" width="55px"> 30% Savings on Standard Course Fees</p>
-                    <p class="mb-0"><i class="fas fa-calendar-alt" style="color: #f0a601"></i> Enroll by 25th September</p>
-                    <p class="mb-0"><i class="fas fa-lock" style="color: #f0a601"></i> Unlock FREE Self-Learning Courses</p>
+                    @foreach($lines as $index => $line)
+                        @php $line = strip_tags($line); @endphp
+                        @if(trim($line) !== '')
+                            <p class="mb-0">
+                                {!! $icons[$index] ?? '' !!} {{ $line }}
+                            </p>
+                        @endif
+                    @endforeach
                 </div>
             </div>
         </div>
     @endif
+
     <div class="navbar-area" id="navbar">
         <div class="navbar-top">
             <div class="container" style="width: 100%;">

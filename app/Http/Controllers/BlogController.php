@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -22,7 +23,8 @@ class BlogController extends Controller
     }
     public function create()
     {
-        return view('admin.blog.add');
+        $categories = Category::get();
+        return view('admin.blog.add', compact('categories'));
     }
     public function store(Request $request)
     {
@@ -52,6 +54,9 @@ class BlogController extends Controller
             $blog->date = date("Y-m-d", strtotime($request->date));
             $blog->description = $request->description;
             $blog->categories = $request->categories;
+            $blog->author = $request->author;
+            $blog->views = $request->views;
+            $blog->read_time = $request->read_time;
 
             // Handle image upload if any
             if ($request->hasFile('image')) {
@@ -70,7 +75,8 @@ class BlogController extends Controller
     public function edit(string $id)
     {
         $blogs = Blog::findOrFail($id);
-        return view('admin.blog.edit', compact('blogs'));
+        $categories = Category::get();
+        return view('admin.blog.edit', compact('blogs', 'categories'));
     }
     public function update(Request $request, string $id)
     {
@@ -94,6 +100,9 @@ class BlogController extends Controller
             $blog->date = date("Y-m-d", strtotime($request->date));
             $blog->description = $request->description;
             $blog->categories = $request->categories;
+            $blog->author = $request->author;
+            $blog->views = $request->views;
+            $blog->read_time = $request->read_time;
             // Handle image upload
             $folder_path = public_path('admin/blog/');
             if (!File::exists($folder_path)) {
@@ -118,4 +127,25 @@ class BlogController extends Controller
     $blogs->delete();
     return redirect()->route('admin.blog.list')->with('error', 'Blog deleted successfully.');
     }
+
+    public function uploadBlogImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file     = $request->file('upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/blog'), $filename);
+
+            return response()->json([
+                'uploaded' => true,
+                'fileName' => 'test',
+                'url' => asset('uploads/blog/' . $filename) 
+            ], 200);
+        }
+        return response()->json([
+            'error' => [
+                'message' => 'No file uploaded'
+            ]
+        ], 400);
+    }
+
 }

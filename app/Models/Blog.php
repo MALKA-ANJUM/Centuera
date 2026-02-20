@@ -10,4 +10,9 @@ class Blog extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    public function getCategory()
+    {
+        return $this->belongsTo(Category::class, 'categories');
+    }
 }
